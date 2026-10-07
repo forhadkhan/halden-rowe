@@ -255,7 +255,7 @@ All in tokens.css sections 4 to 10. How to use them:
   their intrinsic width.
 - **200% zoom** on a 1280 window = 640 CSS px: the md/base layout applies; nothing is clipped; the header is the
   mobile header. **400% zoom** = 320 px: single column; the only content allowed to scroll sideways is none (the map
-  scales as an SVG; gallery and service rows are deliberate scroll-snap rows with visible controls).
+  scales as an SVG; the gallery is a deliberate scroll-snap row with visible controls).
 - No horizontal page scroll at any width: `overflow-x: clip` on `body` is a backstop, not a fix; full-bleed rows use
   `width: 100%`, never `100vw`.
 - Header height `--header-height` (72) → `--header-height-compact` (64) below md. `scroll-padding-top` on `html` =
@@ -816,9 +816,7 @@ the map is night; footer is night. Adjacent night sections never touch (the map 
 - **Desktop:** header (eyebrow + H2 cols 1–7, intro `--text-body` cols 9–12). Four cards in a row (3 cols each):
   arched image (aspect 3:4), service icon is **not** shown (photos carry it), title `--text-display-s`, one line
   `--text-small` muted, text link "Explore buying" + `chevron-right` (whole card clickable as 10.5).
-- **Tablet:** 2×2. **Mobile:** horizontal scroll-snap row (`scroll-snap-type: x mandatory`, cards 78% wide, 12px peek),
-  the row is `role="region"` + `aria-label` + `tabindex="0"` so it can be scrolled by keyboard; scroll progress shown by
-  a thin dimension line under the row (decorative). No hidden content: all four reachable by swipe or Tab.
+- **Tablet:** 2×2. **Mobile:** one card per row (photo 4:5), no sideways scrolling.
 - **Slots:** `services.eyebrow`, `.headline`, `.intro`, `services.items[4]{title, line, link, href}`.
 - **Photos:** `services/buying`, `services/selling`, `services/renting`, `services/valuation`.
 - **Motion:** M4 per arch (stagger 110ms), M6 text, image `scale 1.04` on hover.
@@ -883,12 +881,12 @@ the map is night; footer is night. Adjacent night sections never touch (the map 
 - **Desktop:** header (eyebrow + H2, text link "Meet the team" → /about#team). 3-column grid, two rows, six agents.
   Agent card: portrait 4:5 `--radius-sm`, name `--text-title`, role `--text-small` muted, then two icon buttons
   (`phone`, `mail`, labels "Call Maya Chen" etc.) and listings count as dimension label.
-- **Tablet:** 3 columns. **Mobile:** 2 columns; icon buttons stay 44px (they wrap under the name).
+- **Tablet:** 3 columns. **Mobile:** one card per row; icon buttons stay 44px.
 - **Slots:** `agents.eyebrow`, `.headline`, `.link`; agents from `site.ts` (name, role, phone, email, photo slug).
 - **Photos:** `agents/*` (6).
 - **Name and role on the photo:** both sit at the bottom of the portrait over an ink gradient (rgb 26 30 29, 0.82 at
   the bottom edge fading to 0 over about 45% of the height; ink, never pure black, so the caption reads on any
-  portrait). On phones the photo carries the name only and the role sits below it (long roles do not fit 160px).
+  portrait). The role stays on the photo at every width (phone cards are full width, so it fits).
   Bio and the icon buttons stay below the photo. Source: `src/components/pages/TeamGrid.astro`.
 - **One component:** the home section renders `<TeamGrid />` too (`Agents.astro` is only the heading, the link and
   the grid), so home and /about cannot drift. The old `.agents__grid` / `.agent*` CSS is gone.
