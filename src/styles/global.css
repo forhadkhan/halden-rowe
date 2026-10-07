@@ -387,24 +387,20 @@ p {
 }
 
 /* ---------------------------------------------------------------------------
-   Focus (DESIGN.md 4): every focusable element, both schemes.
+   Focus: no focus rings anywhere (Forhad's call, 2026-10-07). Fields still darken their border; cards still show
+   their hover treatment on :focus-within.
    ------------------------------------------------------------------------ */
+:focus,
 :focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--focus-offset);
-}
-
-:focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Text fields and selects show no outline ring: the border darkens and thickens instead (still well over 3:1). */
+/* Text fields and selects: the border darkens instead of a ring. */
 input.field__control:not([aria-invalid="true"]):focus,
 select.field__control:not([aria-invalid="true"]):focus,
 textarea.field__control:not([aria-invalid="true"]):focus {
   outline: none;
   border-color: var(--color-focus);
-  box-shadow: inset 0 0 0 1px var(--color-focus);
 }
 
 /* Programmatic focus targets (headings after form success, error summary) show no ring. */
@@ -621,8 +617,4 @@ html.lenis body {
   }
 }
 
-@media (forced-colors: active) {
-  :focus-visible {
-    outline-color: Highlight;
-  }
-}
+

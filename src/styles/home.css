@@ -366,10 +366,6 @@
   outline: none;
 }
 
-.hero .search__field:has(:focus-visible) {
-  box-shadow: inset 0 0 0 2px var(--color-focus);
-}
-
 /* Round dark search button; its label stays for assistive tech. */
 .hero [data-search-form] .search__submit {
   width: 3.25rem;
@@ -1612,11 +1608,6 @@
   border-color: var(--color-accent-graphic);
   background-color: var(--color-accent-graphic);
   color: var(--hr-night-900);
-}
-
-.map-card:has(.map-card__link:focus-visible) {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
 }
 
 .map-card__link:focus-visible {

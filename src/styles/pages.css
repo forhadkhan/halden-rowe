@@ -98,11 +98,6 @@
   text-underline-offset: 3px;
 }
 
-.segmented__option input:focus-visible + span {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: 2px;
-}
-
 /* ---------------------------------------------------------------- /properties */
 .results {
   padding-block: var(--space-10) var(--space-section);
@@ -1119,11 +1114,6 @@
 .not-found__input::placeholder {
   color: var(--color-text-muted);
   opacity: 1;
-}
-
-.not-found__input:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
 }
 
 .not-found__actions {
