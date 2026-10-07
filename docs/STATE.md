@@ -238,3 +238,5 @@ hovers are not yet described there; /privacy, /credits and the form success text
 - Verified in the browser pane (1024 and 800 wide): hover states, photo hit-test on Featured, journal cards and teaser,
   3 related posts, broken-image placeholder, accordion toggle and keyboard. Check 0/0/0, 28 tests, build ok.
   Not yet checked by eye: 320/390 phones for the new rows, the teaser's phone thumb rows on hover.
+
+- 2026-10-07 focus rings disabled site-wide on request (global.css plus 10 component/page rules, ring-gap shadows, field and hero-search inset shadows). Fields keep a border-colour change. DESIGN.md override note added above section 4. WCAG 2.4.7 no longer met; flagged.

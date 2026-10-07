@@ -211,6 +211,8 @@ set. Headlines: `text-wrap: balance`; paragraphs: `text-wrap: pretty`. Never let
 
 ---
 
+> **Override (2026-10-07, Forhad): no focus rings anywhere.** `global.css` sets `outline: none` on `:focus` and `:focus-visible`, and every per-component ring, offset and ring-gap shadow was removed. Text fields still darken their border on focus, cards keep their hover treatment on `:focus-within`, and the accordion door handle still brightens. Everything below that describes a "ring" is superseded. This leaves keyboard users without a visible focus indicator (WCAG 2.4.7); revisit before a real launch.
+
 ## 4. Space, radius, shadow, z-index
 
 All in tokens.css sections 4 to 10. How to use them:
