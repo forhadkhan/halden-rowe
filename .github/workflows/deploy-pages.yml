@@ -1,0 +1,56 @@
+# Deploy to GitHub Pages. Not enabled: it runs only when started by hand (Actions > Deploy to GitHub Pages >
+# Run workflow). To turn on deploys from main, add `push: branches: [main]` under `on:`.
+# Repo settings: Pages > Source = GitHub Actions. Repository variables (Settings > Secrets and variables >
+# Actions > Variables): SITE_URL (the build fails without a site URL; see the Build step), BASE_PATH,
+# PUBLIC_FORM_ENDPOINT, PUBLIC_FORM_ACCESS_KEY (a public, domain-locked key).
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        env:
+          # SITE_URL is required by `astro build` (canonical, Open Graph and sitemap URLs). Set the repository
+          # variable SITE_URL to the public origin, e.g. https://www.example.com for a custom domain (with
+          # BASE_PATH=/). Unset, it defaults to this repo's project site, https://<owner>.github.io/<repo>/.
+          SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io', github.repository_owner) }}
+          BASE_PATH: ${{ vars.BASE_PATH || format('/{0}', github.event.repository.name) }}
+          PUBLIC_FORM_ENDPOINT: ${{ vars.PUBLIC_FORM_ENDPOINT }}
+          PUBLIC_FORM_ACCESS_KEY: ${{ vars.PUBLIC_FORM_ACCESS_KEY }}
+        run: npm run check && npm run build
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

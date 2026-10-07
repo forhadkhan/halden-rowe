@@ -1,0 +1,3 @@
+# Cloudflare Pages / Netlify redirects. Placeholder: add rules as pages move, one per line:
+#   /old-path   /new-path   301
+# With BASE_PATH set, include the base in both paths. GitHub Pages ignores this file.
