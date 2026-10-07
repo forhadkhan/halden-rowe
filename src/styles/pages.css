@@ -241,6 +241,14 @@
   .listing__head {
     padding-top: var(--space-5);
   }
+
+  .listing__who h1 {
+    margin-block: var(--space-5);
+  }
+
+  .listing__address {
+    margin-top: 0;
+  }
 }
 
 @media (min-width: 64rem) {
