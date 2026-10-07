@@ -1,0 +1,57 @@
+---
+/**
+ * /privacy: an honest placeholder. Halden & Rowe is a demo; there is no real privacy policy to publish, so the
+ * page says what the demo does and does not do, and marks itself for replacement. See README "Before launch".
+ * seo.json has no privacy entry, so the title and description live here (flagged to Quill in the handoff).
+ */
+import '../styles/pages.css';
+import BaseLayout from '../components/BaseLayout.astro';
+import Breadcrumb from '../components/pages/Breadcrumb.astro';
+import { getCopy } from '../data/load-copy';
+import { breadcrumbLd } from '../components/pages/structured-data';
+import { breadcrumbLabel, homeLabel } from '../components/pages/labels';
+
+const site = getCopy('site');
+const crumbs = [
+  { label: homeLabel(), path: '/' },
+  { label: 'Privacy', path: '/privacy' },
+];
+---
+
+<BaseLayout
+  title="Privacy | Halden & Rowe"
+  description="How this Halden & Rowe demo site handles the details you type into its forms. A placeholder until a reviewed policy replaces it."
+  path="/privacy"
+  jsonLd={[breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <Fragment set:html="<!-- REPLACE BEFORE LAUNCH: this privacy page is a placeholder for the demo. Publish a policy reviewed for the real business, its form service and its jurisdictions. See README.md, Before launch. -->" />
+  <header class="page-head container">
+    <Breadcrumb label={breadcrumbLabel()} items={crumbs} />
+    <h1 class="display-l">Privacy</h1>
+    <p class="lead">This is a demo site, so this page is a placeholder. It describes what the demo does today.</p>
+  </header>
+
+  <div class="prose container-text legal">
+    <h2>What the demo collects</h2>
+    <p>
+      The inquiry, contact and newsletter forms send what you type to the form service set up for this site. If no
+      service is set up, nothing leaves your browser and the form shows a demo message instead.
+    </p>
+    <h2>What stays in your browser</h2>
+    <p>
+      Homes you save are kept in your browser's local storage on this device only. Clear your browser data to remove
+      them.
+    </p>
+    <h2>What the demo does not do</h2>
+    <ul>
+      <li>No analytics, advertising or tracking scripts.</li>
+      <li>No cookies.</li>
+      <li>No requests to third-party servers while you browse: fonts and photos are served from this site.</li>
+    </ul>
+    <h2>Questions</h2>
+    <p>
+      Write to <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. A full policy will replace this page
+      before the site goes live.
+    </p>
+  </div>
+</BaseLayout>

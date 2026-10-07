@@ -1,0 +1,67 @@
+---
+/**
+ * /credits: photo credits from Kolpona's manifest (photographer, source, licence), grouped by section.
+ * The footer links here (site.json footer.creditsHref). seo.json has no credits entry, so title and
+ * description live here (flagged in the handoff).
+ */
+import '../styles/pages.css';
+import BaseLayout from '../components/BaseLayout.astro';
+import Breadcrumb from '../components/pages/Breadcrumb.astro';
+import { photosWhere, type PhotoEntry } from '../lib/photos';
+import { getCopy } from '../data/load-copy';
+import { breadcrumbLd } from '../components/pages/structured-data';
+import { breadcrumbLabel, homeLabel, pageLabel } from '../components/pages/labels';
+
+const a11y = getCopy('site').a11y;
+const title = pageLabel('/credits', 'Photo credits');
+const crumbs = [
+  { label: homeLabel(), path: '/' },
+  { label: title, path: '/credits' },
+];
+
+// One row per photographer and source page; a listing's several photos from one shoot collapse into one row.
+const rows = new Map<string, { entry: PhotoEntry; count: number }>();
+for (const entry of photosWhere({})) {
+  const key = `${entry.photographer}|${entry.source_url}`;
+  const row = rows.get(key);
+  if (row) row.count += 1;
+  else rows.set(key, { entry, count: 1 });
+}
+const credits = [...rows.values()].sort((a, b) => a.entry.photographer.localeCompare(b.entry.photographer));
+const licences = [...new Set(credits.map((c) => c.entry.licence))];
+---
+
+<BaseLayout
+  title="Photo credits | Halden & Rowe"
+  description="The photographers whose work appears on the Halden & Rowe demo site, with links to each original photo and its license."
+  path="/credits"
+  jsonLd={[breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <header class="page-head container">
+    <Breadcrumb label={breadcrumbLabel()} items={crumbs} />
+    <h1 class="display-l">{title}</h1>
+    <p class="lead">
+      Every photo on this demo site is used under the {licences.join(', ')}. The homes, people and places are
+      illustrative.
+    </p>
+  </header>
+
+  <div class="container-text credits">
+    <ul class="credits__list" role="list">
+      {
+        credits.map(({ entry, count }) => (
+          <li>
+            <span class="credits__name">{entry.photographer}</span>
+            <span class="small muted">
+              {entry.alt}
+              {count > 1 && ` (${count} photos)`}
+            </span>
+            <a class="small" href={entry.source_url} target="_blank" rel="noopener noreferrer">
+              View original<span class="visually-hidden"> photo by {entry.photographer} ({a11y.openInNewTab})</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>

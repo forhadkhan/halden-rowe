@@ -1,0 +1,94 @@
+---
+/**
+ * /contact (DESIGN.md 11.5). DOM order follows the phone layout (header, form, details: the form is the job);
+ * from 1024 the grid puts the header and details in the left columns and the form on the right.
+ * The "map" is the decorative floor-plan drawing: no map embed, no third-party request.
+ */
+import '../styles/pages.css';
+import BaseLayout from '../components/BaseLayout.astro';
+import Breadcrumb from '../components/pages/Breadcrumb.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import DrawSvg from '../components/DrawSvg.astro';
+import ContactForm from '../components/pages/ContactForm.astro';
+import { getCopy } from '../data/load-copy';
+import { breadcrumbLd, organizationLd } from '../components/pages/structured-data';
+import { breadcrumbLabel, homeLabel, pageLabel } from '../components/pages/labels';
+
+interface ContactCopy {
+  title: string;
+  lead: string;
+  sell: { title: string; lead: string };
+  details: Record<'heading' | 'phone' | 'email' | 'address' | 'hours' | 'visitNote', string>;
+  image: { file: string; alt: string };
+}
+
+const contact = getCopy<ContactCopy>('contact');
+const office = getCopy('site').contact;
+const seo = getCopy('seo').pages.contact;
+const crumbs = [
+  { label: homeLabel(), path: '/' },
+  { label: pageLabel('/contact', 'Contact'), path: '/contact' },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  path="/contact"
+  jsonLd={[organizationLd(Astro.site!), breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <div class="contact container">
+    <header class="contact__head">
+      <Breadcrumb label={breadcrumbLabel()} items={crumbs} />
+      <h1 class="display-l" data-split data-sell={contact.sell.title}>{contact.title}</h1>
+      <p class="lead muted" data-sell={contact.sell.lead}>{contact.lead}</p>
+      {/* The Sell links (?intent=sell, ?topic=valuation) get the valuation heading. Inline, so the text is in
+          place before the heading animation splits it; the static text stays the default and the SEO copy. */}
+      <script is:inline>
+        (function () {
+          var p = new URLSearchParams(location.search);
+          if (p.get('intent') !== 'sell' && p.get('topic') !== 'valuation') return;
+          document.querySelectorAll('[data-sell]').forEach(function (el) { el.textContent = el.dataset.sell; });
+        })();
+      </script>
+    </header>
+
+    <div class="contact__form">
+      <ContactForm />
+    </div>
+
+    <section class="contact__details" aria-labelledby="office-title">
+      <h2 id="office-title" class="title">{contact.details.heading}</h2>
+      <dl class="contact__list">
+        <div>
+          <dt><Icon name="phone" size={20} /><span>{contact.details.phone}</span></dt>
+          <dd><a href={office.phoneHref}>{office.phone}</a></dd>
+        </div>
+        <div>
+          <dt><Icon name="mail" size={20} /><span>{contact.details.email}</span></dt>
+          <dd><a href={`mailto:${office.email}`}>{office.email}</a></dd>
+        </div>
+        <div>
+          <dt><Icon name="map-pin" size={20} /><span>{contact.details.address}</span></dt>
+          <dd>
+            <address>{office.address.oneLine}</address>
+            <span class="small muted">{contact.details.visitNote}</span>
+          </dd>
+        </div>
+        <div>
+          <dt><Icon name="clock" size={20} /><span>{contact.details.hours}</span></dt>
+          <dd>
+            <ul class="contact__hours" role="list">
+              {office.hours.map((h: { days: string; time: string }) => <li><span>{h.days}</span><span class="tabular">{h.time}</span></li>)}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+      <div class="frame contact__photo" data-clip>
+        <Photo src={contact.image.file} alt={contact.image.alt} sizes="(min-width: 64rem) 38vw, 92vw" widths={[480, 720, 960, 1280]} />
+      </div>
+      <DrawSvg name="floor-plan" width="200px" class="contact__plan" />
+    </section>
+  </div>
+</BaseLayout>

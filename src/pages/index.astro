@@ -1,0 +1,63 @@
+---
+/**
+ * Home (DESIGN.md 11.1, H1-H14; the footer H15 comes from BaseLayout).
+ * Sections live in src/components/home/, their styles in src/styles/home.css, their behaviour in src/scripts/home.ts.
+ */
+import BaseLayout from '../components/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import Trust from '../components/home/Trust.astro';
+import Featured from '../components/home/Featured.astro';
+import AboutTeaser from '../components/home/AboutTeaser.astro';
+import Services from '../components/home/Services.astro';
+import CitiesGrid from '../components/home/CitiesGrid.astro';
+import MapSection from '../components/home/MapSection.astro';
+import Steps from '../components/home/Steps.astro';
+import Places from '../components/home/Places.astro';
+import Agents from '../components/home/Agents.astro';
+import Testimonials from '../components/home/Testimonials.astro';
+import Faq from '../components/home/Faq.astro';
+import CtaBand from '../components/home/CtaBand.astro';
+import JournalTeaser from '../components/home/JournalTeaser.astro';
+import Newsletter from '../components/home/Newsletter.astro';
+import { organizationLd } from '../components/pages/structured-data';
+import { faqJsonLd } from '../lib/jsonld';
+import { getCopy } from '../data/load-copy';
+import '../styles/home.css';
+
+const seo = getCopy('seo').pages.home;
+if (!seo) throw new Error('seo.json is missing pages.home.');
+const faqItems = getCopy('faq').items.filter((item) => item.home);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  path="/"
+  preloadItalic
+  jsonLd={[organizationLd(Astro.site!), faqJsonLd(faqItems)]}
+>
+  <Hero />
+  <div class="home-cover">
+    <Trust />
+    <Featured />
+    <AboutTeaser />
+    <Services />
+    <CitiesGrid />
+    <MapSection />
+    <Steps />
+    <Places />
+    <Agents />
+    <Testimonials />
+    <Faq />
+    <CtaBand />
+    <JournalTeaser />
+    <Newsletter />
+  </div>
+</BaseLayout>
+
+<script>
+  /* home.ts imports motion.ts (GSAP); both wait for the hero tower image so they never compete with it. */
+  import { afterLcpImage } from '../scripts/lib/after-lcp';
+
+  afterLcpImage(() => import('../scripts/home'));
+</script>

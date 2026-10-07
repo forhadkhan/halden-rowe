@@ -1,0 +1,46 @@
+---
+/**
+ * /journal (DESIGN.md 11.6): H1 + lead, the newest post as a feature row, the rest as H13 cards.
+ * With three posts: feature + 2. No category chips in v1 (no category has two posts yet).
+ */
+import '../../styles/pages.css';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/BaseLayout.astro';
+import Breadcrumb from '../../components/pages/Breadcrumb.astro';
+import PostCard from '../../components/pages/PostCard.astro';
+import { getCopy } from '../../data/load-copy';
+import { breadcrumbLd } from '../../components/pages/structured-data';
+import { breadcrumbLabel } from '../../components/pages/labels';
+
+const journal = getCopy<{ title: string; lead: string; breadcrumb: string[] }>('journal');
+const seo = getCopy('seo').pages.journal;
+const posts = (await getCollection('journal')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const [feature, ...rest] = posts;
+const crumbs = [
+  { label: journal.breadcrumb[0] ?? 'Home', path: '/' },
+  { label: journal.breadcrumb[1] ?? journal.title, path: '/journal' },
+];
+---
+
+<BaseLayout title={seo.title} description={seo.description} path="/journal" jsonLd={[breadcrumbLd(crumbs, Astro.site!)]}>
+  <header class="page-head container">
+    <Breadcrumb label={breadcrumbLabel()} items={crumbs} />
+    <h1 class="display-l" data-split>{journal.title}</h1>
+    <p class="lead">{journal.lead}</p>
+  </header>
+
+  <div class="journal container">
+    {feature && <PostCard post={feature} variant="feature" headingLevel={2} priority />}
+    {
+      rest.length > 0 && (
+        <ul class="journal__grid" role="list">
+          {rest.map((post) => (
+            <li>
+              <PostCard post={post} headingLevel={2} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</BaseLayout>

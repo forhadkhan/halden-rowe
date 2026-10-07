@@ -1,0 +1,107 @@
+---
+/**
+ * /about (DESIGN.md 11.4): header, team photo, story, values under the skyline drawing, trust numbers, the team
+ * (id="team", linked from the home page), arched detail photo with the founder's quote, CTA band.
+ */
+import '../styles/pages.css';
+import BaseLayout from '../components/BaseLayout.astro';
+import Breadcrumb from '../components/pages/Breadcrumb.astro';
+import Photo from '../components/Photo.astro';
+import DrawSvg from '../components/DrawSvg.astro';
+import DimensionLine from '../components/DimensionLine.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import TrustBand from '../components/pages/TrustBand.astro';
+import TeamGrid from '../components/pages/TeamGrid.astro';
+import CtaBand from '../components/pages/CtaBand.astro';
+import { getCopy } from '../data/load-copy';
+import { breadcrumbLd, organizationLd } from '../components/pages/structured-data';
+import { breadcrumbLabel, homeLabel, pageLabel } from '../components/pages/labels';
+
+interface AboutCopy {
+  title: string;
+  lead: string;
+  teamImage: { file: string; alt: string };
+  story: { eyebrow: string; headline: string; paragraphs: string[] };
+  values: { name: string; line: string; body: string }[];
+  team: { eyebrow: string; headline: string; lead: string };
+  detailImage: { file: string; alt: string };
+  founderQuote: string;
+  founderName: string;
+}
+
+const about = getCopy<AboutCopy>('about');
+const seo = getCopy('seo').pages.about;
+const crumbLabel = breadcrumbLabel();
+const crumbs = [
+  { label: homeLabel(), path: '/' },
+  { label: pageLabel('/about', 'About'), path: '/about' },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  path="/about"
+  jsonLd={[organizationLd(Astro.site!), breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <header class="page-head about-head container">
+    <Breadcrumb label={crumbLabel} items={crumbs} />
+    <h1 class="display-xl" data-split>{about.title}</h1>
+    <p class="lead">{about.lead}</p>
+  </header>
+
+  <div class="container-wide">
+    <div class="frame about-hero" data-clip="scrub">
+      <div class="about-hero__media" data-parallax>
+        <Photo src={about.teamImage.file} alt={about.teamImage.alt} sizes="(min-width: 90rem) 1400px, 96vw" widths={[640, 960, 1280, 1600, 2000]} priority />
+      </div>
+    </div>
+  </div>
+
+  <section class="about-story section container" aria-labelledby="story-title">
+    <div class="about-story__head">
+      <DimensionLine as="p" label={about.story.eyebrow} align="start" />
+      <h2 id="story-title" class="display-m" data-split>{about.story.headline}</h2>
+    </div>
+    <div class="about-story__body measure">
+      {about.story.paragraphs.map((p, i) => <p class:list={[{ lead: i === 0 }]}>{p}</p>)}
+    </div>
+  </section>
+
+  <section class="about-values container" aria-labelledby="values-title">
+    <h2 id="values-title" class="visually-hidden">{about.story.eyebrow}</h2>
+    <DrawSvg name="skyline" class="about-values__skyline" />
+    <ul class="about-values__list" role="list">
+      {
+        about.values.map((value) => (
+          <li data-reveal>
+            <DimensionLine as="p" label={value.name} align="start" />
+            <h3 class="display-s">{value.line}</h3>
+            <p class="muted">{value.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <TrustBand />
+
+  <section id="team" class="about-team section container" aria-labelledby="team-title">
+    <SectionHeading eyebrow={about.team.eyebrow} html={about.team.headline} id="team-title" size="display-l" lead={about.team.lead} />
+    <TeamGrid />
+  </section>
+
+  <section class="about-quote section container" aria-label={about.founderName}>
+    <div class="about-quote__arch" data-clip="scrub">
+      <Photo src={about.detailImage.file} alt={about.detailImage.alt} sizes="(min-width: 64rem) 34vw, 80vw" widths={[480, 720, 960, 1200]} />
+    </div>
+    <figure class="about-quote__figure">
+      <blockquote>
+        <p class="display-m">{about.founderQuote}</p>
+      </blockquote>
+      <figcaption class="small muted">{about.founderName}</figcaption>
+    </figure>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

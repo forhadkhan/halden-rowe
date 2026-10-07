@@ -1,0 +1,203 @@
+---
+/**
+ * /properties/[slug] (DESIGN.md 11.3), static for every listing in properties.json.
+ * DOM order at every width: breadcrumb, title block, gallery, facts, description, features, agent + enquiry form,
+ * location, calculator or rental terms, similar homes. Wide screens move the aside into the right column with
+ * grid placement only, so focus order stays the reading order. Phones show the gallery first (CSS order) and a
+ * sticky "Inquire" bar.
+ */
+import '../../styles/pages.css';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../components/BaseLayout.astro';
+import Breadcrumb from '../../components/pages/Breadcrumb.astro';
+import Chip from '../../components/Chip.astro';
+import Icon from '../../components/Icon.astro';
+import Button from '../../components/Button.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import PropertyCard from '../../components/PropertyCard.astro';
+import Gallery from '../../components/property/Gallery.astro';
+import Facts from '../../components/property/Facts.astro';
+import NeighborhoodPlan from '../../components/property/NeighborhoodPlan.astro';
+import MortgageCalculator from '../../components/property/MortgageCalculator.astro';
+import AgentCard from '../../components/property/AgentCard.astro';
+import InquiryForm from '../../components/property/InquiryForm.astro';
+import { fmt, getCopy, type Listing } from '../../data/load-copy';
+import { getPhoto } from '../../lib/photos';
+import { similarHomes } from '../../lib/similar';
+import { breadcrumbLd, listingLd } from '../../components/pages/structured-data';
+
+export function getStaticPaths() {
+  return getCopy('properties').listings.map((listing) => ({ params: { slug: listing.slug }, props: { listing } }));
+}
+
+interface Props {
+  listing: Listing;
+}
+
+const { listing } = Astro.props;
+const copy = getCopy('properties');
+const all = copy.listings;
+const d = copy.detailPage as typeof copy.detailPage & Record<string, any>;
+const seo = (getCopy('seo').listings as Record<string, { title: string; description: string }>)[listing.slug];
+if (!seo) throw new Error(`seo.json has no listings["${listing.slug}"] entry.`);
+const agent = getCopy('agents').agents.find((a) => a.id === listing.agentId);
+if (!agent) throw new Error(`Listing ${listing.slug} names agent "${listing.agentId}", which is not in agents.json.`);
+
+const crumbs = [
+  { label: d.breadcrumb[0] ?? 'Home', path: '/' },
+  { label: d.breadcrumb[1] ?? 'Properties', path: '/properties' },
+  { label: listing.title, path: `/properties/${listing.slug}` },
+];
+
+const similar = similarHomes(listing, all);
+
+const imageUrls = await Promise.all(
+  listing.images.map(async (img) => {
+    const out = await getImage({ src: getPhoto(img.file).image, width: 1200, format: 'jpg', quality: 80 });
+    return new URL(out.src, Astro.site).href;
+  }),
+);
+
+const priceSuffix = listing.status === 'rent' ? d.priceSuffixRent : '';
+const facts = d.facts as Parameters<typeof Facts>[0]['labels'];
+const rentalLabels = d.rentalTerms as Record<string, string>;
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  path={`/properties/${listing.slug}`}
+  ogImage={`/og/${listing.slug}.jpg`}
+  jsonLd={[listingLd(listing, imageUrls, Astro.site!), breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <article class="listing">
+    <div class="listing__top">
+      <header class="listing__head container">
+        <Breadcrumb label={d.breadcrumbLabel} items={crumbs} />
+        <div class="listing__title">
+          <div class="listing__who">
+            <p class="listing__chips">
+              <Chip variant="status">{d.status[listing.status]}</Chip>
+              {listing.tag && <Chip variant="status">{listing.tag}</Chip>}
+            </p>
+            <h1 class="display-l" data-split>{listing.title}</h1>
+            <p class="listing__address muted"><Icon name="map-pin" size={20} />{listing.address.neighborhood}, {listing.address.city}, {listing.address.state}</p>
+          </div>
+          <div class="listing__deal">
+            <p class="listing__price display-s tabular">
+              {listing.priceLabel}{priceSuffix && <span class="small muted">{priceSuffix}</span>}
+            </p>
+            <div class="listing__actions">
+              <Button
+                variant="icon"
+                icon="heart"
+                label={fmt(d.actions.save, { title: listing.title })}
+                magnetic={false}
+                class="listing__save"
+                aria-pressed="false"
+                data-save={listing.slug}
+                data-msg-saved={d.actions.saved}
+                data-msg-unsaved={d.actions.unsaved}
+              />
+              <Button
+                variant="icon"
+                icon="share-2"
+                label={d.actions.share}
+                magnetic={false}
+                data-share
+                data-share-text={fmt(d.actions.shareText, { title: listing.title, priceLabel: listing.priceLabel })}
+                data-msg-copied={d.actions.linkCopied}
+                data-msg-copy-failed={d.actions.copyFailed}
+              />
+              <Button variant="icon" icon="printer" label={d.actions.print} magnetic={false} data-print />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <Gallery listing={listing} labels={d.gallery} />
+    </div>
+
+    <div class="listing__body container">
+      <div class="listing__facts">
+        <Facts listing={listing} labels={facts} />
+      </div>
+
+      <section class="listing__section listing__description" aria-labelledby="about-heading">
+        <h2 id="about-heading" class="title">{d.descriptionHeading}</h2>
+        <div class="measure">
+          {listing.description.map((p, i) => <p class:list={[{ lead: i === 0 }]}>{p}</p>)}
+        </div>
+      </section>
+
+      <section class="listing__section" aria-labelledby="features-heading">
+        <h2 id="features-heading" class="title">{d.featuresHeading}</h2>
+        <ul class="listing__features" role="list">
+          {listing.features.map((f) => <li><Icon name="check" size={20} />{f}</li>)}
+        </ul>
+      </section>
+
+      <aside class="listing__aside" aria-label={d.agentHeading}>
+        <div class="listing__aside-inner">
+          <AgentCard agent={agent} heading={d.agentHeading} />
+          <InquiryForm listing={listing} agentName={agent.name} labels={d.enquiry} />
+        </div>
+      </aside>
+
+      <section class="listing__section listing__location" aria-labelledby="location-heading">
+        <h2 id="location-heading" class="title">{d.locationHeading}</h2>
+        <NeighborhoodPlan listing={listing} label={fmt(d.mapLabel, { title: listing.title })} scaleLabel={d.mapScaleLabel} />
+        <h3 class="label listing__hood-heading">{d.neighborhoodHeading}</h3>
+        <ul class="listing__hood" role="list">
+          {listing.neighborhoodFacts.map((f) => <li>{f}</li>)}
+        </ul>
+      </section>
+
+      <div class="listing__section listing__money">
+        {
+          listing.status === 'sale' ? (
+            <MortgageCalculator listing={listing} labels={d.calculator} />
+          ) : (
+            listing.rentalTerms && (
+              <section class="rental-terms" aria-labelledby="terms-heading">
+                <h2 id="terms-heading" class="title">{d.rentalTermsHeading}</h2>
+                <dl>
+                  {Object.entries(listing.rentalTerms).map(([key, value]) => (
+                    <div>
+                      <dt class="muted">{rentalLabels[key] ?? key}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )
+          )
+        }
+      </div>
+    </div>
+
+    <section class="similar container" aria-labelledby="similar-heading">
+      <SectionHeading id="similar-heading" html={d.similarHeadline} size="display-m" />
+      <ul class="similar__row" role="list">
+        {
+          similar.map((l) => (
+            <li>
+              <PropertyCard listing={l} level={3} sizes="(min-width: 80rem) 28vw, (min-width: 48rem) 30vw, 82vw" />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <div class="sticky-bar" data-sticky-bar>
+      <p class="sticky-bar__price title tabular">
+        {listing.priceLabel}{priceSuffix && <span class="small muted">{priceSuffix}</span>}
+      </p>
+      <Button variant="primary" href="#inquiry" data-sticky-cta magnetic={false}>{d.stickyBar.cta}</Button>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  import '../../scripts/listing';
+</script>

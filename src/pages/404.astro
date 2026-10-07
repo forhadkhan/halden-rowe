@@ -1,0 +1,40 @@
+---
+/**
+ * 404 (DESIGN.md 11.8): night scheme, the key line drawing, one plain line, a search box that goes to
+ * /properties?q=, and two ways out. Works without JavaScript (the search is a GET form).
+ */
+import '../styles/pages.css';
+import BaseLayout from '../components/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import DrawSvg from '../components/DrawSvg.astro';
+import Icon from '../components/Icon.astro';
+import { getCopy } from '../data/load-copy';
+import { url } from '../lib/url';
+
+const copy = getCopy('errors').notFound;
+const seo = getCopy('seo').pages.notFound;
+---
+
+<BaseLayout title={seo.title} description={seo.description} path="/404" noindex>
+  <section class="not-found" data-scheme="night">
+    <div class="container not-found__inner">
+      <DrawSvg name="key" width="220px" class="not-found__art" />
+      <h1 class="display-l">{copy.title}</h1>
+      <p class="lead">{copy.line}</p>
+
+      <form class="not-found__search" action={url('/properties')} method="get" role="search">
+        <label class="label" for="not-found-q">{copy.searchLabel}</label>
+        <div class="not-found__row">
+          <span class="not-found__icon" aria-hidden="true"><Icon name="search" size={20} /></span>
+          <input id="not-found-q" class="not-found__input" type="search" name="q" placeholder={copy.searchPlaceholder} autocomplete="off" />
+          <Button type="submit" variant="primary">{copy.searchSubmit}</Button>
+        </div>
+      </form>
+
+      <div class="not-found__actions">
+        <Button href={copy.primaryHref} variant="secondary" icon="chevron-right" iconPosition="end">{copy.primary}</Button>
+        <Button href={copy.secondaryHref} variant="text">{copy.secondary}</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

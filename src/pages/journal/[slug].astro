@@ -1,0 +1,194 @@
+---
+/**
+ * /journal/[post] (DESIGN.md 11.7): breadcrumb, category, H1, meta row (author portrait, name, date, read time),
+ * hero image + caption, long-form body in the text column, author card, share links, the other posts (up to three),
+ * newsletter. A 2px reading-progress line sits at the top of the viewport (scripts/reading-progress.ts).
+ */
+import '../../styles/pages.css';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../components/BaseLayout.astro';
+import Breadcrumb from '../../components/pages/Breadcrumb.astro';
+import Photo from '../../components/Photo.astro';
+import Icon from '../../components/Icon.astro';
+import BrandIcon from '../../components/BrandIcon.astro';
+import PostCard from '../../components/pages/PostCard.astro';
+import Newsletter from '../../components/pages/Newsletter.astro';
+import { fmt, getCopy } from '../../data/load-copy';
+import { getPhoto } from '../../lib/photos';
+import { absoluteUrl } from '../../lib/url';
+import { getImage } from 'astro:assets';
+import { articleLd, breadcrumbLd } from '../../components/pages/structured-data';
+import { breadcrumbLabel } from '../../components/pages/labels';
+import { cropFor } from '../../components/property/crops';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('journal');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: CollectionEntry<'journal'>;
+}
+
+interface JournalCopy {
+  breadcrumb: string[];
+  readingTime: string;
+  categories: Record<string, string>;
+  post: {
+    writtenBy: string;
+    publishedOn: string;
+    shareHeading: string;
+    share: Record<'x' | 'facebook' | 'pinterest' | 'copy', string>;
+    moreHeading: string;
+    progressLabel: string;
+  };
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const journal = getCopy<JournalCopy>('journal');
+const a11y = getCopy('site').a11y;
+const toasts = getCopy('errors').toasts;
+const seo = (getCopy('seo').posts as Record<string, { title: string; description: string }>)[post.id];
+if (!seo) throw new Error(`seo.json has no posts["${post.id}"] entry.`);
+const author = getCopy('agents').agents.find((a) => a.id === post.data.author);
+if (!author) throw new Error(`Post ${post.id} names author "${post.data.author}", which is not in agents.json.`);
+
+const { title, date, category, cover, coverAlt, caption, readingTime } = post.data;
+const dateLabel = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(date);
+const path = `/journal/${post.id}`;
+const crumbs = [
+  { label: journal.breadcrumb[0] ?? 'Home', path: '/' },
+  { label: journal.breadcrumb[1] ?? 'Journal', path: '/journal' },
+  { label: title, path },
+];
+
+const pageUrl = absoluteUrl(path, Astro.site);
+const coverImage = await getImage({ src: getPhoto(cover).image, width: 1200, format: 'jpg', quality: 80 });
+const coverUrl = new URL(coverImage.src, Astro.site).href;
+const enc = encodeURIComponent;
+const shares = [
+  { network: 'x' as const, label: journal.post.share.x, href: `https://x.com/intent/post?url=${enc(pageUrl)}&text=${enc(title)}` },
+  { network: 'facebook' as const, label: journal.post.share.facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${enc(pageUrl)}` },
+  {
+    network: 'pinterest' as const,
+    label: journal.post.share.pinterest,
+    href: `https://pinterest.com/pin/create/button/?url=${enc(pageUrl)}&media=${enc(coverUrl)}&description=${enc(title)}`,
+  },
+];
+
+const related = (await getCollection('journal'))
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => Number(b.data.category === category) - Number(a.data.category === category) || b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  path={path}
+  ogImage={`/og/${post.id}.jpg`}
+  jsonLd={[articleLd({ ...post.data, slug: post.id }, author, coverUrl, Astro.site!), breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <div class="reading-progress" aria-hidden="true" data-reading-progress><span></span></div>
+
+  <article class="post" data-post>
+    <header class="post__head container">
+      <Breadcrumb label={breadcrumbLabel()} items={crumbs} />
+      <p class="label accent post__category">{journal.categories[category] ?? category}</p>
+      <h1 class="display-l" data-split>{title}</h1>
+      <div class="post__meta">
+        <div class="post__avatar">
+          <Photo src={author.photo} alt="" sizes="40px" widths={[80, 120]} position={cropFor(author.photo)} />
+        </div>
+        <p class="small">
+          <span class="post__author">{author.name}</span>
+          <span class="muted">
+            <time datetime={date.toISOString().slice(0, 10)}>{dateLabel}</time>
+            <span aria-hidden="true"> · </span>
+            {fmt(journal.readingTime, { minutes: readingTime })}
+          </span>
+        </p>
+      </div>
+    </header>
+
+    <figure class="post__hero container-wide">
+      <div class="frame post__hero-frame" data-clip="scrub">
+        <Photo src={cover} alt={coverAlt} sizes="(min-width: 90rem) 1400px, 96vw" widths={[640, 960, 1280, 1600, 2000]} priority />
+      </div>
+      {caption && <figcaption class="small muted container-text">{caption}</figcaption>}
+    </figure>
+
+    <div class="prose post__body container-text" data-post-body>
+      <Content />
+    </div>
+
+    <footer class="post__foot container-text">
+      <section class="post__author-card" aria-labelledby="author-title">
+        <div class="post__author-photo">
+          <Photo src={author.photo} alt={author.alt} sizes="96px" widths={[192, 288]} position={cropFor(author.photo)} />
+        </div>
+        <div>
+          <p class="label muted">{journal.post.writtenBy}</p>
+          <h2 id="author-title" class="title">{author.name}</h2>
+          <p class="small muted">{author.role}</p>
+          <p class="small">{author.bioShort}</p>
+          <p class="small muted">{fmt(journal.post.publishedOn, { date: dateLabel })}</p>
+        </div>
+      </section>
+
+      <section class="post__share" aria-labelledby="share-title">
+        <h2 id="share-title" class="label">{journal.post.shareHeading}</h2>
+        <ul class="post__share-list" role="list">
+          {
+            shares.map((s) => (
+              <li>
+                <a class="btn btn--icon" href={s.href} target="_blank" rel="noopener noreferrer">
+                  <span class="btn__inner">
+                    <BrandIcon network={s.network} size={20} />
+                  </span>
+                  <span class="visually-hidden">
+                    {s.label} ({a11y.openInNewTab})
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <button
+              type="button"
+              class="btn btn--icon"
+              data-copy-link={pageUrl}
+              data-msg-copied={toasts.linkCopied}
+              data-msg-copy-failed={toasts.copyFailed}
+            >
+              <span class="btn__inner"><Icon name="copy" size={20} /></span>
+              <span class="visually-hidden">{journal.post.share.copy}</span>
+            </button>
+          </li>
+        </ul>
+      </section>
+    </footer>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="post-related section container" aria-labelledby="related-title">
+        <h2 id="related-title" class="display-m">{journal.post.moreHeading}</h2>
+        <ul class="journal__grid" role="list">
+          {related.map((p) => (
+            <li>
+              <PostCard post={p} headingLevel={3} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <Newsletter />
+</BaseLayout>
+
+<script>
+  import '../../scripts/reading-progress';
+</script>

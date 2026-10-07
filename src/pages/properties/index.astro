@@ -1,0 +1,122 @@
+---
+/**
+ * /properties (DESIGN.md 11.2): breadcrumb, H1, lead, filter bar (10.7), results grid of standard cards,
+ * empty state with close matches. Every home is in the HTML; properties-filter.ts hides and orders them.
+ */
+import '../../styles/pages.css';
+import BaseLayout from '../../components/BaseLayout.astro';
+import Breadcrumb from '../../components/pages/Breadcrumb.astro';
+import PropertyCard from '../../components/PropertyCard.astro';
+import Filters from '../../components/property/Filters.astro';
+import DrawSvg from '../../components/DrawSvg.astro';
+import Button from '../../components/Button.astro';
+import { getCopy, publicStreets } from '../../data/load-copy';
+import { breadcrumbLd } from '../../components/pages/structured-data';
+
+interface SearchPage {
+  properties: { breadcrumb: string[]; title: string; lead: string; titleBuy: string; titleRent: string };
+  empty: {
+    title: string;
+    line: string;
+    primary: string;
+    closeMatches: string;
+    savedTitle: string;
+    savedLine: string;
+    savedPrimary: string;
+  };
+}
+
+const search = getCopy<SearchPage>('search');
+const seo = getCopy('seo').pages.properties;
+const props = getCopy('properties');
+const crumbLabel = (props.detailPage as { breadcrumbLabel?: string }).breadcrumbLabel ?? 'Breadcrumb';
+const crumbs = [
+  { label: search.properties.breadcrumb[0] ?? 'Home', path: '/' },
+  { label: search.properties.breadcrumb[1] ?? 'Properties', path: '/properties' },
+];
+// Server order = the default sort (newest first), so the no-JS page matches the default view.
+const listings = [...props.listings].sort((a, b) => b.listed.localeCompare(a.listed));
+// The keyword matches what a card shows (neighborhood, city, state) plus the state's name, so "Brooklyn, New York"
+// finds the Park Slope card too. Only the states the listings use.
+const STATE_NAMES: Record<string, string> = {
+  CA: 'California',
+  CO: 'Colorado',
+  FL: 'Florida',
+  IL: 'Illinois',
+  NC: 'North Carolina',
+  NY: 'New York',
+  TN: 'Tennessee',
+  TX: 'Texas',
+  WA: 'Washington',
+};
+const stateName = (code: string) => {
+  const name = STATE_NAMES[code];
+  if (!name) throw new Error(`properties/index.astro: add the state name for "${code}" to STATE_NAMES.`);
+  return name;
+};
+const searchText = (l: (typeof listings)[number]) =>
+  [l.title, l.type, l.address.neighborhood, l.address.city, l.address.state, stateName(l.address.state), ...publicStreets(l)]
+    .join(' ')
+    .toLowerCase();
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  path="/properties"
+  jsonLd={[breadcrumbLd(crumbs, Astro.site!)]}
+>
+  <header class="page-head container">
+    <Breadcrumb label={crumbLabel} items={crumbs} />
+    {/* The script swaps the text for Buy/Rent, so this heading fades in (M6) instead of a line split (M2): a split
+        heading keeps its first text in aria-label and restores it on re-split. */}
+    <h1
+      data-reveal
+      data-filter-title
+      data-title-buy={search.properties.titleBuy}
+      data-title-rent={search.properties.titleRent}
+    >
+      {search.properties.title}
+    </h1>
+    <p class="lead">{search.properties.lead}</p>
+  </header>
+
+  <Filters total={listings.length} />
+
+  <section class="results container" aria-labelledby="results-heading">
+    <h2 id="results-heading" class="visually-hidden">{search.properties.title}</h2>
+    <ul class="results__grid" role="list" data-results>
+      {
+        listings.map((l, i) => (
+          <li
+            data-home={l.slug}
+            data-status={l.status}
+            data-city={l.address.city}
+            data-type={l.type}
+            data-price={l.price}
+            data-beds={l.beds}
+            data-sqft={l.sqft}
+            data-listed={l.listed}
+            data-text={searchText(l)}
+          >
+            <PropertyCard listing={l} level={3} priority={i < 2} sizes="(min-width: 80rem) 28vw, (min-width: 48rem) 45vw, 92vw" />
+          </li>
+        ))
+      }
+    </ul>
+
+    {/* Two texts: "no match" and, for the Saved view with nothing saved, "no saved homes yet" (script picks one). */}
+    <div class="empty-state" hidden data-empty>
+      <DrawSvg name="house-blueprint" width="240px" />
+      <h2 class="display-s" data-empty-title data-alt={search.empty.savedTitle}>{search.empty.title}</h2>
+      <p data-empty-line data-alt={search.empty.savedLine}>{search.empty.line}</p>
+      <Button variant="primary" icon="rotate-ccw" data-empty-clear>
+        <span data-empty-primary data-alt={search.empty.savedPrimary}>{search.empty.primary}</span>
+      </Button>
+      <div class="close-matches" hidden data-close-matches>
+        <h3 class="title">{search.empty.closeMatches}</h3>
+        <ul class="results__grid" role="list" data-close-list></ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
