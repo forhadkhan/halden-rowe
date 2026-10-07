@@ -1,0 +1,88 @@
+---
+/**
+ * Trust numbers (DESIGN.md H2, reused on /about): eyebrow on a dimension line + statement, four count-up stats
+ * (M7 via data-count) with hairlines between them.
+ * Inner-page copy of F2a's home/Trust.astro, kept separate so the two pages can ship independently.
+ */
+import DimensionLine from '../DimensionLine.astro';
+import { getCopy } from '../../data/load-copy';
+
+interface Trust {
+  eyebrow: string;
+  statement: string;
+  stats: { value: number; suffix: string; label: string }[];
+}
+
+const { trust } = getCopy<{ trust: Trust }>('home');
+const format = new Intl.NumberFormat('en-US');
+---
+
+<section class="trust-band section" aria-labelledby="trust-band-title">
+  <div class="container trust-band__grid">
+    <div class="trust-band__intro">
+      <DimensionLine as="p" label={trust.eyebrow} align="start" />
+      <h2 id="trust-band-title" class="display-s" data-split>{trust.statement}</h2>
+    </div>
+    <ul class="trust-band__stats" role="list">
+      {
+        trust.stats.map((stat) => (
+          <li class="trust-band__stat" data-reveal>
+            <span class="stat tabular" data-count={stat.value} data-count-suffix={stat.suffix || undefined}>
+              {format.format(stat.value)}
+              {stat.suffix}
+            </span>
+            <span class="small muted">{stat.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style is:global>
+  .trust-band__grid {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  .trust-band__intro h2 {
+    margin: var(--space-4) 0 0;
+    max-width: 30ch;
+  }
+
+  .trust-band__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-10) var(--space-5);
+    margin: 0;
+  }
+
+  .trust-band__stat {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .trust-band__stat::before {
+    content: '';
+    position: absolute;
+    inset: -1px auto auto 0;
+    width: var(--space-8);
+    height: 2px;
+    background: var(--color-accent-line);
+  }
+
+  .trust-band__stat .stat {
+    white-space: nowrap;
+  }
+
+  @media (min-width: 48rem) {
+    .trust-band__stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-5);
+    }
+  }
+</style>

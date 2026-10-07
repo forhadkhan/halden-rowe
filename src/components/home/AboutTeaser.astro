@@ -1,0 +1,33 @@
+---
+/** H4 About teaser: arched photo (M4 + M5), text, house-blueprint drawing (M10). */
+import Photo from '../Photo.astro';
+import SectionHeading from '../SectionHeading.astro';
+import Button from '../Button.astro';
+import DrawSvg from '../DrawSvg.astro';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { aboutTeaser: about } = getCopy<HomeCopy>('home');
+---
+
+<section class="about-teaser section" aria-labelledby="about-title">
+  <div class="container grid about-teaser__grid">
+    <div class="about-teaser__media" data-clip="scrub" data-parallax>
+      <Photo
+        src={about.image.file}
+        alt={about.image.alt}
+        aspect="4 / 5"
+        sizes="(min-width: 64rem) 38vw, (min-width: 48rem) 45vw, 92vw"
+        widths={[480, 720, 960, 1280]}
+        class="about-teaser__photo"
+      />
+    </div>
+    <div class="about-teaser__text">
+      <SectionHeading eyebrow={about.eyebrow} html={about.headline} lead={about.lead} id="about-title" size="display-m" />
+      <p class="about-teaser__body">{about.body}</p>
+      <p class="label muted about-teaser__founders">{about.founders}</p>
+      <Button variant="text" href={about.href} icon="chevron-right">{about.link}</Button>
+    </div>
+    <DrawSvg name="house-blueprint" width="280px" class="about-teaser__drawing" speed={0.16} />
+  </div>
+</section>

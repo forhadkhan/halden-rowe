@@ -1,0 +1,349 @@
+---
+/**
+ * Gallery lightbox (DESIGN.md 10.11): native <dialog> modal, night scheme, full viewport.
+ * Open it from any element with `data-lightbox-open="<id>"` and `data-index="<n>"` (0-based), usually a button
+ * wrapping a thumbnail. Esc closes (native), arrows move, Home/End jump, focus starts on Close and returns to
+ * the opener. Neighbours preload. M20: FLIP from the opener's rect (motion only), else a fade.
+ */
+import Photo from './Photo.astro';
+import Button from './Button.astro';
+import { fmt } from '../data/load-copy';
+
+interface Image {
+  file: string;
+  alt?: string;
+  caption?: string;
+}
+
+interface Props {
+  id: string;
+  images: Image[];
+  labels: {
+    /** "Photos of {title}" already filled in */
+    region: string;
+    /** "{index} / {count}" */
+    counter: string;
+    close: string;
+    previous: string;
+    next: string;
+    loadError: string;
+  };
+}
+
+const { id, images, labels } = Astro.props;
+const count = images.length;
+---
+
+<dialog id={id} class="lightbox" data-scheme="night" aria-label={labels.region} data-lightbox>
+  <div class="lightbox__bar">
+    <p class="lightbox__counter small tabular" aria-live="polite" data-lightbox-counter data-template={labels.counter}>
+      {fmt(labels.counter, { index: 1, count })}
+    </p>
+    <Button variant="icon" icon="x" label={labels.close} data-lightbox-close />
+  </div>
+
+  <div class="lightbox__stage">
+    <Button variant="icon" icon="chevron-left" label={labels.previous} class="lightbox__nav lightbox__nav--prev" data-lightbox-prev />
+    <div class="lightbox__frames">
+      {
+        images.map((image, i) => (
+          <figure class="lightbox__figure" data-lightbox-figure hidden={i !== 0}>
+            <div class="lightbox__frame" data-lightbox-frame>
+              <Photo src={image.file} alt={image.alt} sizes="92vw" widths={[800, 1200, 1600, 2000]} />
+              <p class="lightbox__error small">{labels.loadError}</p>
+            </div>
+            <figcaption class="lightbox__caption small muted">{image.caption ?? image.alt}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <Button variant="icon" icon="chevron-right" label={labels.next} class="lightbox__nav lightbox__nav--next" data-lightbox-next />
+  </div>
+</dialog>
+
+<style is:global>
+  .lightbox {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-text);
+    background-color: transparent;
+    overflow: clip;
+  }
+
+  .lightbox::backdrop {
+    background-color: var(--hr-night-900);
+  }
+
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background-color: var(--color-bg);
+  }
+
+  .lightbox__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .lightbox__counter {
+    margin: 0;
+  }
+
+  .lightbox__stage {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    justify-items: center;
+    min-height: 0;
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    touch-action: pan-y;
+  }
+
+  .lightbox__frames {
+    grid-column: 1 / -1;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .lightbox__figure {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    margin: 0;
+    max-width: 92vw;
+  }
+
+  .lightbox__frame {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: clip;
+  }
+
+  .lightbox__frame .photo-img {
+    width: auto;
+    max-width: 92vw;
+    max-height: 80vh;
+    max-height: 80dvh;
+    object-fit: contain;
+  }
+
+  .lightbox__error {
+    display: none;
+    position: absolute;
+    inset: auto 0 var(--space-6);
+    margin: 0;
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+
+  .lightbox__frame:has(.is-broken) .lightbox__error {
+    display: block;
+  }
+
+  .lightbox__frame:has(.is-broken) .photo {
+    width: min(92vw, 40rem);
+    aspect-ratio: 3 / 2;
+  }
+
+  .lightbox__caption {
+    max-width: var(--measure);
+    margin-inline: var(--space-4);
+    text-align: center;
+  }
+
+  /* Below 768 the side buttons sit in a bottom bar. */
+  .lightbox__nav--prev {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: end;
+    margin-inline-end: var(--space-8);
+  }
+
+  .lightbox__nav--next {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: start;
+    margin-inline-start: var(--space-8);
+  }
+
+  @media (min-width: 48rem) {
+    .lightbox__stage {
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: 1fr;
+      padding-inline: var(--space-4);
+    }
+
+    .lightbox__frames {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .lightbox__nav--prev,
+    .lightbox__nav--next {
+      grid-row: 1;
+      justify-self: center;
+      margin: 0;
+    }
+
+    .lightbox__nav--prev {
+      grid-column: 1;
+    }
+
+    .lightbox__nav--next {
+      grid-column: 3;
+    }
+
+    .lightbox__nav.btn--icon {
+      width: 56px;
+      height: 56px;
+    }
+
+    .lightbox__nav.btn--icon::before {
+      inset: 0;
+    }
+  }
+
+  .lightbox[open] {
+    animation: lightbox-fade 150ms var(--ease-standard);
+  }
+
+  .lightbox.is-closing {
+    animation: lightbox-fade 150ms var(--ease-standard) reverse forwards;
+  }
+
+  .motion-ok .lightbox.is-closing {
+    animation-duration: 320ms;
+    animation-timing-function: var(--ease-in-out);
+  }
+
+  @keyframes lightbox-fade {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import { lockScroll } from '../scripts/scroll-lock';
+
+  document.querySelectorAll<HTMLDialogElement>('[data-lightbox]').forEach((dialog) => {
+    const figures = Array.from(dialog.querySelectorAll<HTMLElement>('[data-lightbox-figure]'));
+    const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]');
+    const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-lightbox-close]');
+    const template = counter?.dataset.template ?? '{index} / {count}';
+    let index = 0;
+    let opener: HTMLElement | null = null;
+    let release: (() => void) | undefined;
+
+    const preload = (i: number) => {
+      const img = figures[(i + figures.length) % figures.length]?.querySelector('img');
+      if (img) img.loading = 'eager';
+    };
+
+    const show = (to: number) => {
+      index = (to + figures.length) % figures.length;
+      figures.forEach((figure, i) => {
+        figure.hidden = i !== index;
+      });
+      preload(index);
+      preload(index + 1);
+      preload(index - 1);
+      if (counter) counter.textContent = template.replace('{index}', String(index + 1)).replace('{count}', String(figures.length));
+    };
+
+    const flipFrom = (source: HTMLElement | null) => {
+      if (!source || !document.documentElement.classList.contains('motion-ok')) return;
+      const frame = figures[index]?.querySelector<HTMLElement>('[data-lightbox-frame]');
+      const from = source.getBoundingClientRect();
+      const to = frame?.getBoundingClientRect();
+      if (!frame || !to || !to.width || !to.height) return;
+      const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+      const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+      const scale = Math.min(from.width / to.width, from.height / to.height);
+      frame.animate(
+        [{ transform: `translate(${dx}px, ${dy}px) scale(${scale})` }, { transform: 'none' }],
+        { duration: 480, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' },
+      );
+    };
+
+    const finishClose = () => {
+      dialog.classList.remove('is-closing');
+      dialog.close();
+    };
+
+    const close = () => {
+      if (!dialog.open || dialog.classList.contains('is-closing')) return;
+      dialog.classList.add('is-closing');
+      const animations = dialog.getAnimations();
+      if (!animations.length) finishClose();
+      else Promise.all(animations.map((a) => a.finished)).then(finishClose, finishClose);
+    };
+
+    const open = (at: number, from: HTMLElement) => {
+      opener = from;
+      show(at);
+      dialog.showModal();
+      release = lockScroll();
+      closeBtn?.focus();
+      flipFrom(from);
+    };
+
+    document.querySelectorAll<HTMLElement>(`[data-lightbox-open="${dialog.id}"]`).forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        open(Number(trigger.dataset.index ?? 0), trigger);
+      });
+    });
+
+    closeBtn?.addEventListener('click', close);
+    dialog.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => show(index - 1));
+    dialog.querySelector('[data-lightbox-next]')?.addEventListener('click', () => show(index + 1));
+
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      close();
+    });
+
+    dialog.addEventListener('close', () => {
+      release?.();
+      release = undefined;
+      opener?.focus();
+    });
+
+    dialog.addEventListener('keydown', (event) => {
+      const keys: Record<string, () => void> = {
+        ArrowLeft: () => show(index - 1),
+        ArrowRight: () => show(index + 1),
+        Home: () => show(0),
+        End: () => show(figures.length - 1),
+      };
+      const action = keys[event.key];
+      if (!action) return;
+      event.preventDefault();
+      action();
+    });
+
+    /* Swipe on touch: 40px horizontal. */
+    let startX = 0;
+    let startY = 0;
+    dialog.addEventListener('pointerdown', (event) => {
+      startX = event.clientX;
+      startY = event.clientY;
+    });
+    dialog.addEventListener('pointerup', (event) => {
+      if (event.pointerType === 'mouse') return;
+      const dx = event.clientX - startX;
+      if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) show(dx < 0 ? index + 1 : index - 1);
+    });
+  });
+</script>

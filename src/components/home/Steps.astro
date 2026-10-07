@@ -1,0 +1,49 @@
+---
+/**
+ * H7 How it works. Markup is the stacked version for everyone: an ordered list, each step with its drawing (M10).
+ * On desktop with motion, home.ts adds .is-pinned and drives M9: the section pins for +300%, steps crossfade, the
+ * stage drawings draw (scrubbed) and the vertical dimension line fills. All four steps stay in the DOM in order.
+ */
+import SectionHeading from '../SectionHeading.astro';
+import DrawSvg from '../DrawSvg.astro';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { steps } = getCopy<HomeCopy>('home');
+const drawings = ['skyline', 'floor-plan', 'house-blueprint', 'key'] as const;
+---
+
+<section class="steps section" aria-labelledby="steps-title" data-steps>
+  <div class="container grid steps__grid">
+    <div class="steps__text">
+      <SectionHeading eyebrow={steps.eyebrow} html={steps.headline} id="steps-title" />
+      <div class="steps__body">
+        <div class="steps__track" aria-hidden="true">
+          <span class="steps__track-fill" data-steps-fill></span>
+          {[0, 1, 2, 3].map((i) => <span class="steps__tick" style={`--i: ${i}`} />)}
+        </div>
+        <ol class="steps__list" role="list">
+          {
+            steps.items.map((step, i) => (
+              <li class="step" data-step>
+                <div class="step__art">
+                  <DrawSvg name={drawings[i] ?? 'key'} />
+                </div>
+                <div class="step__copy">
+                  <p class="step__num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </p>
+                  <h3 class="display-s step__title">{step.title}</h3>
+                  <p class="step__desc">{step.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+    <div class="steps__stage" aria-hidden="true">
+      {drawings.map((name) => <DrawSvg name={name} animate={false} class="steps__drawing" />)}
+    </div>
+  </div>
+</section>

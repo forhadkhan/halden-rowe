@@ -1,0 +1,251 @@
+---
+/**
+ * Contact form (DESIGN.md 11.5 / 10.8) on the shared Form: topic, name, email, phone (optional unless the visitor
+ * asks for a call), property address (only for Selling / Valuation), message (placeholder follows the topic),
+ * preferred contact, consent.
+ * URL params, read on the client because the page is static:
+ *   ?topic=buying|selling|renting|valuation|other   (nav, footer and CTA links)
+ *   ?intent=buy|rent|sell|general                   (card F2b alias; mapped to a topic, sell = valuation)
+ *   ?address=...                                     (valuation prefill)
+ * Without JS the topic defaults to "other" and the address field stays visible (and optional), so nothing is lost.
+ */
+import Form from '../Form.astro';
+import Field from '../Field.astro';
+import { getCopy } from '../../data/load-copy';
+
+interface ContactForm {
+  heading: string;
+  topic: { label: string; options: { value: string; label: string }[] };
+  address: { label: string; hint: string; autocomplete: string };
+  preferredContact: { legend: string; options: { value: string; label: string }[]; phoneNeeded: string };
+  messagePlaceholders: Record<string, string>;
+  submit: string;
+  success: { heading: string; text: string; sendAnother: string };
+  failure: string;
+}
+
+const form = getCopy<{ form: ContactForm }>('contact').form;
+const forms = getCopy('errors').forms;
+const f = forms.fields;
+const e = forms.errors;
+const DEFAULT_TOPIC = 'other';
+---
+
+<section
+  class="contact-form"
+  aria-labelledby="contact-form-title"
+  data-contact-form
+  data-placeholders={JSON.stringify(form.messagePlaceholders)}
+  data-optional={forms.optional}
+>
+  <h2 id="contact-form-title" class="display-s">{form.heading}</h2>
+  <Form name="contact" subject="Contact form" submitLabel={form.submit} success={form.success} failure={form.failure}>
+    <Field
+      name="topic"
+      id="contact-topic"
+      type="select"
+      label={form.topic.label}
+      options={form.topic.options}
+      value={DEFAULT_TOPIC}
+      required
+      messages={{ required: e.topicRequired }}
+    />
+    <div class="contact-form__pair">
+      <Field name="name" id="contact-name" label={f.name.label} autocomplete={f.name.autocomplete} required messages={{ required: e.nameRequired }} />
+      <Field
+        name="email"
+        id="contact-email"
+        type="email"
+        label={f.email.label}
+        hint={f.email.hint}
+      hintBelow
+        autocomplete={f.email.autocomplete}
+        required
+        messages={{ required: e.emailRequired, invalid: e.emailInvalid }}
+      />
+    </div>
+    <Field
+      name="phone"
+      id="contact-phone"
+      type="tel"
+      label={f.phone.label}
+      hint={f.phone.hint}
+      hintBelow
+      autocomplete={f.phone.autocomplete}
+      optionalLabel={forms.optional}
+      pattern="[0-9 \(\)\+\.\-]{7,20}"
+      messages={{ required: form.preferredContact.phoneNeeded, invalid: e.phoneInvalid }}
+    />
+    <Field
+      name="address"
+      id="contact-address"
+      label={form.address.label}
+      hint={form.address.hint}
+      hintBelow
+      autocomplete={form.address.autocomplete}
+      messages={{ required: e.addressRequired }}
+      class="contact-form__address"
+    />
+    <Field
+      name="message"
+      id="contact-message"
+      type="textarea"
+      label={f.message.label}
+      hint={f.message.hint}
+      hintBelow
+      placeholder={form.messagePlaceholders[DEFAULT_TOPIC]}
+      required
+      maxlength={2000}
+      rows={6}
+      messages={{ required: e.messageRequired, tooLong: e.messageTooLong }}
+    />
+    <fieldset class="contact-form__reply">
+      <legend class="field__label">{form.preferredContact.legend}</legend>
+      <div class="contact-form__radios">
+        {
+          form.preferredContact.options.map((option, i) => (
+            <label class="field__check field__check--radio">
+              <input type="radio" name="reply-by" value={option.value} checked={i === 0} data-reply-by />
+              <span class="field__label">{option.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+    <Field
+      name="consent"
+      id="contact-consent"
+      type="checkbox"
+      label={f.consent.label}
+      hint={f.consent.hint}
+      required
+      messages={{ required: e.consentRequired }}
+    />
+  </Form>
+</section>
+
+<style is:global>
+  .contact-form h2 {
+    margin: 0 0 var(--space-6);
+  }
+
+  .contact-form__pair {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 40rem) {
+    .contact-form__pair {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .contact-form__address[hidden] {
+    display: none;
+  }
+
+  .contact-form__reply {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .contact-form__radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-6);
+    margin-top: var(--space-1);
+  }
+
+  .field__check--radio input {
+    border-radius: 50%;
+  }
+
+  .field__check--radio input:checked {
+    background-color: var(--color-input-bg);
+    box-shadow: inset 0 0 0 4px var(--color-input-bg), inset 0 0 0 10px var(--color-text);
+  }
+
+  .field__check--radio input:checked::after {
+    content: none;
+  }
+
+  .field__check--radio input:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  /* Topic and address from the URL, the address field for selling/valuation only, the message placeholder per
+     topic, and a required phone when the visitor asks to be called. */
+  // intent=sell comes from the hero's Sell tab, which promises a free valuation: open on that topic.
+  const INTENT: Record<string, string> = { buy: 'buying', rent: 'renting', sell: 'valuation', general: 'other' };
+  const NEEDS_ADDRESS = new Set(['selling', 'valuation']);
+  // A valuation request is complete with the address: the message is optional there.
+  const MESSAGE_OPTIONAL = new Set(['valuation']);
+
+  const root = document.querySelector<HTMLElement>('[data-contact-form]');
+  const topic = root?.querySelector<HTMLSelectElement>('#contact-topic');
+  const address = root?.querySelector<HTMLInputElement>('#contact-address');
+  const addressField = address?.closest<HTMLElement>('[data-field]');
+  const message = root?.querySelector<HTMLTextAreaElement>('#contact-message');
+  const phone = root?.querySelector<HTMLInputElement>('#contact-phone');
+  const placeholders = JSON.parse(root?.dataset.placeholders ?? '{}') as Record<string, string>;
+
+  if (root && topic && address && addressField && message && phone) {
+    const params = new URLSearchParams(window.location.search);
+    const allowed = new Set([...topic.options].map((o) => o.value));
+    const wanted = params.get('topic') ?? INTENT[params.get('intent') ?? ''] ?? '';
+    if (allowed.has(wanted)) topic.value = wanted;
+    const prefill = params.get('address');
+    if (prefill) address.value = prefill.slice(0, 200);
+
+    const messageOptional = document.createElement('span');
+    messageOptional.className = 'muted';
+    messageOptional.textContent = ` ${root.dataset.optional ?? ''}`;
+    message.labels?.[0]?.append(messageOptional);
+
+    const syncTopic = () => {
+      const needsAddress = NEEDS_ADDRESS.has(topic.value);
+      addressField.hidden = !needsAddress;
+      address.required = needsAddress;
+      address.disabled = !needsAddress;
+      message.placeholder = placeholders[topic.value] ?? '';
+      message.required = !MESSAGE_OPTIONAL.has(topic.value);
+      messageOptional.hidden = message.required;
+      // A "required" error left on an empty message clears once the message becomes optional.
+      if (!message.required && message.getAttribute('aria-invalid') === 'true' && !message.value) {
+        message.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+    topic.addEventListener('change', syncTopic);
+    syncTopic();
+
+    const replyBy = [...root.querySelectorAll<HTMLInputElement>('[data-reply-by]')];
+    const phoneOptional = phone.labels?.[0]?.querySelector<HTMLElement>('.muted');
+    const syncPhone = () => {
+      phone.required = replyBy.some((radio) => radio.checked && radio.value === 'phone');
+      // "(optional)" would be wrong once a call-back makes the phone required.
+      if (phoneOptional) phoneOptional.hidden = phone.required;
+      if (!phone.required && phone.getAttribute('aria-invalid') === 'true' && !phone.value) {
+        phone.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+    replyBy.forEach((radio) => radio.addEventListener('change', syncPhone));
+    syncPhone();
+
+    // "Send another" resets the form: put the topic- and reply-dependent parts back in step.
+    root.addEventListener(
+      'reset',
+      () =>
+        window.requestAnimationFrame(() => {
+          syncTopic();
+          syncPhone();
+        }),
+      true,
+    );
+  }
+</script>

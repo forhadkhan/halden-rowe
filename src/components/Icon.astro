@@ -1,0 +1,43 @@
+---
+/**
+ * Lucide icon, inline SVG (DESIGN.md 9). Decorative by default (aria-hidden); pass `label` only when the
+ * icon alone carries meaning and no visible text names it.
+ */
+import { iconBody, type IconName } from '../lib/icons';
+
+interface Props {
+  name: IconName;
+  size?: 16 | 20 | 24 | 32 | number;
+  strokeWidth?: number;
+  label?: string;
+  class?: string;
+  filled?: boolean;
+}
+
+const { name, size = 20, strokeWidth = 1.5, label, class: className, filled = false } = Astro.props;
+const body = iconBody(name);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill={filled ? 'currentColor' : 'none'}
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={['icon', `icon-${name}`, className]}
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"
+  set:html={body}
+/>
+
+<style>
+  .icon {
+    flex-shrink: 0;
+  }
+</style>

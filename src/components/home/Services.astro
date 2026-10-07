@@ -1,0 +1,54 @@
+---
+/**
+ * H5 Services: four arched cards. Phones get a scroll-snap row (a focusable region so keyboards can scroll it)
+ * with a decorative progress line; tablets 2x2; desktop one row. M4 per arch, M6 on the text.
+ */
+import Photo from '../Photo.astro';
+import SectionHeading from '../SectionHeading.astro';
+import Icon from '../Icon.astro';
+import { getCopy } from '../../data/load-copy';
+import { url } from '../../lib/url';
+import { toPropertiesContract, type HomeCopy } from './types';
+
+const { services } = getCopy<HomeCopy>('home');
+---
+
+<section class="services section" aria-labelledby="services-title">
+  <div class="container">
+    <div class="grid services__head">
+      <SectionHeading eyebrow={services.eyebrow} html={services.headline} id="services-title" class="services__heading" />
+      <p class="services__intro">{services.intro}</p>
+    </div>
+  </div>
+  <div class="services__scroller container" role="region" aria-label={services.regionLabel} tabindex="0" data-services-row>
+    <ul class="services__list" role="list" data-ambient>
+      {
+        services.items.map((item, i) => (
+          <li class="service" style={`--i: ${i}`}>
+            <div class="service__media" data-clip>
+              <Photo
+                src={item.image.file}
+                alt={item.image.alt}
+                aspect="3 / 4"
+                sizes="(min-width: 64rem) 22vw, (min-width: 48rem) 44vw, 78vw"
+                widths={[360, 540, 720, 960]}
+                class="service__photo"
+              />
+            </div>
+            <div class="service__text" data-reveal>
+              <h3 class="display-s service__title">{item.title}</h3>
+              <p class="small muted service__line">{item.line}</p>
+              <a class="service__link stretched-link" href={url(toPropertiesContract(item.href))}>
+                {item.link}
+                <Icon name="chevron-right" size={16} />
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <div class="container services__progress" aria-hidden="true">
+    <span class="services__progress-fill" data-services-progress></span>
+  </div>
+</section>

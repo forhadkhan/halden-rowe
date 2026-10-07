@@ -1,0 +1,76 @@
+---
+/**
+ * Breadcrumb (DESIGN.md 11.2): <nav aria-label>, chevron-right separators (aria-hidden), current item
+ * aria-current="page" and not a link. Pair with breadcrumbLd() from structured-data.ts for the same items.
+ */
+import Icon from '../Icon.astro';
+import { url } from '../../lib/url';
+
+interface Props {
+  label: string;
+  items: { label: string; path: string }[];
+  class?: string;
+}
+
+const { label, items, class: className } = Astro.props;
+const last = items.length - 1;
+---
+
+<nav class:list={['breadcrumb small', className]} aria-label={label}>
+  <ol role="list">
+    {
+      items.map((item, i) => (
+        <li>
+          {i === last ? (
+            <span aria-current="page">{item.label}</span>
+          ) : (
+            <>
+              <a href={url(item.path)}>{item.label}</a>
+              <Icon name="chevron-right" size={14} class="breadcrumb__sep" />
+            </>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style is:global>
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+  }
+
+  .breadcrumb li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  .breadcrumb [aria-current="page"] {
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+  }
+
+  .breadcrumb__sep {
+    flex: none;
+    color: var(--color-text-muted);
+  }
+</style>

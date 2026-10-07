@@ -1,0 +1,275 @@
+---
+/**
+ * Listing gallery (DESIGN.md 11.3). One list of the five photos, laid out three ways:
+ * - <768: edge-to-edge scroll-snap row (4:3) with a "1 / 5" counter pill and "Show all".
+ * - 768-1023: exterior full width (16:9), living + kitchen side by side.
+ * - >=1024: mosaic, exterior 2/3 (3:2) beside living and kitchen stacked; "Show all 5 photos" over the last.
+ * Every photo is a button that opens the lightbox at its index (Lightbox.astro). Photos 4-5 only show in the
+ * phone row and the lightbox; they are lazy, so wider screens never download them here.
+ * Motion: M17 on the exterior (shared name with the card), M4 on the side photos, M16 cursor.
+ */
+import Photo from '../Photo.astro';
+import Button from '../Button.astro';
+import Lightbox from '../Lightbox.astro';
+import { fmt, type Listing } from '../../data/load-copy';
+import { cropFor } from './crops';
+
+interface Props {
+  listing: Listing;
+  labels: Record<'showAll' | 'showAllShort' | 'open' | 'counter' | 'close' | 'previous' | 'next' | 'loadError' | 'regionLabel', string>;
+}
+
+const { listing, labels } = Astro.props;
+const images = listing.images;
+const count = images.length;
+const lightboxId = `gallery-${listing.slug}`;
+// Phones show each photo in a 4:3 frame with object-fit: cover, so a 3:2 photo is drawn ~1.13x the viewport wide.
+const sizes = [
+  '(min-width: 64rem) 62vw, (min-width: 48rem) 100vw, 113vw',
+  '(min-width: 64rem) 31vw, (min-width: 48rem) 50vw, 113vw',
+  '(min-width: 64rem) 31vw, (min-width: 48rem) 50vw, 113vw',
+  '113vw',
+  '113vw',
+];
+---
+
+<section class="gallery container-wide" aria-label={fmt(labels.regionLabel, { title: listing.title })} data-gallery>
+  <ul class="gallery__track" role="list" data-gallery-track>
+    {
+      images.map((image, i) => (
+        <li class:list={['gallery__item', `gallery__item--${i + 1}`]} data-clip={i === 1 || i === 2 ? '' : undefined}>
+          <button
+            type="button"
+            class="gallery__open"
+            data-lightbox-open={lightboxId}
+            data-index={i}
+            data-cursor="view"
+            aria-label={fmt(labels.open, { index: i + 1, count })}
+          >
+            <Photo
+              src={image.file}
+              alt={image.alt}
+              sizes={sizes[i]}
+              widths={i === 0 ? [640, 960, 1280, 1600, 2000] : [480, 800, 1200, 1600]}
+              priority={i === 0}
+              position={cropFor(image.file)}
+              transitionName={i === 0 ? `home-${listing.slug}` : undefined}
+            />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="gallery__counter small tabular" aria-hidden="true" data-gallery-counter data-template={labels.counter}>
+    {fmt(labels.counter, { index: 1, count })}
+  </p>
+
+  <Button variant="secondary" icon="images" class="gallery__all" data-lightbox-open={lightboxId} data-index="0" magnetic={false}>
+    <span class="gallery__all-long">{fmt(labels.showAll, { count })}</span>
+    <span class="gallery__all-short">{labels.showAllShort}</span>
+  </Button>
+</section>
+
+<Lightbox
+  id={lightboxId}
+  images={images.map((image) => ({ file: image.file, alt: image.alt, caption: image.caption }))}
+  labels={{
+    region: fmt(labels.regionLabel, { title: listing.title }),
+    counter: labels.counter,
+    close: labels.close,
+    previous: labels.previous,
+    next: labels.next,
+    loadError: labels.loadError,
+  }}
+/>
+
+<style is:global>
+  .gallery {
+    position: relative;
+  }
+
+  .gallery__track {
+    margin: 0;
+  }
+
+  .gallery__item {
+    position: relative;
+    overflow: clip;
+    background-color: var(--color-skeleton);
+  }
+
+  .gallery__open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .gallery__open:focus-visible {
+    outline-offset: -4px;
+    outline-color: var(--hr-ivory);
+    box-shadow: inset 0 0 0 6px var(--hr-ink-900);
+  }
+
+  .gallery__open .photo,
+  .gallery__open .photo-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .gallery__open .photo-img {
+    object-fit: cover;
+    object-position: var(--photo-position, 50% 50%);
+    transition: scale var(--dur-slow) var(--ease-standard);
+  }
+
+  @media (hover: hover) {
+    .motion-ok .gallery__open:hover .photo-img {
+      scale: 1.03;
+    }
+  }
+
+  .gallery__counter {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background-color: var(--hr-ivory);
+    color: var(--hr-ink-900);
+    font-weight: var(--weight-ui);
+    pointer-events: none;
+  }
+
+  .gallery__all {
+    position: absolute;
+    left: var(--space-3);
+    bottom: var(--space-3);
+    background-color: var(--hr-ivory);
+  }
+
+  .gallery__all-long {
+    display: none;
+  }
+
+  /* Phones: edge to edge, swipe through all five. */
+  @media (max-width: 47.99rem) {
+    .gallery.container-wide {
+      width: 100%;
+    }
+
+    .gallery__track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+
+    .gallery__track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery__item {
+      flex: 0 0 100%;
+      aspect-ratio: 4 / 3;
+      scroll-snap-align: start;
+    }
+  }
+
+  /* Tablet and up: the mosaic. Photos 4-5 live in the lightbox only. */
+  @media (min-width: 48rem) {
+    .gallery__track {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+
+    .gallery__item {
+      border-radius: var(--radius-sm);
+    }
+
+    .gallery__item--1 {
+      grid-column: 1 / -1;
+      aspect-ratio: 16 / 9;
+    }
+
+    .gallery__item--2,
+    .gallery__item--3 {
+      aspect-ratio: 3 / 2;
+    }
+
+    .gallery__item--4,
+    .gallery__item--5,
+    .gallery__counter {
+      display: none;
+    }
+
+    .gallery__all {
+      left: auto;
+      right: var(--space-4);
+      bottom: var(--space-4);
+    }
+
+    .gallery__all-long {
+      display: inline;
+    }
+
+    .gallery__all-short {
+      display: none;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .gallery__track {
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .gallery__item--1 {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      aspect-ratio: 3 / 2;
+    }
+
+    .gallery__item--2,
+    .gallery__item--3 {
+      aspect-ratio: auto;
+      min-height: 0;
+    }
+
+    .gallery__item--2 .gallery__open,
+    .gallery__item--3 .gallery__open {
+      position: absolute;
+      inset: 0;
+    }
+  }
+</style>
+
+<script>
+  /* Phone row: keep the "1 / 5" pill in step with the swipe position. */
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const track = gallery.querySelector<HTMLElement>('[data-gallery-track]');
+    const counter = gallery.querySelector<HTMLElement>('[data-gallery-counter]');
+    if (!track || !counter) return;
+    const count = track.children.length;
+    const template = counter.dataset.template ?? '{index} / {count}';
+    let frame = 0;
+    track.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const index = Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) + 1;
+          counter.textContent = template.replace('{index}', String(Math.min(count, index))).replace('{count}', String(count));
+        });
+      },
+      { passive: true },
+    );
+  });
+</script>

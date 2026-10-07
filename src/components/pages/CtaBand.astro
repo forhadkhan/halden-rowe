@@ -1,0 +1,130 @@
+---
+/**
+ * CTA band (DESIGN.md H12, reused on /about): golden-hour photo in a rounded frame (M4 clip + M5 parallax),
+ * night-scheme text over a scrim, primary "Book a valuation" + secondary "Browse homes" (M12 magnetic).
+ * Phones: 4:5 frame, scrim from the bottom, buttons stacked full width.
+ */
+import Photo from '../Photo.astro';
+import Button from '../Button.astro';
+import { getCopy } from '../../data/load-copy';
+
+interface Cta {
+  headline: string;
+  line: string;
+  primary: string;
+  primaryHref: string;
+  secondary: string;
+  secondaryHref: string;
+  image: { file: string; alt: string };
+}
+
+const { cta } = getCopy<{ cta: Cta }>('home');
+---
+
+<section class="cta section" aria-labelledby="cta-band-title">
+  <div class="container-wide">
+    <div class="cta__frame" data-scheme="night" data-clip="scrub" data-ambient>
+      <div class="cta__media" data-parallax>
+        <Photo src={cta.image.file} alt={cta.image.alt} sizes="(min-width: 90rem) 1400px, 96vw" widths={[640, 960, 1280, 1600, 2000]} />
+      </div>
+      <span class="light-sweep" aria-hidden="true"></span>
+      <div class="cta__content">
+        <h2 id="cta-band-title" class="display-m" data-split>{cta.headline}</h2>
+        <p>{cta.line}</p>
+        <div class="cta__actions">
+          <Button variant="primary" href={cta.primaryHref} icon="chevron-right" iconPosition="end">{cta.primary}</Button>
+          <Button variant="secondary" href={cta.secondaryHref}>{cta.secondary}</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .cta__frame {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: 520px;
+    /* A definite width: otherwise the ratio turns min-height into a 416px width and overflows a 360px screen. */
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 4 / 5;
+    overflow: clip;
+    border-radius: var(--radius-lg);
+    background-color: var(--hr-night-900);
+  }
+
+  .cta__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .cta__media .photo,
+  .cta__media .photo-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cta__media .photo-img {
+    object-fit: cover;
+  }
+
+  .cta__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--scrim-hero-bottom);
+    pointer-events: none;
+  }
+
+  .cta__content {
+    position: relative;
+    z-index: var(--z-raised);
+    padding: var(--space-6) var(--space-5);
+    color: var(--color-text);
+  }
+
+  .cta__content h2 {
+    margin: 0;
+    max-width: 18ch;
+  }
+
+  .cta__content p {
+    margin: var(--space-4) 0 var(--space-6);
+    max-width: var(--measure-narrow);
+  }
+
+  .cta__actions {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 48rem) {
+    .cta__frame {
+      aspect-ratio: 21 / 9;
+      min-height: 480px;
+      align-items: center;
+    }
+
+    .cta__frame::after {
+      background: linear-gradient(to right, var(--scrim-strong) 0%, var(--scrim-strong) 58%, transparent 85%);
+    }
+
+    .cta__content {
+      max-width: 50%;
+      padding: var(--space-12);
+    }
+
+    .cta__actions {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .cta__content {
+      max-width: 56%;
+    }
+  }
+</style>

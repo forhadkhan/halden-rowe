@@ -1,0 +1,515 @@
+---
+/**
+ * /properties filter bar (DESIGN.md 10.7). Desktop (>=1024): every control inline, live. Below 1024: keyword +
+ * "Filters (n)" + Sort, and a native <dialog> bottom sheet whose changes apply on "Show N homes".
+ * Hidden without JS: the page then simply lists every home. Behaviour lives in src/scripts/properties-filter.ts.
+ */
+import Icon from '../Icon.astro';
+import Button from '../Button.astro';
+import FilterFields from './FilterFields.astro';
+import { getCopy, fmt } from '../../data/load-copy';
+import { site } from '../../data/site';
+
+interface SearchCopy {
+  search: { options: { anyLocation: string; anyType: string; anyBeds: string; beds: { value: number; label: string }[]; types: string[] } };
+  filters: {
+    barLabel: string;
+    status: { label: string; any: string; buy: string; rent: string };
+    location: string;
+    type: string;
+    priceMin: string;
+    priceMax: string;
+    noMin: string;
+    noMax: string;
+    priceStepsBuy: number[];
+    priceStepsRent: number[];
+    beds: string;
+    keyword: string;
+    keywordPlaceholder: string;
+    sort: string;
+    open: string;
+    openWithCount: string;
+    sheetTitle: string;
+    closeSheet: string;
+    show: { zero?: string; one: string; other: string };
+    clearAll: string;
+    activeLabel: string;
+    removeChip: string;
+    chip: Record<'status' | 'city' | 'type' | 'min' | 'max' | 'beds' | 'q', string>;
+    saved: string;
+  };
+  sort: { options: { value: string; label: string }[] };
+  results: { count: { zero?: string; one: string; other: string } };
+}
+
+interface Props {
+  total: number;
+}
+
+const { total } = Astro.props;
+const copy = getCopy<SearchCopy>('search');
+const f = copy.filters;
+const opts = copy.search.options;
+const cities = getCopy('site').cities;
+const priceSuffix = getCopy('properties').detailPage.priceSuffixRent;
+const money = (n: number) =>
+  new Intl.NumberFormat(site.locale, { style: 'currency', currency: site.currency, maximumFractionDigits: 0 }).format(n);
+
+const labels = {
+  status: f.status,
+  location: f.location,
+  type: f.type,
+  priceMin: f.priceMin,
+  priceMax: f.priceMax,
+  noMin: f.noMin,
+  noMax: f.noMax,
+  beds: f.beds,
+  anyLocation: opts.anyLocation,
+  anyType: opts.anyType,
+  anyBeds: opts.anyBeds,
+};
+const fieldProps = { labels, cities, types: opts.types, beds: opts.beds, stepsBuy: f.priceStepsBuy, money };
+
+/* Everything the script needs, in one JSON blob (no copy is hard-coded in TypeScript). */
+const config = {
+  cities,
+  types: opts.types,
+  beds: opts.beds.map((b) => b.value),
+  sorts: copy.sort.options.map((o) => o.value),
+  stepsBuy: f.priceStepsBuy,
+  stepsRent: f.priceStepsRent,
+  rentSuffix: priceSuffix,
+  locale: site.locale,
+  currency: site.currency,
+  status: { buy: f.status.buy, rent: f.status.rent },
+  chip: f.chip,
+  removeChip: f.removeChip,
+  count: copy.results.count,
+  show: f.show,
+  open: f.open,
+  openWithCount: f.openWithCount,
+  saved: f.saved,
+};
+const countText = fmt(total === 1 ? copy.results.count.one : copy.results.count.other, { count: total });
+---
+
+<div class="filters" data-filters data-config={JSON.stringify(config)}>
+  <form class="filters__bar container" aria-label={f.barLabel} role="search" data-filter-form>
+    {/* Row 1: keyword search and the saved toggle. Row 2: every filter plus the sort. */}
+    <div class="filters__top">
+    <div class="filters__field filters__field--q">
+      <label class="filters__label" for="filter-q">{f.keyword}</label>
+      <div class="filters__search">
+        <Icon name="search" size={20} class="filters__search-icon" />
+        <input
+          id="filter-q"
+          class="field__control"
+          type="search"
+          name="q"
+          maxlength="80"
+          autocomplete="off"
+          placeholder={f.keywordPlaceholder}
+          data-filter="q"
+        />
+      </div>
+    </div>
+
+    {/* Toggle (aria-pressed): only the visitor's saved homes. Label "Saved (n)" is kept in sync by the script. */}
+    <button type="button" class="btn btn--secondary btn--md filters__saved" aria-pressed="false" data-filter-saved>
+      <span class="btn__inner">
+        <Icon name="heart" size={20} class="btn__icon filters__saved-icon" />
+        <span class="btn__label" data-filter-saved-label>{fmt(f.saved, { count: 0 })}</span>
+      </span>
+    </button>
+    </div>
+
+    <div class="filters__rest">
+    <div class="filters__desk">
+      <FilterFields prefix="bar" {...fieldProps} />
+    </div>
+
+    <button type="button" class="btn btn--secondary btn--md filters__open" aria-haspopup="dialog" aria-controls="filter-sheet" data-filter-open>
+      <span class="btn__inner">
+        <Icon name="sliders-horizontal" size={20} class="btn__icon" />
+        <span class="btn__label" data-filter-open-label>{f.open}</span>
+      </span>
+    </button>
+
+    <div class="filters__field filters__field--sort">
+      <label class="filters__label" for="filter-sort">{f.sort}</label>
+      <div class="field__select">
+        <select id="filter-sort" class="field__control filters__select" data-filter="sort">
+          {copy.sort.options.map((o) => <option value={o.value}>{o.label}</option>)}
+        </select>
+        <Icon name="chevron-down" size={20} class="field__chevron" />
+      </div>
+    </div>
+    </div>
+  </form>
+
+  <div class="filters__meta container">
+    <div class="filters__active" data-filter-active hidden>
+      <p class="visually-hidden" id="filters-active-label">{f.activeLabel}</p>
+      <ul class="filters__chips cluster" role="list" aria-labelledby="filters-active-label" data-filter-chips></ul>
+    </div>
+    {/* Next to the count; disabled until something is applied (the script toggles it with the chips row). */}
+    <div class="filters__summary">
+      <p class="filters__count small" role="status" aria-live="polite" data-filter-count>{countText}</p>
+      <button type="button" class="btn btn--text filters__clear" data-filter-clear disabled>
+        <span class="btn__inner">
+          <Icon name="rotate-ccw" size={16} class="btn__icon" />
+          <span class="btn__label">{f.clearAll}</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <dialog id="filter-sheet" class="filter-sheet" aria-labelledby="filter-sheet-title" data-filter-sheet>
+    <div class="filter-sheet__head">
+      <h2 id="filter-sheet-title" class="title">{f.sheetTitle}</h2>
+      <Button variant="icon" icon="x" label={f.closeSheet} data-filter-sheet-close />
+    </div>
+    <div class="filter-sheet__body" data-lenis-prevent>
+      <FilterFields prefix="sheet" {...fieldProps} />
+    </div>
+    <div class="filter-sheet__foot">
+      <Button variant="secondary" icon="rotate-ccw" data-filter-sheet-clear>{f.clearAll}</Button>
+      <Button variant="primary" data-filter-sheet-apply>
+        <span data-filter-sheet-show>{fmt(total === 1 ? f.show.one : f.show.other, { count: total })}</span>
+      </Button>
+    </div>
+  </dialog>
+</div>
+
+<style is:global>
+  .filters {
+    position: sticky;
+    top: var(--header-height-compact);
+    z-index: var(--z-sticky);
+    padding-block: var(--space-3);
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    transition: top var(--dur-base) var(--ease-standard);
+  }
+
+  html:not(.js) .filters {
+    display: none;
+  }
+
+  /* The header slides away on scroll down; the bar follows it up (10.7). */
+  body:has(.site-header.is-hidden:not(:focus-within)) .filters {
+    top: 0;
+  }
+
+  .filters__bar {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  /* Row 1: search grows, the saved toggle sits at its end. */
+  .filters__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    align-items: end;
+  }
+
+  /* Row 2 (phones, tablets): the sheet button on the left, sort on the right. */
+  .filters__rest {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .filters__saved {
+    min-height: var(--tap-min);
+  }
+
+  /* Pressed = the saved view is on: filled heart (not colour alone) plus the selected-chip colours. */
+  .filters .filters__saved[aria-pressed="true"] {
+    background-color: var(--color-chip-selected-bg);
+    border-color: var(--color-chip-selected-bg);
+    color: var(--color-chip-selected-fg);
+  }
+
+  .filters__saved[aria-pressed="true"] .filters__saved-icon {
+    fill: currentColor;
+  }
+
+  .filters__desk {
+    display: none;
+  }
+
+  .filters__field--sort {
+    min-width: 0;
+    width: min(100%, 11.5rem);
+  }
+
+  .filters__label {
+    display: block;
+    margin-bottom: var(--space-1);
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-label);
+    font-weight: var(--weight-strong);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-label);
+    text-transform: uppercase;
+  }
+
+  .filters .field__control {
+    height: var(--tap-min);
+    min-height: var(--tap-min);
+  }
+
+  .filters__search {
+    position: relative;
+  }
+
+  .filters__search .field__control {
+    border-radius: var(--radius-pill);
+    width: 100%;
+    padding-inline-start: var(--space-10);
+  }
+
+  .filters__search-icon {
+    position: absolute;
+    top: 50%;
+    left: var(--space-3);
+    translate: 0 -50%;
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+
+  .filters__open {
+    min-height: var(--tap-min);
+  }
+
+  /* Selects: self-contained here, /properties never renders a Field so Field.astro's CSS is not loaded. */
+  .filters select.field__control,
+  .filter-sheet select.field__control {
+    appearance: none;
+    width: 100%;
+    padding-block: 0;
+    padding-inline: var(--space-4) calc(var(--space-4) + 28px);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-input-bg);
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .filters select.field__control:hover,
+  .filter-sheet select.field__control:hover {
+    border-color: var(--color-text);
+  }
+
+  /* A filter that is narrowing the results reads as on: ink border plus a tinted fill (not colour alone,
+     the value text itself changes from the "Any" label too). */
+  .filters select.field__control:where(:not([data-filter="sort"]):not(:has(option[value=""]:checked))),
+  .filter-sheet select.field__control:where(:not(:has(option[value=""]:checked))) {
+    border-color: var(--color-text);
+    background-color: var(--color-surface-sunken);
+    box-shadow: inset 0 0 0 0.5px var(--color-text);
+  }
+
+  .filters .field__select,
+  .filter-sheet .field__select {
+    position: relative;
+  }
+
+  .filters .field__chevron,
+  .filter-sheet .field__chevron {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    translate: 0 -50%;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transition: color var(--dur-fast) var(--ease-standard);
+  }
+
+  .filters .field__select:hover .field__chevron,
+  .filter-sheet .field__select:hover .field__chevron {
+    color: var(--color-text);
+  }
+
+  .filters select.field__control option,
+  .filter-sheet select.field__control option {
+    background-color: var(--color-input-bg);
+    color: var(--color-text);
+  }
+
+  /* Status pill toggle: .segmented lives in styles/pages.css (shared with the calculator's term control). */
+
+  .filters__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .filters__active {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    min-width: 0;
+  }
+
+  .filters__active[hidden] {
+    display: none;
+  }
+
+  .filters__chips {
+    --cluster-gap: var(--space-2);
+    margin: 0;
+  }
+
+  .filters__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-inline-start: auto;
+  }
+
+  .filters__count {
+    margin: 0;
+    font-weight: var(--weight-ui);
+  }
+
+  @media (min-width: 64rem) {
+    .filters {
+      top: var(--header-height);
+    }
+
+    .filters__rest {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-3);
+    }
+
+    .filters__desk {
+      display: contents;
+    }
+
+    .filters__open {
+      display: none;
+    }
+
+    .filters__saved {
+      flex: 0 0 auto;
+    }
+
+    /* Status keeps its natural width; the five selects and the sort share the rest evenly. */
+    .filters__desk .filters__status {
+      flex: 0 0 auto;
+    }
+
+    .filters__desk .filters__field,
+    .filters__field--sort {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+    }
+
+    .filters__desk .field__control {
+      width: 100%;
+    }
+  }
+
+  /* Bottom sheet (<1024): full height on phones, rounded top corners. */
+  .filter-sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: 40rem;
+    height: min(100dvh, 46rem);
+    margin: auto auto 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background-color: var(--color-bg);
+    box-shadow: var(--shadow-lg);
+    flex-direction: column;
+  }
+
+  .filter-sheet[open] {
+    display: flex;
+  }
+
+  .filter-sheet::backdrop {
+    background: rgb(var(--hr-scrim-rgb) / 0.5);
+  }
+
+  .filter-sheet__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .filter-sheet__head h2 {
+    margin: 0;
+  }
+
+  .filter-sheet__body {
+    flex: 1;
+    display: grid;
+    align-content: start;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .filter-sheet__body .field__control {
+    width: 100%;
+  }
+
+  .filter-sheet__foot {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+  }
+
+  @media (max-width: 47.99rem) {
+    .filter-sheet {
+      height: 100dvh;
+      max-width: none;
+      border-radius: 0;
+    }
+  }
+
+  .motion-ok .filter-sheet[open] {
+    animation: sheet-up var(--dur-slow) var(--ease-out);
+  }
+
+  @keyframes sheet-up {
+    from {
+      translate: 0 100%;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .segmented__option input:checked + span {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/properties-filter';
+</script>

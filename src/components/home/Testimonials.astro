@@ -1,0 +1,32 @@
+---
+/** H10 Testimonials: the three `slider: true` stories in the shared Slider (M19). */
+import Slider from '../Slider.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { getCopy } from '../../data/load-copy';
+import { toPropertiesContract, type HomeCopy } from './types';
+
+const { testimonials: copy } = getCopy<HomeCopy>('home');
+const source = getCopy('testimonials');
+const items = source.items
+  .filter((t) => t.slider)
+  .map((t) => ({ ...t, href: t.href ? toPropertiesContract(t.href) : undefined }));
+const ratingLabel = typeof source.ratingLabel === 'string' ? source.ratingLabel : undefined;
+---
+
+<section class="testimonials section" aria-labelledby="testimonials-title">
+  <div class="container">
+    <SectionHeading eyebrow={copy.eyebrow} html={copy.headline} id="testimonials-title" class="testimonials__head" />
+    <Slider
+      items={items}
+      labels={{
+        carouselLabel: copy.carouselLabel,
+        slideLabel: copy.slideLabel,
+        previous: copy.previous,
+        next: copy.next,
+        counter: copy.counter,
+      }}
+      ratingLabel={ratingLabel}
+      class="testimonials__slider"
+    />
+  </div>
+</section>

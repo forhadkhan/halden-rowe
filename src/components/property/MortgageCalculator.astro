@@ -1,0 +1,589 @@
+---
+/**
+ * Mortgage calculator (DESIGN.md 10.14), sale listings only. A form with no submit: every input recalculates
+ * (300 ms debounce) into an <output aria-live="polite">. The default result is rendered on the server, so the
+ * numbers are there before (and without) the script. No network calls.
+ */
+import Icon from '../Icon.astro';
+import Button from '../Button.astro';
+import { fmt, type Listing } from '../../data/load-copy';
+import { site } from '../../data/site';
+import { LIMITS, TERMS, calculate, money, plainNumber } from '../../scripts/lib/mortgage';
+
+interface Props {
+  listing: Listing;
+  labels: {
+    heading: string;
+    homePrice: string;
+    downPayment: string;
+    downPaymentPercent: string;
+    downPaymentAmount: string;
+    rate: string;
+    rateHint: string;
+    rateDecrease: string;
+    rateIncrease: string;
+    term: string;
+    termOption: string;
+    resultLabel: string;
+    loanAmount: string;
+    totalInterest: string;
+    totalCost: string;
+    principal: string;
+    interest: string;
+    emptyResult: string;
+    errors: { price: string; priceMax: string; downCap: string; rate: string };
+    disclaimer: string;
+  };
+}
+
+const { listing, labels } = Astro.props;
+const id = `calc-${listing.slug}`;
+const defaults = { price: listing.price, downPercent: 20, rate: site.illustrativeRate, years: 30 };
+const result = calculate(defaults);
+const principalShare = result.totalPaid > 0 ? (result.loan / result.totalPaid) * 100 : 100;
+const config = JSON.stringify({
+  downAmount: labels.downPaymentAmount,
+  empty: labels.emptyResult,
+  errors: labels.errors,
+});
+---
+
+<section class="calc" aria-labelledby={`${id}-heading`} data-calc data-config={config}>
+  <h2 id={`${id}-heading`} class="display-s"><Icon name="calculator" size={24} />{labels.heading}</h2>
+
+  <form class="calc__grid" novalidate data-calc-form>
+    <div class="calc__inputs">
+      <div class="field">
+        <label class="field__label" for={`${id}-price`}>{labels.homePrice}</label>
+        <div class="calc__money">
+          <span aria-hidden="true">$</span>
+          <input
+            id={`${id}-price`}
+            class="field__control tabular"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            value={plainNumber(defaults.price)}
+            data-calc-price
+          />
+        </div>
+        <!-- Errors are linked by aria-describedby only while shown: a hidden one would still be read as the
+             field's description ("Enter a home price…" on a valid price). -->
+        <p id={`${id}-price-error`} class="field__error small" hidden data-calc-price-error>
+          <Icon name="circle-alert" size={16} /><span data-msg-price={labels.errors.price} data-msg-max={labels.errors.priceMax}>{labels.errors.price}</span>
+        </p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for={`${id}-down`}>{labels.downPayment}</label>
+        <div class="calc__down">
+          <input
+            id={`${id}-down`}
+            class="calc__range"
+            type="range"
+            min={LIMITS.downMin}
+            max={LIMITS.downMax}
+            step="1"
+            value={defaults.downPercent}
+            aria-describedby={`${id}-down-amount`}
+            style={`--fill: ${(defaults.downPercent / LIMITS.downMax) * 100}%`}
+            data-calc-down-range
+          />
+          <span class="calc__percent">
+            <label class="visually-hidden" for={`${id}-down-pct`}>{labels.downPaymentPercent}</label>
+            <input
+              id={`${id}-down-pct`}
+              class="field__control tabular"
+              type="number"
+              inputmode="numeric"
+              min={LIMITS.downMin}
+              max={LIMITS.downMax}
+              step="1"
+              value={defaults.downPercent}
+              data-calc-down-pct
+            />
+            <span aria-hidden="true">%</span>
+          </span>
+        </div>
+        <p id={`${id}-down-amount`} class="small muted tabular" data-calc-down-amount>
+          {fmt(labels.downPaymentAmount, { amount: money(result.down) })}
+        </p>
+        <p id={`${id}-down-cap`} class="calc__note small" hidden data-calc-down-cap>
+          <Icon name="info" size={16} /><span>{labels.errors.downCap}</span>
+        </p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for={`${id}-rate`}>{labels.rate}</label>
+        <p id={`${id}-rate-hint`} class="field__hint">{labels.rateHint}</p>
+        <div class="calc__stepper">
+          <Button variant="icon" icon="minus" label={labels.rateDecrease} magnetic={false} class="calc__step" data-calc-step="-1" />
+          <input
+            id={`${id}-rate`}
+            class="field__control tabular"
+            type="number"
+            inputmode="decimal"
+            min={LIMITS.rateMin}
+            max={LIMITS.rateMax}
+            step={LIMITS.rateStep}
+            value={defaults.rate.toFixed(2)}
+            aria-describedby={`${id}-rate-hint`}
+            data-calc-rate
+          />
+          <Button variant="icon" icon="plus" label={labels.rateIncrease} magnetic={false} class="calc__step" data-calc-step="1" />
+        </div>
+        <p id={`${id}-rate-error`} class="field__error small" hidden>
+          <Icon name="circle-alert" size={16} /><span>{labels.errors.rate}</span>
+        </p>
+      </div>
+
+      <fieldset class="segmented calc__term">
+        <legend class="field__label">{labels.term}</legend>
+        <div class="segmented__track">
+          {
+            TERMS.map((years) => (
+              <label class="segmented__option">
+                <input type="radio" name={`${id}-term`} value={years} checked={years === defaults.years} data-calc-term />
+                <span>{fmt(labels.termOption, { years })}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="calc__result">
+      <output class="calc__output" for={`${id}-price ${id}-down ${id}-down-pct ${id}-rate`} aria-live="polite" data-calc-output>
+        <span class="calc__label small">{labels.resultLabel}</span>
+        <span class="calc__monthly display-m tabular" data-calc-monthly>{money(result.monthly)}</span>
+        <span class="calc__empty small muted" data-calc-empty hidden>{labels.emptyResult}</span>
+      </output>
+
+      <dl class="calc__totals small">
+        <div><dt class="muted">{labels.loanAmount}</dt><dd class="tabular" data-calc-loan>{money(result.loan)}</dd></div>
+        <div><dt class="muted">{labels.totalInterest}</dt><dd class="tabular" data-calc-interest>{money(result.totalInterest)}</dd></div>
+        <div><dt class="muted">{labels.totalCost}</dt><dd class="tabular" data-calc-total>{money(result.totalPaid)}</dd></div>
+      </dl>
+
+      <div class="calc__split" data-calc-split style={`--principal: ${principalShare}%`}>
+        <div class="calc__bar" aria-hidden="true"><span></span><span></span></div>
+        <p class="calc__legend small">
+          <span><i class="calc__key calc__key--principal" aria-hidden="true"></i>{labels.principal} <b class="tabular" data-calc-principal-value>{money(result.loan)}</b></span>
+          <span><i class="calc__key calc__key--interest" aria-hidden="true"></i>{labels.interest} <b class="tabular" data-calc-interest-value>{money(result.totalInterest)}</b></span>
+        </p>
+      </div>
+
+      <p class="calc__disclaimer small muted">{labels.disclaimer}</p>
+    </div>
+  </form>
+</section>
+
+<style is:global>
+  .calc {
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+  }
+
+  .calc h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-6);
+  }
+
+  .calc h2 .icon {
+    flex: none;
+    color: var(--color-accent-graphic);
+  }
+
+  /* minmax(0, …): a long figure wraps inside the card instead of widening the track past the screen. */
+  .calc__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .calc__inputs {
+    display: grid;
+    gap: var(--space-6);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .calc__inputs p {
+    margin: 0;
+  }
+
+  .calc__money,
+  .calc__percent {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .calc__money > span {
+    position: absolute;
+    left: var(--space-4);
+    pointer-events: none;
+  }
+
+  .calc__money .field__control {
+    padding-left: calc(var(--space-4) + 1ch);
+  }
+
+  .calc__down {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .calc__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  .calc__note .icon {
+    flex: none;
+    margin-top: 0.15em;
+  }
+
+  .calc__percent {
+    flex: none;
+    gap: var(--space-2);
+  }
+
+  .calc__percent .field__control {
+    width: 5.5rem;
+  }
+
+  .calc__stepper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .calc__stepper .field__control {
+    width: 7rem;
+    text-align: center;
+  }
+
+  /* Range: 4px track, accent fill up to the thumb (--fill), 20px ink thumb with an ivory ring; 44px tall hit area. */
+  .calc__range {
+    flex: 1;
+    min-width: 0;
+    height: var(--tap-min);
+    margin: 0;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .calc__range::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(to right, var(--color-accent-graphic) var(--fill, 0%), var(--color-border) var(--fill, 0%));
+  }
+
+  .calc__range::-moz-range-track {
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(to right, var(--color-accent-graphic) var(--fill, 0%), var(--color-border) var(--fill, 0%));
+  }
+
+  .calc__range::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
+    border: 2px solid var(--hr-ivory);
+    border-radius: 50%;
+    background-color: var(--color-text);
+    appearance: none;
+  }
+
+  .calc__range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--hr-ivory);
+    border-radius: 50%;
+    background-color: var(--color-text);
+  }
+
+  .calc__range:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .calc__term .segmented__track {
+    margin-top: var(--space-2);
+  }
+
+  .calc__result {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .calc__output {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .calc__label {
+    font-weight: var(--weight-ui);
+  }
+
+  .calc__monthly,
+  .calc__totals dd,
+  .calc__legend b {
+    overflow-wrap: anywhere;
+  }
+
+  .calc__monthly {
+    font-family: var(--font-serif);
+  }
+
+  .calc__totals {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-block: var(--space-4);
+    border-block: 1px solid var(--color-border);
+  }
+
+  .calc__totals div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .calc__totals dd {
+    min-width: 0;
+    margin: 0;
+    text-align: end;
+    font-weight: var(--weight-ui);
+  }
+
+  .calc__bar {
+    display: flex;
+    gap: 2px;
+    height: 8px;
+  }
+
+  .calc__bar span {
+    border-radius: var(--radius-pill);
+  }
+
+  .calc__bar span:first-child {
+    flex: 0 0 var(--principal, 100%);
+    background-color: var(--color-text);
+  }
+
+  .calc__bar span:last-child {
+    flex: 1;
+    background-color: var(--color-accent-graphic);
+  }
+
+  .calc__legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-3) 0 0;
+  }
+
+  .calc__legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .calc__legend b {
+    font-weight: var(--weight-ui);
+  }
+
+  .calc__key {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .calc__key--principal {
+    background-color: var(--color-text);
+  }
+
+  .calc__key--interest {
+    background-color: var(--color-accent-graphic);
+  }
+
+  .calc__disclaimer {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .calc {
+      padding: var(--space-8);
+    }
+  }
+
+  /* Wide main column: inputs 7 cols, result 5 cols and sticky inside the card. */
+  @media (min-width: 80rem) {
+    .calc__grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: var(--space-10);
+    }
+
+    .calc__result {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-6));
+    }
+  }
+
+  @media (forced-colors: active) {
+    .calc__bar span,
+    .calc__key {
+      forced-color-adjust: none;
+    }
+  }
+</style>
+
+<script>
+  import { LIMITS, calculate, clamp, money, parseMoney, plainNumber, validate } from '../../scripts/lib/mortgage';
+
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const config = JSON.parse(root.dataset.config ?? '{}') as { downAmount: string };
+    const q = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+    const price = q<HTMLInputElement>('[data-calc-price]');
+    const range = q<HTMLInputElement>('[data-calc-down-range]');
+    const pct = q<HTMLInputElement>('[data-calc-down-pct]');
+    const rate = q<HTMLInputElement>('[data-calc-rate]');
+    const terms = root.querySelectorAll<HTMLInputElement>('[data-calc-term]');
+    const priceError = q<HTMLElement>('[data-calc-price-error]');
+    const priceErrorText = priceError.querySelector<HTMLElement>('[data-msg-price]')!;
+    const rateError = document.getElementById(`${rate.id}-error`)!;
+    const downCap = q<HTMLElement>('[data-calc-down-cap]');
+    const out = {
+      monthly: q<HTMLElement>('[data-calc-monthly]'),
+      empty: q<HTMLElement>('[data-calc-empty]'),
+      loan: q<HTMLElement>('[data-calc-loan]'),
+      interest: q<HTMLElement>('[data-calc-interest]'),
+      total: q<HTMLElement>('[data-calc-total]'),
+      downAmount: q<HTMLElement>('[data-calc-down-amount]'),
+      split: q<HTMLElement>('[data-calc-split]'),
+      principalValue: q<HTMLElement>('[data-calc-principal-value]'),
+      interestValue: q<HTMLElement>('[data-calc-interest-value]'),
+    };
+    let timer = 0;
+    // Live calculation only: Enter in a field must not submit (and reload) the page.
+    q<HTMLFormElement>('[data-calc-form]').addEventListener('submit', (event) => event.preventDefault());
+
+    // A message is part of the field's description only while it shows (a hidden one is still read out).
+    const describe = (input: HTMLElement, message: HTMLElement, on: boolean) => {
+      const ids = (input.getAttribute('aria-describedby') ?? '').split(' ').filter((x) => x && x !== message.id);
+      if (on) ids.push(message.id);
+      if (ids.length) input.setAttribute('aria-describedby', ids.join(' '));
+      else input.removeAttribute('aria-describedby');
+      message.hidden = !on;
+    };
+    const setError = (input: HTMLInputElement, message: HTMLElement, on: boolean) => {
+      input.setAttribute('aria-invalid', String(on));
+      describe(input, message, on);
+    };
+
+    // Typing over 60% (or the old 80%) is capped, and says so instead of changing the number silently.
+    const syncDown = (value: number) => {
+      describe(pct, downCap, value > LIMITS.downMax);
+      const v = clamp(Math.round(value), LIMITS.downMin, LIMITS.downMax);
+      range.value = String(v);
+      range.style.setProperty('--fill', `${(v / LIMITS.downMax) * 100}%`);
+      return v;
+    };
+
+    /* While the price is being typed, a half-written entry ("1.", "1.2") must not flash an error: the
+       message waits for the field's change event, and only clears live. */
+    let typingPrice = false;
+    const render = () => {
+      const years = Number([...terms].find((t) => t.checked)?.value ?? 30);
+      const input = {
+        price: parseMoney(price.value),
+        downPercent: Number.parseFloat(pct.value) || 0,
+        rate: rate.value.trim() === '' ? Number.NaN : Number.parseFloat(rate.value),
+        years,
+      };
+      const error = validate(input);
+      const priceBad = error === 'price' || error === 'priceMax';
+      if (priceBad) priceErrorText.textContent = (error === 'priceMax' ? priceErrorText.dataset.msgMax : priceErrorText.dataset.msgPrice) ?? '';
+      if (!typingPrice || !priceBad) setError(price, priceError, priceBad);
+      setError(rate, rateError, error === 'rate');
+      if (error) {
+        out.monthly.textContent = '—';
+        out.empty.hidden = false;
+        for (const el of [out.loan, out.interest, out.total, out.principalValue, out.interestValue]) el.textContent = '—';
+        out.downAmount.textContent = config.downAmount.replace('{amount}', '—');
+        return;
+      }
+      const result = calculate(input);
+      out.monthly.textContent = money(result.monthly);
+      out.empty.hidden = true;
+      out.loan.textContent = money(result.loan);
+      out.interest.textContent = money(result.totalInterest);
+      out.total.textContent = money(result.totalPaid);
+      out.principalValue.textContent = money(result.loan);
+      out.interestValue.textContent = money(result.totalInterest);
+      out.downAmount.textContent = config.downAmount.replace('{amount}', money(result.down));
+      const share = result.totalPaid > 0 ? (result.loan / result.totalPaid) * 100 : 100;
+      out.split.style.setProperty('--principal', `${share}%`);
+    };
+
+    const schedule = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(render, 300);
+    };
+
+    range.addEventListener('input', () => {
+      pct.value = String(syncDown(Number(range.value)));
+      schedule();
+    });
+    pct.addEventListener('input', () => {
+      if (pct.value !== '') syncDown(Number(pct.value));
+      schedule();
+    });
+    pct.addEventListener('change', () => {
+      pct.value = String(syncDown(Number(pct.value) || 0));
+      schedule();
+    });
+    price.addEventListener('input', () => {
+      typingPrice = true;
+      schedule();
+    });
+    // Formatted as you leave the field: "1250000" becomes "1,250,000". Errors show from here on.
+    price.addEventListener('change', () => {
+      typingPrice = false;
+      const value = parseMoney(price.value);
+      if (Number.isFinite(value) && value > 0 && value <= LIMITS.priceMax) price.value = plainNumber(value);
+      schedule();
+    });
+    // Enter in the price field: the form's submit is cancelled, so show the result (and any error) now.
+    price.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter') return;
+      typingPrice = false;
+      window.clearTimeout(timer);
+      render();
+    });
+    rate.addEventListener('input', schedule);
+    terms.forEach((t) => t.addEventListener('change', schedule));
+
+    root.querySelectorAll<HTMLButtonElement>('[data-calc-step]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const current = Number.parseFloat(rate.value);
+        const base = Number.isFinite(current) ? current : 0;
+        const next = clamp(base + Number(button.dataset.calcStep) * LIMITS.rateStep, LIMITS.rateMin, LIMITS.rateMax);
+        rate.value = next.toFixed(2);
+        schedule();
+      });
+    });
+  });
+</script>

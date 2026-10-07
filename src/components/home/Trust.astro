@@ -1,0 +1,31 @@
+---
+/** H2 Trust numbers: statement (M2) and four count-up stats (M7). */
+import DimensionLine from '../DimensionLine.astro';
+import { getCopy } from '../../data/load-copy';
+import { site } from '../../data/site';
+import type { HomeCopy } from './types';
+
+const { trust } = getCopy<HomeCopy>('home');
+const format = new Intl.NumberFormat(site.locale);
+---
+
+<section class="trust" aria-labelledby="trust-title">
+  <div class="container grid trust__grid">
+    <div class="trust__intro">
+      <DimensionLine as="p" label={trust.eyebrow} align="start" class="trust__eyebrow" />
+      <h2 id="trust-title" class="display-s trust__statement" data-split>{trust.statement}</h2>
+    </div>
+    <ul class="trust__stats" role="list">
+      {
+        trust.stats.map((stat) => (
+          <li class="trust__stat" data-reveal>
+            <span class="stat trust__value" data-count={stat.value} data-count-suffix={stat.suffix || undefined}>
+              {`${format.format(stat.value)}${stat.suffix}`}
+            </span>
+            <span class="small muted trust__label">{stat.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

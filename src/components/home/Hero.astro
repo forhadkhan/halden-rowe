@@ -1,0 +1,74 @@
+---
+/**
+ * H1 Hero (DESIGN.md 11.1, rebuilt to the Zentro reference in the house palette): a light airy sky-to-ivory field,
+ * a centred serif headline, a tall transparent tower (the LCP) standing on a half-circle dome, and the search pill
+ * straddling the tower's base. Lead + one stat sit bottom-left, the agents' rating bottom-right; on phones they
+ * stack under the stage. The tower is height-driven (object-fit contain, bottom-aligned), so any replacement
+ * PNG of any ratio fits without layout changes.
+ */
+import { Picture } from 'astro:assets';
+import Icon from '../Icon.astro';
+import Photo from '../Photo.astro';
+import SearchPanel from './SearchPanel.astro';
+import tower from '../../assets/hero/tower.png';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { hero } = getCopy<HomeCopy>('home');
+// Never upscale: half and full intrinsic width cover 1x and 2x at the largest display height.
+const towerWidths = [...new Set([Math.round(tower.width / 2), tower.width])];
+---
+
+{/* Curtain (motion.ts data-curtain): while the hero fits the viewport it stays pinned and the rest of the page
+    (.home-cover in index.astro) slides up over it, the hero dimming as it is covered. On a mouse the dome, tower
+    and headline lean toward the pointer by different amounts. */}
+<section class="hero" aria-labelledby="hero-title" data-hero-root data-curtain data-mouse-root data-ambient>
+  <div class="container hero__head">
+    <h1 id="hero-title" class="display-xl hero__title" data-split="hero" data-mouse="5" set:html={hero.headline} />
+  </div>
+
+  <div class="container hero__body">
+    <div class="hero__stage">
+      <div class="hero__dome" aria-hidden="true" data-hero-dome data-mouse="-10"></div>
+      <Picture
+        src={tower}
+        alt=""
+        formats={['avif']}
+        fallbackFormat="webp"
+        widths={towerWidths}
+        sizes="(min-width: 64rem) 24rem, 16rem"
+        priority
+        class="hero__tower-img"
+        data-mouse="14"
+        pictureAttributes={{ class: 'hero__tower', 'data-hero-tower': '' }}
+      />
+      <div class="hero__panel" data-hero-panel>
+        <SearchPanel />
+      </div>
+    </div>
+
+    <div class="hero__facts">
+      <p class="lead hero__lead">{hero.lead}</p>
+      <p class="hero__stat">
+        <span class="stat hero__stat-value">{hero.stat.value}</span>
+        <span class="hero__stat-label">{hero.stat.label}</span>
+      </p>
+      <div class="hero__rating">
+        <ul class="hero__avatars" role="list">
+          {
+            hero.avatars.map((file) => (
+              <li class="hero__avatar">
+                <Photo src={file} alt="" aspect="1 / 1" sizes="48px" widths={[96, 144]} />
+              </li>
+            ))
+          }
+        </ul>
+        <p class="hero__stars" role="img" aria-label={hero.rating.starsLabel}>
+          {Array.from({ length: hero.rating.stars }, () => <Icon name="star" size={20} filled strokeWidth={1} />)}
+        </p>
+        <p class="hero__rating-title">{hero.rating.title}</p>
+        <p class="hero__rating-caption">{hero.rating.caption}</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,631 @@
+---
+/**
+ * Site header (DESIGN.md 10.1) and mobile menu (10.2).
+ * - `overHero`: night scheme, transparent over the hero scrim; turns solid light once the element marked
+ *   `[data-hero]` has scrolled under the header (M14). Without JS the header scrolls away with the hero.
+ * - Hides on scroll down past 120px, shows on any scroll up; never under reduced motion, never with focus inside.
+ * - Mobile menu: native <dialog> with showModal(); M15 runs in CSS so it needs no GSAP.
+ */
+import { getCopy } from '../data/load-copy';
+import { url, stripBase } from '../lib/url';
+import Icon from './Icon.astro';
+import BrandIcon from './BrandIcon.astro';
+import BrandMark from './BrandMark.astro';
+import Button from './Button.astro';
+
+interface Props {
+  overHero?: boolean;
+}
+
+const { overHero = false } = Astro.props;
+const copy = getCopy('site');
+const { nav, contact, social } = copy;
+const current = stripBase(Astro.url.pathname).replace(/\/+$/, '') || '/';
+
+/** Server-side current state for links without a query; query links (Buy/Rent) are refined in the browser. */
+function isCurrent(href: string): boolean {
+  if (href.includes('?')) return false;
+  const path = href.replace(/\/+$/, '') || '/';
+  return path === '/' ? current === '/' : current === path || current.startsWith(`${path}/`);
+}
+
+const links = nav.links.map((link) => ({ ...link, href: url(link.href), current: isCurrent(link.href) }));
+---
+
+<header
+  class="site-header"
+  data-site-header
+  data-scheme={overHero ? 'night' : undefined}
+  data-over-hero={overHero ? '' : undefined}
+>
+  <div class="site-header__inner container-wide">
+    <a class="site-header__home" href={url('/')} aria-label={nav.homeLinkLabel}>
+      <BrandMark name="monogram" class="site-header__monogram" />
+      <BrandMark name="wordmark" class="site-header__wordmark" />
+    </a>
+
+    <nav class="site-nav" aria-label={nav.label}>
+      <ul class="site-nav__list" role="list">
+        {
+          links.map((link) => (
+            <li>
+              <a class="site-nav__link" href={link.href} aria-current={link.current ? 'page' : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="site-header__phone" href={contact.phoneHref}>
+        <Icon name="phone" size={16} />
+        <span class="tabular">{contact.phone}</span>
+      </a>
+      <Button variant="secondary" size="sm" href={nav.cta.href} class="site-header__cta" magnetic={false}>
+        {nav.cta.label}
+      </Button>
+      <button
+        type="button"
+        class="menu-toggle"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-open
+      >
+        <span>{nav.menuOpen}</span>
+        <Icon name="menu" size={20} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="mobile-menu" class="mobile-menu" data-scheme="night" aria-label={nav.label} data-mobile-menu>
+  <div class="mobile-menu__panel">
+    <div class="mobile-menu__top container-wide">
+      <a class="site-header__home" href={url('/')} aria-label={nav.homeLinkLabel}>
+        <BrandMark name="monogram" class="site-header__monogram" />
+        <BrandMark name="wordmark" class="site-header__wordmark" />
+      </a>
+      <button type="button" class="menu-toggle" data-menu-close>
+        <span>{nav.menuClose}</span>
+        <Icon name="x" size={20} />
+      </button>
+    </div>
+
+    <nav class="mobile-menu__body container-wide" aria-label={nav.label}>
+      <ul class="mobile-menu__list" role="list">
+        {
+          links.map((link, i) => (
+            <li style={`--i: ${i}`}>
+              <a class="mobile-menu__link" href={link.href} aria-current={link.current ? 'page' : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <ul class="mobile-menu__contact" role="list" style={`--i: ${links.length}`}>
+        <li>
+          <a href={contact.phoneHref}>
+            <Icon name="phone" size={20} />
+            <span class="tabular">{contact.phone}</span>
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${contact.email}`}>
+            <Icon name="mail" size={20} />
+            <span>{contact.email}</span>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="mobile-menu__social" role="list" style={`--i: ${links.length + 1}`}>
+        {
+          social.map((s) => (
+            <li>
+              <a href={s.href} aria-label={s.label}>
+                <BrandIcon network={s.network} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="mobile-menu__foot container-wide">
+      <Button variant="primary" size="lg" href={nav.cta.href} block magnetic={false}>{nav.cta.label}</Button>
+    </div>
+  </div>
+</dialog>
+
+<style is:global>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-header);
+    height: var(--header-height-compact);
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    transition:
+      translate var(--dur-base) var(--ease-standard),
+      background-color var(--dur-base) var(--ease-standard),
+      border-color var(--dur-base) var(--ease-standard);
+  }
+
+  .site-header[data-over-hero]:not(.is-solid) {
+    background-color: transparent;
+    background-image: var(--scrim-hero-top);
+    border-bottom-color: transparent;
+  }
+
+  /* No JS: nothing can switch the header to solid, so it scrolls away with the hero instead of floating. */
+  html:not(.js) .site-header[data-over-hero] {
+    position: absolute;
+  }
+
+  .site-header.is-hidden:not(:focus-within) {
+    translate: 0 -100%;
+  }
+
+  @media (min-width: 64rem) {
+    .site-header {
+      height: var(--header-height);
+    }
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    height: 100%;
+  }
+
+  .site-header__home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--tap-min);
+    color: inherit;
+  }
+
+  .site-header__monogram {
+    height: 28px;
+  }
+
+  .site-header__wordmark {
+    height: 14px;
+  }
+
+  @media (max-width: 22.49rem) {
+    .site-header__wordmark {
+      display: none;
+    }
+  }
+
+  .site-nav,
+  .site-header__phone,
+  .site-header__cta {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .site-header__monogram {
+      display: none;
+    }
+
+    .site-header__wordmark {
+      display: block;
+      height: 18px;
+    }
+
+    .site-nav {
+      display: block;
+    }
+
+    .site-header__cta {
+      display: inline-flex;
+    }
+
+    /* Raised specificity: the base .menu-toggle rule comes later in this file. */
+    .site-header .menu-toggle,
+    .mobile-menu {
+      display: none;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .site-header__phone {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: var(--tap-min);
+      font-size: var(--text-small);
+      font-weight: var(--weight-ui);
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
+  .site-nav__list {
+    display: flex;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .site-nav__link::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 calc(50% - 0.75em - 2px - 1.5px);
+    height: 1.5px;
+    background-color: var(--color-accent-graphic);
+    scale: 0 1;
+    /* Draws in from the left, retracts to the right. */
+    transform-origin: right center;
+    transition: scale var(--dur-slow) var(--ease-out-expo);
+  }
+
+  .site-nav__link:hover::after,
+  .site-nav__link:focus-visible::after,
+  .site-nav__link[aria-current="page"]::after {
+    scale: 1 1;
+    transform-origin: left center;
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    padding-inline: var(--space-2);
+    margin-inline-end: calc(var(--space-2) * -1);
+    color: inherit;
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    text-underline-offset: 4px;
+  }
+
+  .menu-toggle:hover span {
+    text-decoration: underline;
+  }
+
+  /* Mobile menu (10.2) */
+  .mobile-menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+  }
+
+  .mobile-menu::backdrop {
+    background-color: transparent;
+  }
+
+  .mobile-menu__panel {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100%;
+  }
+
+  .mobile-menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height-compact);
+  }
+
+  .mobile-menu__body {
+    padding-block: var(--space-6);
+  }
+
+  .mobile-menu__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-menu__list li {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-menu__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    font-family: var(--font-display);
+    font-size: var(--text-display-m);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-display-m);
+    letter-spacing: var(--tracking-display-m);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .mobile-menu__link:hover {
+    color: var(--hr-brass-300);
+  }
+
+  .mobile-menu__link:focus-visible {
+    outline-color: var(--hr-brass-300);
+  }
+
+  .mobile-menu__link[aria-current="page"] {
+    padding-inline-start: var(--space-5);
+  }
+
+  .mobile-menu__link[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background-color: var(--color-accent-graphic);
+  }
+
+  .mobile-menu__contact,
+  .mobile-menu__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-menu__contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .mobile-menu__social {
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+  }
+
+  .mobile-menu__social a {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    margin-inline-start: calc(var(--space-3) * -1);
+    color: var(--color-text-muted);
+  }
+
+  .mobile-menu__social li + li a {
+    margin-inline-start: 0;
+  }
+
+  .mobile-menu__social a:hover {
+    color: var(--color-text);
+  }
+
+  .mobile-menu__foot {
+    padding-block: var(--space-4) max(var(--space-6), env(safe-area-inset-bottom));
+  }
+
+  /* M15: reduced motion and no-motion get a 150ms fade; .motion-ok gets the clip and the stagger. */
+  .mobile-menu[open] {
+    animation: menu-fade 150ms var(--ease-standard);
+  }
+
+  .mobile-menu.is-closing {
+    animation: menu-fade 150ms var(--ease-standard) reverse forwards;
+  }
+
+  .motion-ok .mobile-menu[open] {
+    animation: menu-clip-in var(--dur-slow) var(--ease-in-out);
+  }
+
+  .motion-ok .mobile-menu[open] .mobile-menu__body > ul > li,
+  .motion-ok .mobile-menu[open] .mobile-menu__contact,
+  .motion-ok .mobile-menu[open] .mobile-menu__social {
+    animation: menu-link-in var(--dur-slow) var(--ease-out) both;
+    animation-delay: calc(160ms + var(--i, 0) * 60ms);
+  }
+
+  .motion-ok .mobile-menu[open] .mobile-menu__contact > li,
+  .motion-ok .mobile-menu[open] .mobile-menu__social > li {
+    animation: none;
+  }
+
+  .motion-ok .mobile-menu.is-closing {
+    animation: menu-clip-out 320ms var(--ease-in) forwards;
+  }
+
+  @keyframes menu-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes menu-clip-in {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes menu-clip-out {
+    from {
+      clip-path: inset(0);
+    }
+
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  @keyframes menu-link-in {
+    from {
+      opacity: 0;
+      translate: 0 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { lockScroll } from '../scripts/scroll-lock';
+
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const menu = document.querySelector<HTMLDialogElement>('[data-mobile-menu]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const closeBtn = menu?.querySelector<HTMLButtonElement>('[data-menu-close]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* Buy / Rent share /properties: mark the one whose status matches the current URL. */
+  const here = new URL(window.location.href);
+  document.querySelectorAll<HTMLAnchorElement>('.site-nav__link, .mobile-menu__link').forEach((link) => {
+    const target = new URL(link.href);
+    if (!target.search) return;
+    const samePath = target.pathname.replace(/\/+$/, '') === here.pathname.replace(/\/+$/, '');
+    const status = target.searchParams.get('status');
+    if (samePath && status && here.searchParams.get('status') === status) link.setAttribute('aria-current', 'page');
+  });
+
+  /* M14: solid after the hero, hide on scroll down. */
+  if (header) {
+    const hero = document.querySelector<HTMLElement>('[data-hero]');
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const setSolid = (value: boolean) => {
+      if (!header.hasAttribute('data-over-hero')) return;
+      header.classList.toggle('is-solid', value);
+      if (value) header.removeAttribute('data-scheme');
+      else header.setAttribute('data-scheme', 'night');
+    };
+
+    if (hero && header.hasAttribute('data-over-hero')) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry) setSolid(!entry.isIntersecting);
+        },
+        { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
+      );
+      observer.observe(hero);
+    }
+
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      const delta = y - lastY;
+      if (reduceMotion.matches || document.documentElement.hasAttribute('data-scroll-locked')) {
+        header.classList.remove('is-hidden');
+      } else if (delta > 8 && y > 120) {
+        header.classList.add('is-hidden');
+      } else if (delta < 0) {
+        header.classList.remove('is-hidden');
+      }
+      if (Math.abs(delta) > 8 || delta < 0) lastY = y;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+  }
+
+  /* Mobile menu (10.2) */
+  if (menu && openBtn && closeBtn) {
+    let release: (() => void) | undefined;
+
+    const finishClose = () => {
+      menu.classList.remove('is-closing');
+      menu.close();
+    };
+
+    const closeMenu = (animate = true) => {
+      if (!menu.open || menu.classList.contains('is-closing')) return;
+      if (!animate) {
+        finishClose();
+        return;
+      }
+      menu.classList.add('is-closing');
+      const animations = menu.getAnimations();
+      if (animations.length === 0) finishClose();
+      else Promise.all(animations.map((a) => a.finished)).then(finishClose, finishClose);
+    };
+
+    openBtn.addEventListener('click', () => {
+      menu.showModal();
+      openBtn.setAttribute('aria-expanded', 'true');
+      release = lockScroll();
+      menu.querySelector<HTMLAnchorElement>('.mobile-menu__link')?.focus();
+    });
+
+    closeBtn.addEventListener('click', () => closeMenu());
+
+    menu.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeMenu();
+    });
+
+    menu.addEventListener('close', () => {
+      openBtn.setAttribute('aria-expanded', 'false');
+      release?.();
+      release = undefined;
+      openBtn.focus();
+    });
+
+    /* Close after navigation starts (same-page hash links close at once). */
+    menu.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+      link.addEventListener('click', () => requestAnimationFrame(() => closeMenu(false)));
+    });
+
+    /* Resizing to desktop while open: the dialog is hidden by CSS, so close it properly. */
+    window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => {
+      if (event.matches) closeMenu(false);
+    });
+  }
+</script>

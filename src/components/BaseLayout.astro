@@ -1,0 +1,102 @@
+---
+/**
+ * Page shell: <head> (fonts, Seo, motion gate), skip link, header, <main id="content">, footer, motion script.
+ * `overHero`: the page starts with a full-bleed photo hero marked `data-hero`; the header sits over it in the
+ * night scheme and main gets no top padding. Otherwise main is padded below the fixed header.
+ */
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { site } from '../data/site';
+import { getCopy } from '../data/load-copy';
+import { url } from '../lib/url';
+import Seo from './Seo.astro';
+import SkipLink from './SkipLink.astro';
+import Nav from './Nav.astro';
+import Footer from './Footer.astro';
+import Cursor from './Cursor.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Run `title` through seo.json's titleTemplate. */
+  template?: boolean;
+  path?: string;
+  image?: string;
+  imageAlt?: string;
+  /** Generated share card path, e.g. "/og/loft-chicago.jpg" (see Seo.astro). */
+  ogImage?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  overHero?: boolean;
+  /** Preload the Newsreader italic too: only when italic text sits above the fold (the home hero's <em>). */
+  preloadItalic?: boolean;
+  /** Extra class on <body>, e.g. for a page-level scheme. */
+  bodyClass?: string;
+}
+
+const { overHero = false, preloadItalic = false, bodyClass, ...seo } = Astro.props;
+const copy = getCopy('site');
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      /* Motion gate (DESIGN.md 6, rule 1). Hidden pre-animation states exist only under .motion-ok. If motion.ts
+         has not started within 4s (blocked, failed), drop the class so nothing stays hidden, and mark the page so a
+         late motion.ts does not hide it again (data-motion-fallback, read in motion.ts). */
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+          d.classList.add('motion-ok');
+          setTimeout(function () {
+            if (window.__motionReady) return;
+            d.classList.remove('motion-ok');
+            d.setAttribute('data-motion-fallback', '');
+          }, 4000);
+        }
+      })();
+    </script>
+    {/* An italic found only through CSS is fetched at the highest priority and competes with the hero photo. */}
+    <Font cssVariable="--font-newsreader" preload={preloadItalic ? true : [{ style: 'normal' }]} />
+    <Font cssVariable="--font-schibsted" preload />
+    <Seo {...seo} />
+    <meta name="theme-color" content={site.themeColor} />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    {site.indexable && <link rel="sitemap" href={url('/sitemap-index.xml')} />}
+    <slot name="head" />
+  </head>
+  <body class:list={[{ 'has-hero': overHero }, bodyClass]}>
+    <SkipLink label={copy.skipLink} />
+    <Nav overHero={overHero} />
+    <main id="content" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <Cursor />
+    <script>
+      /* motion.ts is about 54 KB gzipped; it waits for the LCP photo (the head gate keeps content visible if it
+         never arrives). */
+      import { afterLcpImage } from '../scripts/lib/after-lcp';
+
+      afterLcpImage(() => import('../scripts/motion'));
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  body:not(.has-hero) > main {
+    padding-top: var(--header-height-compact);
+  }
+
+  @media (min-width: 64rem) {
+    body:not(.has-hero) > main {
+      padding-top: var(--header-height);
+    }
+  }
+</style>

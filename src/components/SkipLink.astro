@@ -1,0 +1,32 @@
+---
+/** First focusable element; jumps to <main id="content"> (DESIGN.md 10.1). */
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<a class="skip-link" href="#content">{label}</a>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: var(--space-3);
+    left: var(--space-3);
+    z-index: var(--z-skip);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
+    background-color: var(--hr-ink-900);
+    color: var(--hr-ivory);
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    text-decoration: none;
+    translate: 0 calc(-100% - var(--space-6));
+  }
+
+  .skip-link:focus-visible,
+  .skip-link:focus {
+    translate: 0 0;
+    outline-color: var(--hr-ink-900);
+  }
+</style>

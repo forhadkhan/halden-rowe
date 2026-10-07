@@ -1,0 +1,311 @@
+---
+/**
+ * Button or link styled as a button (DESIGN.md 10.3). `href` renders <a>, otherwise <button>.
+ * Variants: primary, secondary, text (inline link with optional trailing chevron), icon (44px hit, 36px circle;
+ * needs `label`). Primary and secondary get the magnetic effect (M12) on fine pointers.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Icon from './Icon.astro';
+import type { IconName } from '../lib/icons';
+import { url } from '../lib/url';
+
+type Variant = 'primary' | 'secondary' | 'text' | 'icon';
+
+interface Props extends Omit<HTMLAttributes<'button'>, 'type'> {
+  variant?: Variant;
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  icon?: IconName;
+  iconPosition?: 'start' | 'end';
+  /** Accessible name for icon-only buttons (required for variant="icon"). */
+  label?: string;
+  /** Icon button sitting over a photo: ivory circle and a focus gap. */
+  onPhoto?: boolean;
+  block?: boolean;
+  magnetic?: boolean;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  icon,
+  iconPosition = variant === 'text' ? 'end' : 'start',
+  label,
+  onPhoto = false,
+  block = false,
+  magnetic = variant === 'primary' || variant === 'secondary',
+  class: className,
+  ...rest
+} = Astro.props;
+
+if (variant === 'icon' && !label) throw new Error('Button variant="icon" needs a `label` for its accessible name.');
+
+const Tag = href ? 'a' : 'button';
+const classes = [
+  'btn',
+  `btn--${variant}`,
+  variant !== 'text' && variant !== 'icon' && `btn--${size}`,
+  onPhoto && 'btn--on-photo',
+  block && 'btn--block',
+  className,
+];
+const iconSize = variant === 'icon' ? 24 : variant === 'text' ? 16 : 20;
+---
+
+<Tag
+  class:list={classes}
+  href={href ? url(href) : undefined}
+  type={href ? undefined : type}
+  aria-label={variant === 'icon' ? label : undefined}
+  data-magnetic={magnetic ? '' : undefined}
+  data-ambient={variant === 'primary' ? '' : undefined}
+  {...rest}
+>
+  {variant === 'primary' && <span class="btn__shine" aria-hidden="true"></span>}
+  <span class="btn__inner" data-magnetic-label>
+    {icon && iconPosition === 'start' && <Icon name={icon} size={iconSize} class="btn__icon" />}
+    {variant !== 'icon' && <span class="btn__label"><slot /></span>}
+    {icon && iconPosition === 'end' && <Icon name={icon} size={iconSize} class="btn__icon btn__icon--end" />}
+  </span>
+</Tag>
+
+<style is:global>
+  .btn {
+    --btn-h: 3rem;
+    --btn-px: var(--space-6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--btn-h);
+    padding-inline: var(--btn-px);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    letter-spacing: var(--tracking-button);
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard),
+      scale var(--dur-instant) var(--ease-standard);
+  }
+
+  .btn__inner {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .btn--sm {
+    --btn-h: 2.5rem;
+    --btn-px: 1.125rem;
+  }
+
+  .btn--lg {
+    --btn-h: 3.5rem;
+    --btn-px: 1.75rem;
+  }
+
+  /* 40px visual height still gets a 44px target. */
+  .btn--sm::before {
+    content: "";
+    position: absolute;
+    inset: -2px 0;
+  }
+
+  .btn--sm {
+    position: relative;
+  }
+
+  .btn--block {
+    display: flex;
+    width: 100%;
+  }
+
+  .btn--primary {
+    background-color: var(--color-btn-bg);
+    color: var(--color-btn-fg);
+    border: 1px solid transparent;
+  }
+
+  .btn--secondary {
+    background-color: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border-control);
+  }
+
+  .btn--secondary:hover {
+    border-color: var(--color-text);
+  }
+
+  /* Hover fill sweeps in from the left (clip-path only) and draws back on leave. The pseudo sits under the
+     label (z-index -1 inside the isolated button). Zero specificity on position, so a component that positions
+     a button keeps its own value. With reduced motion the fill is instant (global transition override). */
+  :where(.btn--primary, .btn--secondary) {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .btn--primary::after,
+  .btn--secondary::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--color-btn-bg-hover);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--dur-slow) var(--ease-out-expo);
+    pointer-events: none;
+  }
+
+  .btn--secondary::after {
+    background-color: var(--color-surface);
+  }
+
+  /* A pressed toggle carries its own fill (e.g. Filters' saved view); a light sweep would hide its text. */
+  .btn[aria-pressed="true"]::after {
+    content: none;
+  }
+
+  .btn--primary:hover::after,
+  .btn--secondary:hover::after {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* M30 shine: a faint light band crosses a primary button every 8s, under the label and under the hover fill
+     (earlier in the tree than ::after). */
+  .btn__shine {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .motion-ok .btn__shine::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 60%;
+    background-image: linear-gradient(105deg, transparent 20%, rgb(255 255 255 / 0.2) 50%, transparent 80%);
+    translate: -100% 0;
+    animation: btn-shine var(--dur-shine) var(--ease-in-out) 2s infinite;
+    animation-play-state: var(--ambient-play, running);
+  }
+
+  @keyframes btn-shine {
+    0% {
+      translate: -100% 0;
+    }
+
+    20%,
+    100% {
+      translate: 170% 0;
+    }
+  }
+
+  .btn--primary:active,
+  .btn--secondary:active {
+    scale: 0.98;
+  }
+
+  .btn--text {
+    --btn-h: auto;
+    --btn-px: 0;
+    min-height: var(--tap-min);
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    border-radius: var(--radius-xs);
+  }
+
+  .btn--text:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .btn--text .btn__icon--end {
+    transition: translate var(--dur-fast) var(--ease-standard);
+  }
+
+  .btn--text:hover .btn__icon--end {
+    translate: 2px 0;
+  }
+
+  .btn--icon {
+    --btn-h: var(--tap-min);
+    --btn-px: 0;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    position: relative;
+    color: var(--color-text);
+    background: none;
+  }
+
+  /* 36px visible circle inside the 44px target. */
+  .btn--icon::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .btn--icon .btn__inner {
+    position: relative;
+  }
+
+  .btn--icon:hover::before {
+    background-color: var(--color-surface-sunken);
+  }
+
+  .btn--icon:active {
+    scale: 0.94;
+  }
+
+  .btn--icon.btn--on-photo::before {
+    background-color: var(--color-surface);
+  }
+
+  .btn--icon.btn--on-photo:hover::before {
+    background-color: var(--color-surface-sunken);
+  }
+
+  .btn--on-photo:focus-visible {
+    box-shadow: var(--shadow-focus-gap);
+  }
+
+  .btn[aria-disabled="true"],
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn[aria-busy="true"] .btn__icon {
+    animation: btn-spin 1s linear infinite;
+  }
+
+  @keyframes btn-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .btn--primary,
+    .btn--icon::before {
+      border: 1px solid ButtonText;
+    }
+  }
+</style>

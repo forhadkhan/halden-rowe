@@ -1,0 +1,20 @@
+---
+/** H9 Agents: the same portrait cards as /about#team (TeamGrid): name and role on the photo, bio, call and email. */
+import SectionHeading from '../SectionHeading.astro';
+import Button from '../Button.astro';
+import TeamGrid from '../pages/TeamGrid.astro';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { agents: copy } = getCopy<HomeCopy>('home');
+---
+
+<section class="agents section" aria-labelledby="agents-title">
+  <div class="container">
+    <div class="agents__head">
+      <SectionHeading eyebrow={copy.eyebrow} html={copy.headline} id="agents-title" />
+      <Button variant="text" href={copy.href} icon="chevron-right">{copy.link}</Button>
+    </div>
+    <TeamGrid />
+  </div>
+</section>

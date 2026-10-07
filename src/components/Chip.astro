@@ -1,0 +1,159 @@
+---
+/**
+ * Chips (DESIGN.md 10.4).
+ * - filter: toggle <button aria-pressed>, check icon when selected (non-colour cue).
+ * - removable: active filter with an x button named "Remove filter: <label>" (`removeLabel`).
+ * - status: static label (For sale, For rent, New, Under offer).
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  variant?: 'filter' | 'removable' | 'status';
+  pressed?: boolean;
+  /** Accessible name of the remove button, e.g. "Remove filter: 3+ beds" (Quill's pattern). */
+  removeLabel?: string;
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const { variant = 'filter', pressed = false, removeLabel, class: className, ...data } = Astro.props;
+if (variant === 'removable' && !removeLabel) throw new Error('Chip variant="removable" needs `removeLabel`.');
+---
+
+{
+  variant === 'filter' && (
+    <button type="button" class:list={['chip', 'chip--filter', className]} aria-pressed={pressed ? 'true' : 'false'} {...data}>
+      <Icon name="check" size={16} class="chip__check" />
+      <slot />
+    </button>
+  )
+}
+{
+  variant === 'removable' && (
+    <span class:list={['chip', 'chip--removable', className]} {...data}>
+      <slot />
+      <button type="button" class="chip__remove" aria-label={removeLabel}>
+        <Icon name="x" size={16} />
+      </button>
+    </span>
+  )
+}
+{
+  variant === 'status' && (
+    <span class:list={['chip', 'chip--status', 'label', className]} {...data}>
+      <slot />
+    </span>
+  )
+}
+
+<style is:global>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .chip--filter,
+  .chip--removable {
+    position: relative;
+    min-height: 2.25rem;
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-border-control);
+    color: var(--color-text);
+    background-color: transparent;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard),
+      scale var(--dur-instant) var(--ease-standard);
+  }
+
+  .chip--filter:active {
+    scale: 0.96;
+  }
+
+  /* The check pops in when a chip is selected (its display flips, so a keyframe runs each time). */
+  @media (prefers-reduced-motion: no-preference) {
+    .chip--filter[aria-pressed="true"] .chip__check {
+      animation: chip-check var(--dur-base) var(--ease-out-expo);
+    }
+  }
+
+  @keyframes chip-check {
+    from {
+      opacity: 0;
+      scale: 0.4;
+    }
+  }
+
+  /* 36px visible, 44px target. */
+  .chip--filter::before {
+    content: "";
+    position: absolute;
+    inset: -4px 0;
+  }
+
+  .chip--filter:hover {
+    background-color: var(--color-surface-sunken);
+    border-color: var(--color-text);
+  }
+
+  .chip__check {
+    display: none;
+    margin-inline-start: calc(var(--space-1) * -1);
+  }
+
+  .chip--filter[aria-pressed="true"] {
+    background-color: var(--color-chip-selected-bg);
+    color: var(--color-chip-selected-fg);
+    border-color: var(--color-chip-selected-bg);
+  }
+
+  .chip--filter[aria-pressed="true"] .chip__check {
+    display: block;
+  }
+
+  .chip--filter[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .chip--removable {
+    padding-inline-end: 0;
+  }
+
+  .chip__remove {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    margin-block: -0.25rem;
+    border-radius: 50%;
+    color: inherit;
+  }
+
+  .chip__remove:hover {
+    background-color: var(--color-surface-sunken);
+  }
+
+  .chip--status {
+    min-height: 1.625rem;
+    padding-inline: var(--space-3);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: var(--text-label);
+    font-weight: var(--weight-strong);
+  }
+
+  @media (forced-colors: active) {
+    .chip {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

@@ -1,0 +1,42 @@
+---
+/** H14 Newsletter: sunken panel, heading (M2), inline email form (shared Form/Field), key drawing (M10). */
+import Form from '../Form.astro';
+import Field from '../Field.astro';
+import DrawSvg from '../DrawSvg.astro';
+import { getCopy } from '../../data/load-copy';
+
+const { newsletter } = getCopy('site');
+const errors = getCopy('errors').forms.errors;
+---
+
+<section class="newsletter section" aria-labelledby="newsletter-title">
+  <div class="container">
+    <div class="newsletter__panel">
+      <DrawSvg name="key" width="200px" class="newsletter__key" speed={-0.1} />
+      <div class="newsletter__intro">
+        <h2 id="newsletter-title" class="display-m newsletter__title" data-split>{newsletter.headline}</h2>
+        <p class="newsletter__line">{newsletter.line}</p>
+      </div>
+      <div class="newsletter__form">
+        <Form
+          name="newsletter"
+          submitLabel={newsletter.submit}
+          success={{ heading: newsletter.success, text: newsletter.successLine }}
+          failure={newsletter.failure}
+          class="newsletter__form-root"
+        >
+          <Field
+            name="email"
+            type="email"
+            label={newsletter.label}
+            placeholder={newsletter.placeholder}
+            autocomplete="email"
+            required
+            messages={{ required: errors.emailRequired ?? newsletter.error, invalid: newsletter.error }}
+          />
+        </Form>
+        <p class="small muted newsletter__consent">{newsletter.consent}</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,63 @@
+---
+/**
+ * The four line drawings (DESIGN.md 8), inlined so CSS and GSAP reach the paths. Decorative (aria-hidden in the
+ * files). Draws on scroll (M10, `data-draw`); fully drawn without JS or with reduced motion. Never below 160px.
+ */
+import key from '../assets/brand/illustrations/key.svg?raw';
+import houseBlueprint from '../assets/brand/illustrations/house-blueprint.svg?raw';
+import skyline from '../assets/brand/illustrations/skyline.svg?raw';
+import floorPlan from '../assets/brand/illustrations/floor-plan.svg?raw';
+
+const drawings = {
+  key,
+  'house-blueprint': houseBlueprint,
+  skyline,
+  'floor-plan': floorPlan,
+} as const;
+
+interface Props {
+  name: keyof typeof drawings;
+  /** CSS width; the height follows the viewBox. */
+  width?: string;
+  /** false = static drawing (inside a pinned M9 timeline that F2 drives itself). */
+  animate?: boolean;
+  class?: string;
+  /** Scroll depth layer (motion.ts `data-speed`), e.g. 0.12; tablet and desktop only. */
+  speed?: number;
+}
+
+const { name, width, animate = true, class: className, speed } = Astro.props;
+const svg = drawings[name]
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .replace(/\swidth="\d+"\s+height="\d+"/, '');
+---
+
+<div
+  class:list={['draw-svg', `draw-svg--${name}`, className]}
+  style={width ? `--draw-width: ${width}` : undefined}
+  data-draw={animate ? '' : undefined}
+  data-speed={speed}
+  set:html={svg}
+/>
+
+<style is:global>
+  .draw-svg {
+    width: var(--draw-width, 100%);
+    min-width: 160px;
+    max-width: 100%;
+    color: var(--color-accent-line);
+  }
+
+  .draw-svg svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  @media (forced-colors: active) {
+    .draw-svg {
+      color: CanvasText;
+    }
+  }
+</style>

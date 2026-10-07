@@ -1,0 +1,154 @@
+---
+/**
+ * Responsive photo by manifest path: <Photo src="listings/loft-chicago/exterior.jpg" sizes="(min-width: 64rem) 33vw, 100vw" />.
+ * Builds avif sources with a webp fallback (no jpg: every browser from 2020 on reads webp, and the jpg copies were
+ * 160 MB of the build) at widths capped by the original, takes alt text from the
+ * manifest unless `alt` is given (pass alt="" for a decorative photo), lazy-loads unless `priority` (the LCP image).
+ * `aspect` crops with object-fit so the box is reserved before the image loads (no layout shift).
+ */
+import { Picture } from 'astro:assets';
+import { getPhoto } from '../lib/photos';
+
+interface Props {
+  src: string;
+  alt?: string;
+  sizes?: string;
+  widths?: number[];
+  priority?: boolean;
+  /** CSS aspect-ratio for the frame, e.g. "4 / 3". Omit to keep the photo's own ratio. */
+  aspect?: string;
+  /** object-position, e.g. "60% 50%" (DESIGN.md H1 mobile crop). */
+  position?: string;
+  class?: string;
+  imgClass?: string;
+  /** view-transition-name on the image (M17 shared element, e.g. `home-<slug>`). */
+  transitionName?: string;
+}
+
+const DEFAULT_WIDTHS = [480, 800, 1200, 1600];
+
+const {
+  src,
+  alt,
+  sizes = '100vw',
+  widths = DEFAULT_WIDTHS,
+  priority = false,
+  aspect,
+  position,
+  class: className,
+  imgClass,
+  transitionName,
+} = Astro.props;
+
+const { entry, image } = getPhoto(src);
+// Never upscale past the original; always include the original width as the top candidate.
+const usable = [...new Set([...widths.filter((w) => w < image.width), Math.min(image.width, Math.max(...widths))])];
+const style = [aspect && `--photo-aspect: ${aspect}`, position && `--photo-position: ${position}`]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<Picture
+  src={image}
+  alt={alt ?? entry.alt}
+  formats={['avif']}
+  fallbackFormat="webp"
+  widths={usable}
+  sizes={sizes}
+  priority={priority}
+  loading={priority ? 'eager' : 'lazy'}
+  decoding={priority ? 'sync' : 'async'}
+  class:list={['photo-img', imgClass]}
+  style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
+  pictureAttributes={{
+    class: ['photo', aspect && 'photo--fixed', className].filter(Boolean).join(' '),
+    style: style || undefined,
+  }}
+/>
+
+<style is:global>
+  .photo {
+    display: block;
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background-color: var(--color-skeleton);
+  }
+
+  /* Placeholder: the monogram, centred on the skeleton, behind the photo. It shows while the photo loads and stays
+     if the photo fails (the img is then hidden); a loaded photo covers it. */
+  .photo::before {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: -1;
+    width: clamp(1.25rem, 24%, 4.5rem);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background-color: var(--color-text-muted);
+    opacity: 0.3;
+    mask: url("../assets/brand/monogram.svg") center / contain no-repeat;
+  }
+
+  .photo--fixed {
+    aspect-ratio: var(--photo-aspect);
+  }
+
+  .photo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .photo--fixed .photo-img {
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--photo-position, 50% 50%);
+  }
+
+  .photo.is-broken {
+    min-height: 6rem;
+  }
+
+  .photo.is-broken .photo-img {
+    visibility: hidden;
+  }
+
+
+</style>
+
+<script>
+  /* 10.5 error state: a photo that fails keeps its skeleton frame and the monogram placeholder (CSS, `.photo::before`). */
+  const markBroken = (img: HTMLImageElement) => {
+    const frame = img.closest('.photo');
+    if (!frame || frame.classList.contains('is-broken')) return;
+    frame.classList.add('is-broken');
+  };
+
+  document.querySelectorAll<HTMLImageElement>('img.photo-img').forEach((img) => {
+    if (img.complete && img.naturalWidth === 0 && img.currentSrc) markBroken(img);
+  });
+  /* A failed candidate can be followed by a good one (srcset re-pick on resize), so a load clears the state. */
+  const clearBroken = (img: HTMLImageElement) => {
+    const frame = img.closest('.photo');
+    if (!frame || !frame.classList.contains('is-broken') || img.naturalWidth === 0) return;
+    frame.classList.remove('is-broken');
+  };
+
+  document.addEventListener(
+    'error',
+    (event) => {
+      const target = event.target;
+      if (target instanceof HTMLImageElement && target.classList.contains('photo-img')) markBroken(target);
+    },
+    true,
+  );
+  document.addEventListener(
+    'load',
+    (event) => {
+      const target = event.target;
+      if (target instanceof HTMLImageElement && target.classList.contains('photo-img')) clearBroken(target);
+    },
+    true,
+  );
+</script>

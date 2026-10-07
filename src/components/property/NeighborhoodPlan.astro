@@ -1,0 +1,244 @@
+---
+/**
+ * Stylised neighbourhood plan (DESIGN.md 10.13 / 11.3): an 800x500 drawing composed from the listing's data,
+ * not a map tile. Street grid (--color-map-road, 10px), a park block, a water edge when location.water is
+ * lake / coast / river, 2-3 street labels, one ink price pin at the centre and a "650 ft" dimension-line scale.
+ * The drawing is deliberately approximate: it shows the kind of place, never the exact address.
+ * Road positions shift a little per listing (seeded from the slug) so the twelve plans differ.
+ */
+import { publicStreets, type Listing } from '../../data/load-copy';
+
+interface Props {
+  listing: Listing;
+  label: string;
+  scaleLabel: string;
+}
+
+const { listing, label, scaleLabel } = Astro.props;
+const { water, park } = listing.location;
+const streets = publicStreets(listing);
+
+/* Small deterministic jitter from the slug. */
+let seed = [...listing.slug].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+const jitter = (range: number) => {
+  seed = (seed * 1103515245 + 12345) >>> 0;
+  return Math.round(((seed % 1000) / 1000 - 0.5) * 2 * range);
+};
+
+const xs = [100 + jitter(14), 280 + jitter(10), 520 + jitter(10), 700 + jitter(14)];
+const ys = [150 + jitter(8), 350 + jitter(8)];
+const lanes = [ys[0] - 95 + jitter(10), ys[1] + 90 + jitter(10)];
+const diagonal = jitter(1) >= 0;
+
+const waterPath =
+  water === 'lake'
+    ? 'M0 0H150C196 110 118 214 168 318C208 404 156 456 178 500H0Z'
+    : water === 'coast'
+      ? 'M0 408C140 386 260 428 400 404S660 380 800 410V500H0Z'
+      : water === 'river'
+        ? 'M520 0C566 118 642 196 800 246V320C616 276 512 174 462 0Z'
+        : null;
+
+const parkRect =
+  water === 'coast'
+    ? { x: xs[0] + 14, y: 22, w: xs[1] - xs[0] - 28, h: ys[0] - 36 }
+    : { x: xs[2] + 14, y: ys[1] + 14, w: xs[3] - xs[2] - 28, h: 500 - ys[1] - 30 };
+
+const labelA = { x: water === 'river' ? 190 : 610, y: ys[0] + 4, text: streets[0] };
+const labelB = { x: xs[1] + 4, y: water === 'coast' ? 76 : 430, text: streets[1] };
+const labelC = { x: water === 'lake' ? 640 : 640, y: ys[1] + 4, text: streets[2] };
+const labels = [labelA, labelC].filter((l) => l.text);
+
+const pin = listing.mapPin.label;
+const pillW = Math.max(72, pin.length * 9 + 28);
+const titleId = `plan-title-${listing.slug}`;
+const descId = `plan-desc-${listing.slug}`;
+---
+
+<figure class="plan">
+  <svg class="plan__svg" viewBox="0 0 800 500" role="img" aria-labelledby={titleId} aria-describedby={descId}>
+    <title id={titleId}>{label}</title>
+    <desc id={descId}>{listing.mapPin.ariaLabel}</desc>
+
+    <rect width="800" height="500" class="plan__land" />
+
+    {park && <rect x={parkRect.x} y={parkRect.y} width={parkRect.w} height={parkRect.h} rx="6" class="plan__park" />}
+
+    <g class="plan__roads">
+      {xs.map((x) => <path d={`M${x} 0V500`} />)}
+      {ys.map((y) => <path d={`M0 ${y}H800`} />)}
+      {diagonal ? <path d={`M${xs[0]} ${ys[1]}L${xs[2]} 500`} /> : <path d={`M${xs[1]} ${ys[0]}L${xs[3]} 0`} />}
+    </g>
+    <g class="plan__lanes">
+      {lanes.map((y) => <path d={`M0 ${y}H800`} />)}
+    </g>
+
+    {waterPath && <path d={waterPath} class="plan__water" />}
+    {waterPath && <path d={waterPath} class="plan__shore" />}
+
+    {
+      park && (
+        <text x={parkRect.x + parkRect.w / 2} y={parkRect.y + parkRect.h / 2 + 5} class="plan__park-label" text-anchor="middle">
+          {park}
+        </text>
+      )
+    }
+
+    {labels.map((l) => <text x={l.x} y={l.y} class="plan__street" text-anchor="middle">{l.text}</text>)}
+    {
+      labelB.text && (
+        <text x={labelB.x} y={labelB.y} class="plan__street" text-anchor="middle" transform={`rotate(-90 ${labelB.x} ${labelB.y})`}>
+          {labelB.text}
+        </text>
+      )
+    }
+
+    <g class="plan__pin" transform="translate(400 250)">
+      <circle r="18" class="plan__pulse" />
+      <circle r="6" class="plan__dot" />
+      <path d="M0 -8L-6 -16H6Z" class="plan__tick" />
+      <rect x={-pillW / 2} y="-48" width={pillW} height="32" rx="16" class="plan__pill" />
+      <text y="-27" text-anchor="middle" class="plan__price">{pin}</text>
+    </g>
+
+    <g class="plan__scale" transform="translate(620 466)">
+      <rect x="-12" y="-28" width="168" height="44" rx="4" class="plan__scale-bg" />
+      <path d="M0 0H144M0 -6V6M144 -6V6" />
+      <text x="72" y="-10" text-anchor="middle" class="plan__scale-label">{scaleLabel}</text>
+    </g>
+  </svg>
+  <figcaption class="small muted">{listing.location.note}</figcaption>
+</figure>
+
+<style is:global>
+  .plan {
+    margin: 0;
+  }
+
+  .plan__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    background-color: var(--color-map-land);
+    font-family: var(--font-sans);
+  }
+
+  .plan figcaption {
+    margin-top: var(--space-3);
+  }
+
+  .plan__land {
+    fill: var(--color-map-land);
+  }
+
+  .plan__park {
+    fill: var(--color-map-park);
+  }
+
+  .plan__roads path {
+    fill: none;
+    stroke: var(--color-map-road);
+    stroke-width: 10;
+  }
+
+  .plan__lanes path {
+    fill: none;
+    stroke: var(--color-map-road);
+    stroke-width: 5;
+    opacity: 0.8;
+  }
+
+  .plan__water {
+    fill: var(--color-map-water);
+  }
+
+  .plan__shore {
+    fill: none;
+    stroke: var(--color-accent-line);
+    stroke-width: 1;
+  }
+
+  .plan__street,
+  .plan__park-label {
+    fill: var(--color-map-label);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    paint-order: stroke;
+    stroke: var(--color-map-road);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+
+  .plan__park-label {
+    stroke: var(--color-map-park);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-size: 14px;
+  }
+
+  .plan__pill,
+  .plan__dot,
+  .plan__tick {
+    fill: var(--color-pin);
+  }
+
+  .plan__price {
+    fill: var(--color-pin-fg);
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .plan__pulse {
+    fill: none;
+    stroke: var(--color-pin-pulse);
+    stroke-width: 1.5;
+    opacity: 0.6;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .motion-ok .plan__pulse {
+    animation: plan-pulse 2.4s var(--ease-out) infinite;
+  }
+
+  @keyframes plan-pulse {
+    from {
+      scale: 0.4;
+      opacity: 0.8;
+    }
+    to {
+      scale: 1.6;
+      opacity: 0;
+    }
+  }
+
+  .plan__scale path {
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 1.5;
+  }
+
+  .plan__scale-bg {
+    fill: var(--color-map-land);
+    opacity: 0.85;
+  }
+
+  .plan__scale-label {
+    fill: var(--color-text);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+  }
+
+  @media (forced-colors: active) {
+    .plan__pill {
+      stroke: CanvasText;
+      stroke-width: 1;
+    }
+  }
+</style>

@@ -1,0 +1,380 @@
+---
+/**
+ * Form shell (DESIGN.md 10.8): error summary, the fields (slot), submit button, status region, success panel.
+ * - Validation on submit, then live per field after its first error. The summary (role="alert") gets focus.
+ * - PUBLIC_FORM_ENDPOINT set: POST FormData (plus PUBLIC_FORM_ACCESS_KEY as `access_key`, Web3Forms style)
+ *   with Accept: application/json. Not set: demo mode, nothing leaves the browser, the success panel says so.
+ * - Without JS the form still posts natively to the endpoint when one is configured. In demo mode it can't be
+ *   sent without JS: the submit button is disabled and a <noscript> note says why.
+ * Copy comes from errors.json `forms` unless `labels` overrides parts of it.
+ */
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { getCopy, type Plural } from '../data/load-copy';
+import { formConfig } from '../data/site';
+
+interface Props {
+  /** Form name sent with the submission (e.g. "contact", "inquiry", "newsletter"). */
+  name: string;
+  submitLabel: string;
+  /** `sendAnother` is optional: one-off forms such as the newsletter have no "send another" step. */
+  success: { heading: string; text: string; sendAnother?: string };
+  /** Overrides for errors.json forms.status (Quill words some forms differently). */
+  failure?: string;
+  /** Subject line sent to the endpoint. */
+  subject?: string;
+  class?: string;
+}
+
+const { name, submitLabel, success, failure, subject, class: className } = Astro.props;
+const forms = getCopy('errors').forms;
+const endpoint = formConfig.endpoint;
+const strings = {
+  summaryHeading: forms.summary.heading satisfies Plural,
+  summaryIntro: forms.summary.intro,
+  sending: forms.status.sending,
+  buttonSending: forms.status.buttonSending,
+  failure: failure ?? forms.status.failure,
+};
+const id = `form-${name}`;
+---
+
+<div class:list={['form', className]} data-form-root>
+  <form
+    id={id}
+    class="form__form"
+    action={endpoint || undefined}
+    method="post"
+    novalidate
+    data-form
+    data-endpoint={endpoint}
+    data-strings={JSON.stringify(strings)}
+  >
+    <div class="form__summary" role="alert" tabindex="-1" hidden data-form-summary>
+      <h2 class="title form__summary-heading" data-summary-heading></h2>
+      <p class="small">{strings.summaryIntro}</p>
+      <ul class="form__summary-list" data-summary-list></ul>
+    </div>
+
+    <input type="hidden" name="form" value={name} />
+    {subject && <input type="hidden" name="subject" value={subject} />}
+    {formConfig.accessKey && <input type="hidden" name="access_key" value={formConfig.accessKey} />}
+    {/* Honeypot, out of sight and out of the tab order. Web3Forms (access key set) drops a submission with
+        `botcheck` ticked; Formspree drops one with `_gotcha` filled. */}
+    {
+      formConfig.accessKey ? (
+        <input type="checkbox" name="botcheck" class="form__trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      ) : (
+        <input type="text" name="_gotcha" class="form__trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      )
+    }
+
+    <div class="form__fields">
+      <slot />
+    </div>
+
+    <div class="form__actions">
+      {/* Demo mode has nowhere to post, so the button stays disabled until the script takes over the submit. */}
+      <Button type="submit" variant="primary" icon="send" iconPosition="end" disabled={!endpoint} data-form-submit>
+        {submitLabel}
+      </Button>
+      <p class="form__status small" role="status" data-form-status></p>
+      {
+        !endpoint && (
+          <noscript>
+            <p class="form__demo small">
+              <Icon name="info" size={16} />
+              <span>{forms.status.noScriptNote}</span>
+            </p>
+          </noscript>
+        )
+      }
+    </div>
+  </form>
+
+  <div class="form__success" hidden data-form-success>
+    <h2 class="display-s form__success-heading" tabindex="-1" data-success-heading>{success.heading}</h2>
+    <p>{success.text}</p>
+    {
+      !endpoint && (
+        <p class="form__demo small">
+          <Icon name="info" size={16} />
+          <span>{forms.status.demoNote}</span>
+        </p>
+      )
+    }
+    {success.sendAnother && <Button variant="text" icon="chevron-right" data-form-reset>{success.sendAnother}</Button>}
+  </div>
+</div>
+
+<style is:global>
+  .form__form,
+  .form__fields {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .form__form[hidden] {
+    display: none;
+  }
+
+  .form__summary {
+    padding: var(--space-5);
+    border: 1.5px solid var(--color-error);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+  }
+
+  .form__summary[hidden] {
+    display: none;
+  }
+
+  .form__summary-heading {
+    margin: 0 0 var(--space-2);
+  }
+
+  .form__summary p {
+    margin: 0 0 var(--space-3);
+  }
+
+  .form__summary-list {
+    margin: 0;
+    padding-inline-start: var(--space-5);
+  }
+
+  .form__summary-list a {
+    color: var(--color-error);
+    text-underline-offset: 3px;
+  }
+
+  .form__trap {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+
+  .form__actions {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+
+  .form__status {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin: 0;
+    min-height: 1.5em;
+  }
+
+  .form__status.is-error {
+    color: var(--color-error);
+  }
+
+  .form__success {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    padding: var(--space-8) var(--space-6);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+  }
+
+  .form__success[hidden] {
+    display: none;
+  }
+
+  .form__success p {
+    margin: 0;
+    max-width: var(--measure-narrow);
+  }
+
+  .form__success-heading {
+    margin: 0;
+  }
+
+  .form__demo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+  }
+</style>
+
+<script>
+  import circleAlert from 'lucide-static/icons/circle-alert.svg?raw';
+
+  interface Strings {
+    summaryHeading: { one: string; other: string };
+    summaryIntro: string;
+    sending: string;
+    buttonSending: string;
+    failure: string;
+  }
+
+  type Control = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  /** First failing rule's message for a control, or '' when valid. */
+  function check(control: Control): string {
+    const msg = control.dataset;
+    if (control instanceof HTMLInputElement && control.type === 'checkbox') {
+      return control.required && !control.checked ? (msg.msgRequired ?? '') : '';
+    }
+    const value = control.value.trim();
+    if (!value) return control.required ? (msg.msgRequired ?? '') : '';
+    if (control.validity.typeMismatch || control.validity.patternMismatch) return msg.msgInvalid ?? '';
+    if ('maxLength' in control && control.maxLength > 0 && value.length > control.maxLength) return msg.msgTooLong ?? '';
+    if (control instanceof HTMLInputElement && control.type === 'date' && value < today()) return msg.msgPast ?? '';
+    return '';
+  }
+
+  function setError(control: Control, message: string) {
+    const error = document.getElementById(control.dataset.errorId ?? '');
+    const text = error?.querySelector('[data-error-text]');
+    const hint = (control.getAttribute('aria-describedby') ?? '').split(' ').filter((t) => t && t !== error?.id);
+    if (message) {
+      control.setAttribute('aria-invalid', 'true');
+      control.setAttribute('aria-describedby', [...hint, error?.id].filter(Boolean).join(' '));
+      if (text) text.textContent = message;
+      if (error) error.hidden = false;
+    } else {
+      control.removeAttribute('aria-invalid');
+      if (hint.length) control.setAttribute('aria-describedby', hint.join(' '));
+      else control.removeAttribute('aria-describedby');
+      if (error) error.hidden = true;
+    }
+  }
+
+  document.querySelectorAll<HTMLFormElement>('[data-form]').forEach((form) => {
+    const root = form.closest<HTMLElement>('[data-form-root]');
+    const strings = JSON.parse(form.dataset.strings ?? '{}') as Strings;
+    const endpoint = form.dataset.endpoint ?? '';
+    const summary = form.querySelector<HTMLElement>('[data-form-summary]');
+    const summaryHeading = form.querySelector<HTMLElement>('[data-summary-heading]');
+    const summaryList = form.querySelector<HTMLElement>('[data-summary-list]');
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    const submit = form.querySelector<HTMLButtonElement>('[data-form-submit]');
+    const submitLabel = submit?.querySelector('.btn__label');
+    const submitText = submitLabel?.textContent ?? '';
+    const successPanel = root?.querySelector<HTMLElement>('[data-form-success]');
+    if (submit) submit.disabled = false;
+    const controls = () =>
+      Array.from(form.querySelectorAll<Control>('[data-field] input, [data-field] textarea, [data-field] select'));
+
+    /* Live validation once a field has shown an error. */
+    form.addEventListener('input', (event) => {
+      const control = event.target as Control;
+      if (control.getAttribute('aria-invalid') === 'true') setError(control, check(control));
+    });
+    form.addEventListener('change', (event) => {
+      const control = event.target as Control;
+      if (control.getAttribute('aria-invalid') === 'true') setError(control, check(control));
+    });
+
+    const setBusy = (busy: boolean) => {
+      controls().forEach((c) => {
+        if (c instanceof HTMLSelectElement || (c instanceof HTMLInputElement && c.type === 'checkbox')) {
+          if (busy) c.setAttribute('aria-disabled', 'true');
+          else c.removeAttribute('aria-disabled');
+        } else {
+          c.readOnly = busy;
+        }
+      });
+      if (submit) {
+        submit.setAttribute('aria-busy', String(busy));
+        if (submitLabel) submitLabel.textContent = busy ? strings.buttonSending : submitText;
+      }
+      if (status) {
+        status.classList.remove('is-error');
+        status.textContent = busy ? strings.sending : '';
+      }
+    };
+
+    const showSuccess = () => {
+      form.hidden = true;
+      if (successPanel) {
+        successPanel.hidden = false;
+        successPanel.querySelector<HTMLElement>('[data-success-heading]')?.focus();
+      }
+    };
+
+    successPanel?.querySelector('[data-form-reset]')?.addEventListener('click', () => {
+      form.reset();
+      controls().forEach((c) => setError(c, ''));
+      if (summary) summary.hidden = true;
+      successPanel.hidden = true;
+      form.hidden = false;
+      controls()[0]?.focus();
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (submit?.getAttribute('aria-busy') === 'true') return;
+
+      const errors = controls()
+        .map((control) => ({ control, message: check(control) }))
+        .filter(({ control, message }) => {
+          setError(control, message);
+          return Boolean(message);
+        });
+
+      if (errors.length && summary && summaryHeading && summaryList) {
+        const forms = strings.summaryHeading;
+        summaryHeading.textContent = (errors.length === 1 ? forms.one : forms.other).replace('{count}', String(errors.length));
+        summaryList.replaceChildren(
+          ...errors.map(({ control, message }) => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `#${control.id}`;
+            a.textContent = message;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              control.focus();
+            });
+            li.append(a);
+            return li;
+          }),
+        );
+        summary.hidden = false;
+        summary.focus();
+        return;
+      }
+      if (summary) summary.hidden = true;
+
+      if (!endpoint) {
+        showSuccess();
+        return;
+      }
+
+      setBusy(true);
+      // A stalled connection must not leave the form locked on "Sending": give up after 15s and show the failure.
+      const abort = new AbortController();
+      const timer = window.setTimeout(() => abort.abort(), 15000);
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+          signal: abort.signal,
+        });
+        if (!response.ok) throw new Error(String(response.status));
+        setBusy(false);
+        showSuccess();
+      } catch {
+        setBusy(false);
+        if (status) {
+          status.classList.add('is-error');
+          status.innerHTML = circleAlert.replace('<svg', '<svg class="icon" width="16" height="16" aria-hidden="true" focusable="false"');
+          status.append(document.createTextNode(strings.failure));
+        }
+      } finally {
+        window.clearTimeout(timer);
+      }
+    });
+  });
+</script>

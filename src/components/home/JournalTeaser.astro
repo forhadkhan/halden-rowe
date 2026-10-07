@@ -1,0 +1,61 @@
+---
+/** H13 Journal teaser: the three newest posts (M6). Hover is the Featured homes treatment (styles/card-hover.css). */
+import { getCollection } from 'astro:content';
+import Photo from '../Photo.astro';
+import Icon from '../Icon.astro';
+import SectionHeading from '../SectionHeading.astro';
+import Button from '../Button.astro';
+import { fmt, getCopy } from '../../data/load-copy';
+import { site } from '../../data/site';
+import { url } from '../../lib/url';
+import '../../styles/card-hover.css';
+import type { HomeCopy, JournalCopy } from './types';
+
+const { journalTeaser: copy } = getCopy<HomeCopy>('home');
+const journal = getCopy<JournalCopy>('journal');
+const posts = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const dateFormat = new Intl.DateTimeFormat(site.locale, { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+---
+
+<section class="journal-teaser section" aria-labelledby="journal-title">
+  <div class="container">
+    <div class="journal-teaser__head">
+      <SectionHeading eyebrow={copy.eyebrow} html={copy.headline} id="journal-title" />
+      <Button variant="text" href={copy.href} icon="chevron-right">{copy.link}</Button>
+    </div>
+    <ul class="journal-teaser__grid" role="list">
+      {
+        posts.map((post, i) => (
+          <li class:list={['post-card', { 'post-card--first': i === 0 }]} data-reveal>
+            <div class="post-card__media" data-parallax="desktop">
+              <Photo
+                src={post.data.cover}
+                alt=""
+                aspect="3 / 2"
+                sizes="(min-width: 64rem) 30vw, (min-width: 48rem) 45vw, 92vw"
+                widths={[192, 400, 640, 960]}
+                class="post-card__photo"
+              />
+              <span class="post-card__go" aria-hidden="true">
+                <Icon name="arrow-up-right" size={28} strokeWidth={1.5} />
+              </span>
+            </div>
+            <div class="post-card__body">
+              <p class="label muted post-card__meta">
+                <span>{journal.categories[post.data.category] ?? post.data.category}</span>
+                <span aria-hidden="true"> · </span>
+                <time datetime={post.data.date.toISOString().slice(0, 10)}>{dateFormat.format(post.data.date)}</time>
+              </p>
+              <h3 class="display-s post-card__title">
+                <a class="stretched-link post-card__link" href={url(`/journal/${post.id}`)}>
+                  <span class="hc-text">{post.data.title}</span>
+                </a>
+              </h3>
+              <p class="small muted">{fmt(journal.readingTime, { minutes: post.data.readingTime })}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

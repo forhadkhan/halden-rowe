@@ -1,0 +1,124 @@
+---
+/**
+ * The signature dimension line (DESIGN.md 1.3): a 1px brass rule with 9px end ticks and a label sitting on a
+ * gap in the rule. The rule is decorative (aria-hidden); the label is real text. Draws from the label
+ * outward on scroll (M21, motion.ts `data-dim`).
+ */
+interface Props {
+  /** Visible label. Use `as` to make it the eyebrow paragraph or keep a plain span inside other text. */
+  label: string;
+  as?: 'p' | 'div' | 'span';
+  /** CSS width of the whole line; defaults to the parent's width. */
+  width?: string;
+  align?: 'center' | 'start';
+  class?: string;
+  animate?: boolean;
+}
+
+const { label, as: Tag = 'div', width, align = 'center', class: className, animate = true } = Astro.props;
+---
+
+<Tag
+  class:list={['dim', `dim--${align}`, className]}
+  style={width ? `--dim-width: ${width}` : undefined}
+  data-dim={animate ? '' : undefined}
+  data-ambient={animate ? '' : undefined}
+>
+  <span class="dim__rule dim__rule--start" aria-hidden="true"></span>
+  <span class="dim__label label">{label}</span>
+  <span class="dim__rule dim__rule--end" aria-hidden="true"></span>
+</Tag>
+
+<style is:global>
+  .dim {
+    --dim-tick: 9px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: var(--dim-width, 100%);
+    max-width: 100%;
+    color: var(--color-accent-text);
+  }
+
+  .dim__label {
+    flex: none;
+    max-width: 80%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .dim__rule {
+    position: relative;
+    flex: 1 1 0;
+    min-width: var(--space-4);
+    height: 1px;
+    background-color: var(--color-accent-line);
+  }
+
+  .dim--start .dim__rule--start {
+    flex: 0 0 var(--space-4);
+  }
+
+  .dim__rule::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--dim-tick) / -2);
+    width: 1px;
+    height: var(--dim-tick);
+    background-color: var(--color-accent-line);
+  }
+
+  .dim__rule--start::before {
+    left: 0;
+  }
+
+  .dim__rule--end::before {
+    right: 0;
+  }
+
+  /* M21 initial state: halves grow from the label outward; ticks follow. */
+  .motion-ok .dim[data-dim]:not(.is-drawn) .dim__rule {
+    scale: 0 1;
+  }
+
+  .motion-ok .dim[data-dim] .dim__rule--start {
+    transform-origin: right center;
+  }
+
+  .motion-ok .dim[data-dim] .dim__rule--end {
+    transform-origin: left center;
+  }
+
+  .motion-ok .dim[data-dim]:not(.is-drawn) .dim__rule::before {
+    opacity: 0;
+  }
+
+  .dim.is-drawn .dim__rule {
+    scale: 1 1;
+    transition: scale var(--dur-slower) var(--ease-out-expo);
+  }
+
+  .dim.is-drawn .dim__rule::before {
+    opacity: 1;
+    transition: opacity var(--dur-base) var(--ease-standard) var(--dur-slower);
+  }
+
+  /* M32 breathing: once drawn, the rule slowly dims and returns (opacity only; scale belongs to M21). */
+  .motion-ok .dim.is-drawn .dim__rule {
+    animation: dim-breathe var(--dur-float) var(--ease-in-out) var(--dur-reveal) infinite alternate;
+    animation-play-state: var(--ambient-play, running);
+  }
+
+  @keyframes dim-breathe {
+    to {
+      opacity: 0.4;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .dim__rule,
+    .dim__rule::before {
+      background-color: CanvasText;
+    }
+  }
+</style>

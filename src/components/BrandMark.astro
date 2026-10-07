@@ -1,0 +1,38 @@
+---
+/**
+ * Inline wordmark or monogram (DESIGN.md 7) so `currentColor` follows the scheme. Always aria-hidden:
+ * the link or text around it carries the brand name. Size it with CSS height (or width for the footer).
+ */
+import wordmark from '../assets/brand/wordmark.svg?raw';
+import monogram from '../assets/brand/monogram.svg?raw';
+
+interface Props {
+  name: 'wordmark' | 'monogram';
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const source = name === 'wordmark' ? wordmark : monogram;
+const viewBox = /viewBox="([^"]+)"/.exec(source)?.[1];
+const body = /<svg[^>]*>([\s\S]*)<\/svg>/.exec(source)?.[1]
+  ?.replace(/<title[\s\S]*?<\/title>/g, '')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .trim();
+if (!viewBox || !body) throw new Error(`Brand mark "${name}" could not be parsed.`);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={viewBox}
+  class:list={['brand-mark', `brand-mark--${name}`, className]}
+  aria-hidden="true"
+  focusable="false"
+  set:html={body}
+/>
+
+<style is:global>
+  .brand-mark {
+    width: auto;
+    overflow: visible;
+  }
+</style>

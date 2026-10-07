@@ -1,0 +1,411 @@
+---
+/**
+ * Dev-only styleguide (injected by astro.config.mjs for `astro dev` or STYLEGUIDE=1; noindex; not in the sitemap).
+ * Shows every F1 component in the light and night schemes. Check it at 360px and 1440px.
+ */
+import BaseLayout from '../components/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import DimensionLine from '../components/DimensionLine.astro';
+import Button from '../components/Button.astro';
+import Chip from '../components/Chip.astro';
+import Icon from '../components/Icon.astro';
+import BrandIcon from '../components/BrandIcon.astro';
+import BrandMark from '../components/BrandMark.astro';
+import Photo from '../components/Photo.astro';
+import DrawSvg from '../components/DrawSvg.astro';
+import Accordion from '../components/Accordion.astro';
+import Slider from '../components/Slider.astro';
+import Lightbox from '../components/Lightbox.astro';
+import PropertyCard from '../components/PropertyCard.astro';
+import Field from '../components/Field.astro';
+import Form from '../components/Form.astro';
+import { getCopy, fmt } from '../data/load-copy';
+import { iconNames } from '../lib/icons';
+import { faqJsonLd } from '../lib/jsonld';
+
+const site = getCopy('site');
+const properties = getCopy('properties');
+const faq = getCopy('faq').items.slice(0, 4);
+const testimonials = getCopy('testimonials').items.filter((t) => t.slider);
+const errors = getCopy('errors').forms;
+const home = getCopy<{ testimonials: { carouselLabel: string; slideLabel: string; previous: string; next: string; counter: string } }>('home');
+const contact = getCopy<{ form: { submit: string; success: { heading: string; text: string; sendAnother: string }; topic: { label: string; options: { value: string; label: string }[] } } }>('contact');
+
+const listings = properties.listings;
+const gallery = listings[0];
+const g = properties.detailPage.gallery;
+
+const roles = [
+  'bg', 'surface', 'surface-sunken', 'text', 'text-muted', 'accent-text', 'accent-line', 'accent-graphic',
+  'border', 'border-control', 'btn-bg', 'chip-selected-bg', 'focus', 'error', 'success', 'skeleton',
+];
+const type = [
+  ['display-xl', 'Homes measured with <em>care</em>'],
+  ['display-l', 'Twelve cities, one <em>named</em> agent'],
+  ['display-m', 'Before you get in touch'],
+  ['display-s', 'Glass and stone villa with a lit pool'],
+  ['title', 'Title, Schibsted 600'],
+  ['lead', 'Lead paragraph for section introductions, one or two sentences long.'],
+  ['', 'Body text sits at a comfortable measure, with generous leading for long reading.'],
+  ['small', 'Small text for captions and meta.'],
+  ['label', 'Label / eyebrow'],
+  ['stat', '4,320'],
+];
+---
+
+<BaseLayout title="Styleguide" description="Component reference for the Halden & Rowe site." noindex overHero>
+  <section class="sg-hero" data-hero data-scheme="night">
+    <Photo src="hero/villa-dusk.jpg" sizes="100vw" priority class="sg-hero__photo" />
+    <div class="sg-hero__content container">
+      <SectionHeading eyebrow="Styleguide" html="Every component, <em>light and night</em>" level={1} size="display-xl" split={false} />
+      <p class="lead">The header is over a hero here: scroll to see it turn solid and hide on the way down.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stack">
+      <SectionHeading eyebrow="Tokens" html="Color roles" />
+      <ul class="sg-swatches" role="list">
+        {roles.map((r) => <li><span class="sg-swatch" style={`background: var(--color-${r})`} /><code>--color-{r}</code></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section surface">
+    <div class="container stack">
+      <SectionHeading eyebrow="Type" html="Type scale" />
+      {type.map(([cls, text]) => <p class={cls || undefined} set:html={text} />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stack">
+      <SectionHeading eyebrow="10.3" html="Buttons" />
+      <div class="cluster">
+        <Button>Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="text" icon="chevron-right" href="/about">Text link</Button>
+        <Button variant="icon" icon="share-2" label="Share this home" />
+      </div>
+      <div class="cluster">
+        <Button size="sm">Small</Button>
+        <Button size="lg" icon="search">Large with icon</Button>
+        <Button disabled>Disabled</Button>
+        <Button aria-busy="true" icon="loader-circle">Sending…</Button>
+      </div>
+      <SectionHeading eyebrow="10.4" html="Chips" />
+      <div class="cluster">
+        <Chip>3+ beds</Chip>
+        <Chip pressed>Brooklyn</Chip>
+        <Chip aria-disabled="true">Chicago (0)</Chip>
+        <Chip variant="removable" removeLabel="Remove filter: 3+ beds">3+ beds</Chip>
+        <Chip variant="status">For sale</Chip>
+      </div>
+      <SectionHeading eyebrow="1.3" html="Dimension line" />
+      <DimensionLine label="4,320 sq ft" />
+      <DimensionLine label="Eyebrow, start aligned" align="start" width="20rem" />
+    </div>
+  </section>
+
+  <section class="section" data-scheme="night">
+    <div class="container stack">
+      <SectionHeading eyebrow="Night scheme" html="Buttons and chips on <em>night</em>" lead="The same components, tokens flipped by data-scheme." />
+      <div class="cluster">
+        <Button>Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="text" icon="chevron-right" href="/journal">Text link</Button>
+        <Button variant="icon" icon="heart" label="Save" />
+        <Chip>Filter</Chip>
+        <Chip pressed>Selected</Chip>
+      </div>
+      <div class="sg-draw-grid">
+        <DrawSvg name="key" />
+        <DrawSvg name="skyline" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stack">
+      <SectionHeading eyebrow="9" html="Icons (Lucide)" />
+      <ul class="sg-icons" role="list">
+        {iconNames.map((n) => <li><Icon name={n} size={24} /><span class="small muted">{n}</span></li>)}
+      </ul>
+      <div class="cluster">
+        {site.social.map((s) => <BrandIcon network={s.network} size={24} />)}
+      </div>
+      <SectionHeading eyebrow="7" html="Brand marks" />
+      <div class="cluster sg-marks">
+        <BrandMark name="wordmark" />
+        <BrandMark name="monogram" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section surface-sunken">
+    <div class="container stack">
+      <SectionHeading eyebrow="8" html="Line drawings" lead="Draw on scroll (M10); fully drawn without JS or with reduced motion." />
+      <div class="sg-draw-grid">
+        <DrawSvg name="house-blueprint" />
+        <DrawSvg name="floor-plan" />
+        <DrawSvg name="skyline" />
+        <DrawSvg name="key" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stack">
+      <SectionHeading eyebrow="6" html="Motion utilities" />
+      <div class="sg-motion">
+        <div data-clip class="sg-motion__clip"><Photo src="places/skyline.jpg" aspect="3 / 2" sizes="(min-width: 64rem) 40vw, 92vw" /></div>
+        <div data-parallax class="sg-motion__clip"><Photo src="places/waterfront.jpg" aspect="3 / 2" sizes="(min-width: 64rem) 40vw, 92vw" /></div>
+      </div>
+      <p class="stat tabular"><span data-count="4320">4,320</span> <span class="small muted">sq ft, count-up (M7)</span></p>
+      <h2 class="display-l" data-split>Lines rise from a mask, <em>once</em>, as the heading enters</h2>
+      <div data-marquee class="sg-marquee">
+        <div data-marquee-track>
+          <ul role="list" class="sg-marquee__list">{site.cities.map((c) => <li class="display-s">{c}</li>)}</ul>
+          <ul role="list" class="sg-marquee__list" aria-hidden="true">{site.cities.map((c) => <li class="display-s">{c}</li>)}</ul>
+        </div>
+        <button type="button" class="btn btn--secondary btn--sm" data-marquee-toggle aria-pressed="false">
+          <span class="btn__inner"><Icon name="pause" size={16} /><span class="btn__label">Pause the scrolling city names</span></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section surface">
+    <div class="container stack">
+      <SectionHeading eyebrow="10.5" html="Property cards" />
+      <div class="sg-cards">
+        {listings.slice(0, 3).map((l) => <PropertyCard slug={l.slug} />)}
+      </div>
+      <div class="sg-cards sg-cards--wide">
+        {listings[3] && <PropertyCard slug={listings[3].slug} variant="large" sizes="(min-width: 64rem) 60vw, 92vw" />}
+        <div class="stack">
+          {listings.slice(4, 6).map((l) => <PropertyCard slug={l.slug} variant="compact" />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container stack">
+      <SectionHeading eyebrow="10.11" html="Lightbox" />
+      {
+        gallery && (
+          <>
+            <ul class="sg-thumbs" role="list">
+              {gallery.images.map((img, i) => (
+                <li>
+                  <button type="button" class="sg-thumb" data-lightbox-open="sg-gallery" data-index={i} aria-label={fmt(g.open, { index: i + 1, count: gallery.images.length })}>
+                    <Photo src={img.file} alt="" aspect="4 / 3" sizes="(min-width: 48rem) 20vw, 45vw" widths={[320, 480]} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <Lightbox
+              id="sg-gallery"
+              images={gallery.images}
+              labels={{
+                region: fmt(g.regionLabel, { title: gallery.title }),
+                counter: g.counter,
+                close: g.close,
+                previous: g.previous,
+                next: g.next,
+                loadError: g.loadError,
+              }}
+            />
+          </>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section surface-sunken">
+    <div class="container stack">
+      <SectionHeading eyebrow="10.10" html="Slider" />
+      <Slider items={testimonials} labels={home.testimonials} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container-text stack">
+      <SectionHeading eyebrow="10.9" html="Accordion" />
+      <Accordion items={faq} />
+    </div>
+  </section>
+
+  <section class="section surface">
+    <div class="container-text stack">
+      <SectionHeading eyebrow="10.8" html="Form" lead="Submit empty to see the error summary. With no PUBLIC_FORM_ENDPOINT the form runs in demo mode." />
+      <Form name="styleguide" submitLabel={contact.form.submit} success={contact.form.success}>
+        <Field name="topic" type="select" label={contact.form.topic.label} options={contact.form.topic.options} placeholderOption="" required messages={{ required: errors.errors.topicRequired }} />
+        <Field name="name" label={errors.fields.name.label} autocomplete="name" required messages={{ required: errors.errors.nameRequired }} />
+        <Field name="email" type="email" label={errors.fields.email.label} hint={errors.fields.email.hint} autocomplete="email" required messages={{ required: errors.errors.emailRequired, invalid: errors.errors.emailInvalid }} />
+        <Field name="phone" type="tel" label={errors.fields.phone.label} hint={errors.fields.phone.hint} autocomplete="tel" optionalLabel={errors.optional} pattern="[0-9 ()+.\-]{7,}" messages={{ invalid: errors.errors.phoneInvalid }} />
+        <Field name="date" type="date" label="Preferred viewing date" optionalLabel={errors.optional} messages={{ past: errors.errors.dateInPast }} />
+        <Field name="message" type="textarea" label={errors.fields.message.label} hint={errors.fields.message.hint} required maxlength={1000} messages={{ required: errors.errors.messageRequired, tooLong: errors.errors.messageTooLong }} />
+        <Field name="consent" type="checkbox" label={errors.fields.consent.label} hint={errors.fields.consent.hint} required messages={{ required: errors.errors.consentRequired }} />
+      </Form>
+    </div>
+  </section>
+
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqJsonLd(faq)).replace(/</g, '\\u003c')} />
+</BaseLayout>
+
+<style>
+  .sg-hero {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: 80svh;
+    padding-block: calc(var(--header-height) + var(--space-12)) var(--space-12);
+    color: var(--color-text);
+    overflow: clip;
+  }
+
+  .sg-hero :global(.sg-hero__photo) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .sg-hero :global(.sg-hero__photo img) {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sg-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--scrim-hero-bottom);
+  }
+
+  .sg-hero__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sg-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+  }
+
+  .sg-swatches li {
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+  }
+
+  .sg-swatch {
+    display: block;
+    height: 3rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+
+  .sg-icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+  }
+
+  .sg-icons li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .sg-icons span {
+    overflow-wrap: anywhere;
+  }
+
+  .sg-marks :global(.brand-mark--wordmark) {
+    height: 24px;
+  }
+
+  .sg-marks :global(.brand-mark--monogram) {
+    height: 40px;
+  }
+
+  .sg-draw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--space-8);
+    align-items: end;
+  }
+
+  .sg-motion {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .sg-motion {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .sg-motion__clip {
+    border-radius: var(--radius-sm);
+    overflow: clip;
+  }
+
+  .sg-marquee {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .sg-marquee__list {
+    display: flex;
+    gap: var(--space-10);
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  .sg-cards {
+    display: grid;
+    gap: var(--space-10) var(--space-gutter);
+  }
+
+  @media (min-width: 48rem) {
+    .sg-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .sg-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .sg-cards--wide {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .sg-thumbs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+  }
+
+  .sg-thumb {
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    overflow: clip;
+  }
+</style>

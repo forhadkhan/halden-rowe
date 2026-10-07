@@ -1,0 +1,543 @@
+---
+/**
+ * Property card (DESIGN.md 10.5), data-driven from src/data/copy/properties.json.
+ * Pass `slug` (looked up in properties.json) or a full `listing`. Variants: standard, large (featured),
+ * compact (map popup, similar homes on mobile: no dimension line).
+ * One link: the title <a> is stretched over the card; the save button sits above it. Saved homes live in
+ * localStorage ("hr:saved") and announce through a polite status region.
+ */
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import Chip from './Chip.astro';
+import Button from './Button.astro';
+import DimensionLine from './DimensionLine.astro';
+import { getCopy, hasCopy, fmt, plural, type Listing } from '../data/load-copy';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+import { cropFor } from './property/crops';
+
+interface Props {
+  slug?: string;
+  listing?: Listing;
+  variant?: 'standard' | 'large' | 'compact';
+  /** Heading level of the title. */
+  level?: 2 | 3 | 4;
+  /** Image `sizes`; defaults suit a 3-up grid. */
+  sizes?: string;
+  priority?: boolean;
+  /** Add the M6 entrance (data-reveal). */
+  reveal?: boolean;
+  /** Hover treatment: a centred arrow disc over the photo, text scales down on a dark body (Featured homes). Replaces the M16 "View" cursor. */
+  arrow?: boolean;
+  class?: string;
+}
+
+const { slug, variant = 'standard', level = 3, priority = false, reveal = true, arrow = false, class: className } = Astro.props;
+
+if (!hasCopy('properties')) throw new Error('PropertyCard needs src/data/copy/properties.json.');
+const properties = getCopy('properties');
+const listing = Astro.props.listing ?? properties.listings.find((l) => l.slug === slug);
+if (!listing) throw new Error(`PropertyCard: no listing with slug "${slug}" in properties.json.`);
+
+const labels = properties.detailPage;
+const viewHome = hasCopy('search') ? getCopy<{ card: { viewHome: string } }>('search').card.viewHome : 'View home';
+const toasts = hasCopy('errors') ? getCopy('errors').toasts : undefined;
+
+const aspect = { standard: '4 / 3', large: '3 / 2', compact: '16 / 10' }[variant];
+const sizes =
+  Astro.props.sizes ??
+  {
+    standard: '(min-width: 64rem) 30vw, (min-width: 48rem) 45vw, 92vw',
+    large: '(min-width: 64rem) 60vw, 92vw',
+    compact: '(min-width: 48rem) 20rem, 80vw',
+  }[variant];
+const price = new Intl.NumberFormat(site.locale, {
+  style: 'currency',
+  currency: site.currency,
+  maximumFractionDigits: 0,
+}).format(listing.price);
+const exterior = listing.images[0];
+const Heading = `h${level}` as const;
+const href = url(`/properties/${listing.slug}`);
+---
+
+<article
+  class:list={['property-card', `property-card--${variant}`, { 'property-card--arrow': arrow }, className]}
+  data-property-card
+  data-slug={listing.slug}
+  data-reveal={reveal ? '' : undefined}
+>
+  <div class="property-card__media" data-cursor={arrow ? undefined : 'view'} data-parallax={variant === 'compact' ? undefined : 'desktop'}>
+    {
+      exterior && (
+        <Photo
+          src={exterior.file}
+          alt={exterior.alt}
+          aspect={aspect}
+          sizes={sizes}
+          priority={priority}
+          widths={[400, 560, 720, 960, 1280]}
+          transitionName={`home-${listing.slug}`}
+          position={cropFor(exterior.file)}
+        />
+      )
+    }
+    {
+      arrow && (
+        <span class="property-card__go" aria-hidden="true">
+          <Icon name="arrow-up-right" size={28} strokeWidth={1.5} />
+        </span>
+      )
+    }
+    <div class="property-card__chips">
+      <Chip variant="status">{labels.status[listing.status]}</Chip>
+      {listing.tag && <Chip variant="status">{listing.tag}</Chip>}
+    </div>
+  </div>
+
+  <div class="property-card__body">
+    <Heading class="property-card__title">
+      <a class="property-card__link stretched-link" href={href}><span class="hc-text">{listing.title}</span></a>
+    </Heading>
+    <p class="property-card__price tabular">
+      {price}
+      {listing.status === 'rent' && <span class="small muted">{labels.priceSuffixRent}</span>}
+    </p>
+    <p class="property-card__address small muted">
+      <Icon name="map-pin" size={16} />
+      <span>{listing.address.neighborhood}, {listing.address.city}, {listing.address.state}</span>
+    </p>
+    <ul class="property-card__facts small" role="list">
+      <li>
+        <Icon name="bed-double" size={18} />
+        <span>{listing.beds} {plural(listing.beds, labels.facts.beds)}</span>
+      </li>
+      <li>
+        <Icon name="bath" size={18} />
+        <span>{listing.baths} {plural(listing.baths, labels.facts.baths)}</span>
+      </li>
+    </ul>
+    {variant !== 'compact' && <DimensionLine label={listing.sqftLabel} align="center" class="property-card__area" />}
+    <p class="property-card__more small" aria-hidden="true">
+      {viewHome}
+      <Icon name="chevron-right" size={16} />
+    </p>
+  </div>
+
+  <Button
+    variant="icon"
+    icon="heart"
+    onPhoto
+    label={fmt(labels.actions.save, { title: listing.title })}
+    class="property-card__save"
+    aria-pressed="false"
+    data-save={listing.slug}
+    data-msg-saved={toasts?.saved ?? labels.actions.saved}
+    data-msg-unsaved={toasts?.unsaved ?? labels.actions.unsaved}
+  />
+</article>
+
+<style is:global>
+  .property-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    container-type: inline-size;
+    border-radius: var(--radius-sm);
+  }
+
+  .property-card:has(.property-card__link:focus-visible) {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: 6px;
+  }
+
+  .property-card__link:focus-visible {
+    outline: none;
+  }
+
+  .property-card__media {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: clip;
+  }
+
+  .property-card__media .photo-img {
+    transition: scale var(--dur-slower) var(--ease-out-expo);
+  }
+
+  /* M13 hover frame: a brass hairline and a soft foot shade fade in over the photo (opacity only; the card
+     itself never moves). */
+  .property-card__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px var(--color-accent-graphic);
+    background-image: linear-gradient(to top, color-mix(in srgb, var(--hr-night-900) 28%, transparent), transparent 45%);
+    opacity: 0;
+    transition: opacity var(--dur-slow) var(--ease-standard);
+    pointer-events: none;
+  }
+
+  .property-card:hover .property-card__media::after,
+  .property-card:focus-within .property-card__media::after {
+    opacity: 1;
+  }
+
+  .property-card__price {
+    transition: color var(--dur-base) var(--ease-standard);
+  }
+
+  .property-card:hover .property-card__price,
+  .property-card:focus-within .property-card__price {
+    color: var(--color-accent-text);
+  }
+
+  .property-card__chips {
+    z-index: 1;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .property-card__save {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: var(--z-raised);
+  }
+
+  .property-card__save[aria-pressed="true"] .icon {
+    fill: currentColor;
+  }
+
+  .property-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+  }
+
+  /* DOM order is title, price, address, facts (one link first); visual order puts the price on top. */
+  .property-card__price {
+    order: -1;
+    margin: 0;
+    font-size: var(--text-title);
+    font-weight: var(--weight-strong);
+    line-height: var(--leading-title);
+  }
+
+  .property-card__price .small {
+    font-weight: var(--weight-body);
+  }
+
+  .property-card__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-title);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-title);
+  }
+
+  @container (min-width: 360px) {
+    .property-card__title {
+      font-size: var(--text-display-s);
+      line-height: var(--leading-display-s);
+      letter-spacing: var(--tracking-display-s);
+    }
+  }
+
+  .property-card--large .property-card__title {
+    font-size: var(--text-display-m);
+    line-height: var(--leading-display-m);
+    letter-spacing: var(--tracking-display-m);
+  }
+
+  .property-card__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .property-card__address {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .property-card__facts {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .property-card__facts li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-3);
+  }
+
+  .property-card__facts li:first-child {
+    padding-inline-start: 0;
+  }
+
+  .property-card__facts li + li {
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  .property-card__area {
+    margin-top: var(--space-2);
+  }
+
+  .property-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    font-weight: var(--weight-ui);
+    opacity: 0;
+    translate: -8px 0;
+    transition:
+      opacity var(--dur-base) var(--ease-standard),
+      translate var(--dur-base) var(--ease-standard);
+  }
+
+  /* M13 */
+  .property-card:hover .property-card__more,
+  .property-card:focus-within .property-card__more {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .motion-ok .property-card:hover .property-card__media .photo-img,
+  .motion-ok .property-card:focus-within .property-card__media .photo-img {
+    scale: 1.06;
+  }
+
+  /* Featured hover: a dark disc with an up-right arrow fades in over the middle of the photo, and the text body
+     turns to a dark panel while its text scales down. Only opacity, scale and colour change; the card never moves. */
+  .property-card--arrow .property-card__go {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin: -2.25rem 0 0 -2.25rem;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.62);
+    color: #fff;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    scale: 0.8;
+    transition:
+      opacity var(--dur-base) var(--ease-standard),
+      scale var(--dur-slow) var(--ease-out-expo);
+    pointer-events: none;
+  }
+
+  /* Featured: the photo sits one frame-gap (12px) below the card top, matching the gap the hover frame leaves at
+     its sides. The save button moves with it. */
+  .property-card--arrow .property-card__media {
+    margin-top: var(--space-3);
+  }
+
+  .property-card--arrow .property-card__save {
+    top: calc(var(--space-3) + 4px);
+  }
+
+  /* Hover frame: a 1px hairline drawn over the whole card (above the photo and the dark panel). Opacity only. */
+  .property-card--arrow::after {
+    content: "";
+    position: absolute;
+    inset: 0 calc(var(--space-3) * -1) calc(var(--space-3) * -1);
+    z-index: 2;
+    border: 1px solid var(--hr-night-800);
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transition: opacity var(--dur-slow) var(--ease-standard);
+    pointer-events: none;
+  }
+
+  .property-card--arrow:hover::after,
+  .property-card--arrow:focus-within::after {
+    opacity: 1;
+  }
+
+  /* The link text never underlines on Featured cards, with or without reduced motion. */
+  .property-card.property-card--arrow:hover .property-card__link,
+  .property-card.property-card--arrow:focus-within .property-card__link {
+    text-decoration: none;
+  }
+
+  /* The dark panel is the body's own background, reaching the frame (12px) at the sides and foot and starting 8px under
+     the photo; the padding puts the text back where it was. Nothing in the body is positioned, so the stretched link
+     still anchors to the card and the photo stays clickable. */
+  .property-card--arrow .property-card__body {
+    margin: var(--space-2) calc(var(--space-3) * -1) calc(var(--space-3) * -1);
+    padding: var(--space-2) var(--space-3) var(--space-3);
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    transition: background-color var(--dur-slow) var(--ease-standard);
+  }
+
+  .property-card__title .hc-text {
+    display: block;
+  }
+
+  .property-card--arrow .property-card__body > *,
+  .property-card--arrow .property-card__title .hc-text {
+    transform-origin: left center;
+    transition:
+      scale var(--dur-slow) var(--ease-out-expo),
+      color var(--dur-base) var(--ease-standard),
+      opacity var(--dur-base) var(--ease-standard),
+      translate var(--dur-base) var(--ease-standard);
+  }
+
+  .property-card--arrow:hover .property-card__go,
+  .property-card--arrow:focus-within .property-card__go {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .property-card--arrow:hover .property-card__body,
+  .property-card--arrow:focus-within .property-card__body {
+    background-color: var(--hr-night-800);
+  }
+
+  /* The scale goes on the title's inner text, never on an element that contains the stretched link: a transformed
+     ancestor becomes the link's containing block and shrinks its click area to the title. */
+  .property-card--arrow:hover .property-card__body > :not(.property-card__title),
+  .property-card--arrow:focus-within .property-card__body > :not(.property-card__title),
+  .property-card--arrow:hover .property-card__title .hc-text,
+  .property-card--arrow:focus-within .property-card__title .hc-text {
+    scale: 0.92;
+  }
+
+  .property-card--arrow:hover .property-card__body > *,
+  .property-card--arrow:focus-within .property-card__body > * {
+    color: var(--hr-mist-200, #e6e9e6);
+  }
+
+  .property-card--arrow:hover .property-card__body .muted,
+  .property-card--arrow:focus-within .property-card__body .muted,
+  .property-card--arrow:hover .property-card__body .small,
+  .property-card--arrow:focus-within .property-card__body .small {
+    color: var(--hr-mist-400, #aab2af);
+  }
+
+  .property-card--arrow:hover .property-card__price,
+  .property-card--arrow:focus-within .property-card__price {
+    color: var(--hr-brass-300);
+  }
+
+  .property-card--arrow:hover .property-card__facts li + li,
+  .property-card--arrow:focus-within .property-card__facts li + li {
+    border-inline-start-color: var(--hr-night-700);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .property-card--arrow .property-card__go,
+    .property-card--arrow:hover .property-card__go,
+    .property-card--arrow:focus-within .property-card__go {
+      scale: none;
+    }
+
+    .property-card--arrow:hover .property-card__body > *,
+    .property-card--arrow:focus-within .property-card__body > *,
+    .property-card--arrow:hover .property-card__title .hc-text,
+    .property-card--arrow:focus-within .property-card__title .hc-text {
+      scale: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .property-card__more {
+      translate: none;
+    }
+
+    .property-card:hover .property-card__link,
+    .property-card:focus-within .property-card__link {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+
+  .toast-region {
+    position: fixed;
+    inset: auto var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
+    z-index: var(--z-toast);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .toast-region:empty {
+    display: none;
+  }
+
+  .toast {
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
+    background-color: var(--hr-ink-900);
+    color: var(--hr-ivory);
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    box-shadow: var(--shadow-md);
+  }
+</style>
+
+<script>
+  import { readSaved as read, writeSaved as write } from '../scripts/lib/saved';
+
+  let toastTimer = 0;
+  /* The live region exists before the first message so screen readers pick the message up. */
+  const ensureRegion = () => {
+    let region = document.querySelector<HTMLElement>('[data-toast-region]');
+    if (!region) {
+      region = document.createElement('div');
+      region.className = 'toast-region';
+      region.setAttribute('role', 'status');
+      region.setAttribute('aria-live', 'polite');
+      region.dataset.toastRegion = '';
+      document.body.append(region);
+    }
+    return region;
+  };
+  ensureRegion();
+
+  const announce = (message: string) => {
+    const region = ensureRegion();
+    region.replaceChildren();
+    const toast = document.createElement('p');
+    toast.className = 'toast';
+    toast.textContent = message;
+    region.append(toast);
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => region.replaceChildren(), 4000);
+  };
+
+  const saved = new Set(read());
+  document.querySelectorAll<HTMLButtonElement>('[data-save]').forEach((button) => {
+    const slug = button.dataset.save ?? '';
+    button.setAttribute('aria-pressed', String(saved.has(slug)));
+    button.addEventListener('click', () => {
+      const list = new Set(read());
+      const nowSaved = !list.has(slug);
+      if (nowSaved) list.add(slug);
+      else list.delete(slug);
+      write([...list]);
+      document
+        .querySelectorAll<HTMLButtonElement>(`[data-save="${CSS.escape(slug)}"]`)
+        .forEach((b) => b.setAttribute('aria-pressed', String(nowSaved)));
+      announce((nowSaved ? button.dataset.msgSaved : button.dataset.msgUnsaved) ?? '');
+    });
+  });
+</script>

@@ -1,0 +1,239 @@
+---
+/**
+ * Footer, night scheme (DESIGN.md 10.12): monogram + positioning + address, Explore and Company link groups,
+ * contact with icons and social links, the giant wordmark (aria-hidden, M24 via `data-letters`), legal row.
+ */
+import { getCopy, fmt } from '../data/load-copy';
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+import BrandIcon from './BrandIcon.astro';
+import BrandMark from './BrandMark.astro';
+
+const { footer, contact, social } = getCopy('site');
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" data-scheme="night">
+  <div class="container-wide">
+    <div class="site-footer__top">
+      <div class="site-footer__brand" data-reveal-unit>
+        <BrandMark name="monogram" class="site-footer__monogram" />
+        <p class="site-footer__positioning">{footer.positioning}</p>
+        <address class="small muted">
+          {contact.address.street}<br />
+          {contact.address.city}, {contact.address.state}
+          {contact.address.postalCode}
+        </address>
+      </div>
+
+      <nav class="site-footer__group" aria-labelledby="footer-explore" data-reveal-unit>
+        <h2 id="footer-explore" class="label muted">{footer.explore.heading}</h2>
+        <ul role="list">
+          {footer.explore.links.map((link) => <li><a class="site-footer__link" href={url(link.href)}>{link.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav class="site-footer__group" aria-labelledby="footer-company" data-reveal-unit>
+        <h2 id="footer-company" class="label muted">{footer.company.heading}</h2>
+        <ul role="list">
+          {footer.company.links.map((link) => <li><a class="site-footer__link" href={url(link.href)}>{link.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="site-footer__contact" data-reveal-unit>
+        <h2 class="label muted">{footer.contactHeading}</h2>
+        <ul role="list" class="site-footer__contact-list">
+          <li>
+            <Icon name="phone" size={18} />
+            <a class="site-footer__link tabular" href={contact.phoneHref}>{contact.phone}</a>
+          </li>
+          <li>
+            <Icon name="mail" size={18} />
+            <a class="site-footer__link" href={`mailto:${contact.email}`}>{contact.email}</a>
+          </li>
+          <li>
+            <Icon name="clock" size={18} />
+            <span>{contact.hoursShort}</span>
+          </li>
+        </ul>
+        <h2 class="visually-hidden">{footer.socialHeading}</h2>
+        <ul role="list" class="site-footer__social">
+          {
+            social.map((s) => (
+              <li>
+                <a href={s.href} aria-label={s.label}>
+                  <BrandIcon network={s.network} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__giant" aria-hidden="true" data-letters>
+      <BrandMark name="wordmark" class="site-footer__wordmark" />
+    </div>
+
+    <div class="site-footer__legal small muted" data-reveal-unit>
+      <p>{fmt(footer.copyright, { year })}</p>
+      <p>{footer.demoLine}</p>
+      <p>
+        <a class="site-footer__link" href={url(footer.privacyHref)}>{footer.privacyLabel}</a>
+        <span aria-hidden="true"> · </span>
+        <a class="site-footer__link" href={url(footer.creditsHref)}>{footer.creditsLabel}</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  .site-footer {
+    padding-top: var(--space-section);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+  }
+
+  .site-footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer h2 {
+    margin: 0 0 var(--space-4);
+  }
+
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-10) var(--space-gutter);
+  }
+
+  .site-footer__brand,
+  .site-footer__contact {
+    grid-column: 1 / -1;
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .site-footer__monogram {
+    height: 40px;
+  }
+
+  .site-footer__positioning {
+    max-width: var(--measure-narrow);
+    margin: 0;
+  }
+
+  .site-footer address {
+    font-style: normal;
+  }
+
+  .site-footer__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--color-accent-graphic), var(--color-accent-graphic));
+    background-repeat: no-repeat;
+    background-position: 0 calc(50% + 0.75em + 2px);
+    background-size: 0 1.5px;
+    transition: background-size var(--dur-fast) var(--ease-standard);
+  }
+
+  .site-footer__link:hover {
+    background-size: 100% 1.5px;
+  }
+
+  .site-footer__contact-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--tap-min);
+  }
+
+  .site-footer__contact-list .icon {
+    color: var(--color-accent-text);
+  }
+
+  .site-footer__social {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-4) !important;
+    margin-inline-start: calc(var(--space-3) * -1) !important;
+  }
+
+  .site-footer__social a {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    color: var(--color-text-muted);
+    border-radius: 50%;
+  }
+
+  .site-footer__social a:hover {
+    color: var(--color-text);
+  }
+
+  .site-footer__giant {
+    margin-block: var(--space-16);
+  }
+
+  .site-footer__wordmark {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: clip;
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-6);
+    padding-block: var(--space-4) var(--space-8);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .site-footer__legal p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    min-height: var(--tap-min);
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer__top {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .site-footer__brand,
+    .site-footer__contact {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .site-footer__top {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .site-footer__brand {
+      grid-column: 1 / span 4;
+    }
+
+    .site-footer__group {
+      grid-column: span 2;
+    }
+
+    .site-footer__contact {
+      grid-column: 9 / span 4;
+    }
+  }
+</style>

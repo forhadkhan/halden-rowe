@@ -1,0 +1,53 @@
+---
+/**
+ * H3 Featured homes: one large card and five standard cards (featuredOrder 1-6). Tablet shows five, phones three.
+ * The scroll moment (scrubbed clip on the large photo, row drift) lives in home.ts; the second card is a depth
+ * layer; M5/M6/M13/M16 come with PropertyCard.
+ */
+import PropertyCard from '../PropertyCard.astro';
+import SectionHeading from '../SectionHeading.astro';
+import Button from '../Button.astro';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { featured } = getCopy<HomeCopy>('home');
+const homes = getCopy('properties')
+  .listings.filter((l) => l.featured)
+  .sort((a, b) => (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99))
+  .slice(0, 6);
+---
+
+<section class="featured section" aria-labelledby="featured-title">
+  <div class="container">
+    <div class="featured__head">
+      <SectionHeading eyebrow={featured.eyebrow} html={featured.headline} id="featured-title" />
+      <Button variant="text" href={featured.viewAllHref} icon="chevron-right" class="featured__all">
+        {featured.viewAll}
+      </Button>
+    </div>
+    <ul class="featured__grid" role="list">
+      {
+        homes.map((home, i) => (
+          <li class:list={['featured__item', `featured__item--${i + 1}`]} data-speed={i === 1 ? 0.06 : undefined}>
+            <PropertyCard
+              listing={home}
+              variant={i === 0 ? 'large' : 'standard'}
+              level={3}
+              arrow
+              sizes={
+                i === 0
+                  ? '(min-width: 64rem) 58vw, 92vw'
+                  : i === 1
+                    ? '(min-width: 64rem) 52vw, (min-width: 48rem) 45vw, 92vw'
+                    : '(min-width: 64rem) 30vw, (min-width: 48rem) 45vw, 92vw'
+              }
+            />
+          </li>
+        ))
+      }
+    </ul>
+    <Button variant="secondary" href={featured.viewAllHref} block class="featured__all-mobile">
+      {featured.viewAll}
+    </Button>
+  </div>
+</section>

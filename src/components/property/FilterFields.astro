@@ -1,0 +1,72 @@
+---
+/**
+ * The six filter controls (status, location, type, min, max, beds), rendered twice by Filters.astro: once in
+ * the desktop bar (live) and once in the mobile sheet (applied on "Show"). `prefix` keeps ids unique.
+ * Price options start on the sale scale; properties-filter.ts swaps them to the rent scale when Rent is chosen.
+ */
+import Icon from '../Icon.astro';
+
+interface Props {
+  prefix: string;
+  labels: {
+    status: { label: string; any: string; buy: string; rent: string };
+    location: string;
+    type: string;
+    priceMin: string;
+    priceMax: string;
+    noMin: string;
+    noMax: string;
+    beds: string;
+    anyLocation: string;
+    anyType: string;
+    anyBeds: string;
+  };
+  cities: string[];
+  types: string[];
+  beds: { value: number; label: string }[];
+  stepsBuy: number[];
+  money: (n: number) => string;
+}
+
+const { prefix, labels, cities, types, beds, stepsBuy, money } = Astro.props;
+const selects = [
+  { key: 'city', label: labels.location, any: labels.anyLocation, options: cities.map((c) => ({ value: c, label: c })) },
+  { key: 'type', label: labels.type, any: labels.anyType, options: types.map((t) => ({ value: t, label: t })) },
+  { key: 'min', label: labels.priceMin, any: labels.noMin, options: stepsBuy.map((s) => ({ value: String(s), label: money(s) })) },
+  { key: 'max', label: labels.priceMax, any: labels.noMax, options: stepsBuy.map((s) => ({ value: String(s), label: money(s) })) },
+  { key: 'beds', label: labels.beds, any: labels.anyBeds, options: beds.map((b) => ({ value: String(b.value), label: b.label })) },
+];
+---
+
+<fieldset class="segmented filters__status" data-filter-status>
+  <legend class="filters__label">{labels.status.label}</legend>
+  <div class="segmented__track">
+    {
+      (['all', 'buy', 'rent'] as const).map((value) => (
+        <label class="segmented__option">
+          <input type="radio" name={`${prefix}-status`} value={value} checked={value === 'all'} data-filter="mode" />
+          <span>{value === 'all' ? labels.status.any : labels.status[value]}</span>
+        </label>
+      ))
+    }
+  </div>
+</fieldset>
+
+{
+  selects.map((s) => (
+    <div class={`filters__field filters__field--${s.key}`}>
+      <label class="filters__label" for={`${prefix}-${s.key}`}>
+        {s.label}
+      </label>
+      <div class="field__select">
+        <select id={`${prefix}-${s.key}`} class="field__control filters__select" data-filter={s.key}>
+          <option value="">{s.any}</option>
+          {s.options.map((o) => (
+            <option value={o.value}>{o.label}</option>
+          ))}
+        </select>
+        <Icon name="chevron-down" size={20} class="field__chevron" />
+      </div>
+    </div>
+  ))
+}

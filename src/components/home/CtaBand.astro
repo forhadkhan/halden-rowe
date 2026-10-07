@@ -1,0 +1,36 @@
+---
+/** H12 CTA band: golden-hour photo frame (M4 + M5), night text and buttons (M2, M12). */
+import Photo from '../Photo.astro';
+import Button from '../Button.astro';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { cta } = getCopy<HomeCopy>('home');
+---
+
+<section class="cta-band" aria-labelledby="cta-title">
+  <div class="container-wide">
+    <div class="cta-band__frame" data-clip="scrub" data-scheme="night" data-ambient>
+      <div class="cta-band__media" data-parallax>
+        <Photo
+          src={cta.image.file}
+          alt={cta.image.alt}
+          aspect="auto"
+          sizes="(min-width: 90rem) 1400px, 96vw"
+          widths={[640, 960, 1280, 1600, 2000]}
+          class="cta-band__photo"
+        />
+      </div>
+      <span class="light-sweep" aria-hidden="true"></span>
+      <div class="cta-band__scrim" aria-hidden="true"></div>
+      <div class="cta-band__content">
+        <h2 id="cta-title" class="display-m cta-band__title" data-split>{cta.headline}</h2>
+        <p class="lead cta-band__line">{cta.line}</p>
+        <div class="cta-band__actions">
+          <Button href={cta.primaryHref}>{cta.primary}</Button>
+          <Button variant="secondary" href={cta.secondaryHref}>{cta.secondary}</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

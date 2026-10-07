@@ -1,0 +1,197 @@
+---
+/**
+ * H6 Explore the map (night, DESIGN.md 10.13): stylised contiguous US (us-map.ts), twelve price pins as HTML
+ * buttons, one popup per pin (non-modal disclosure), chips that filter pins and list, and the list itself as the
+ * accessible alternative. Behaviour and M10 coast draw, M11 drop + pulse, M22 popup live in home.ts.
+ * Each popup follows its pin in the DOM, so Tab moves from an open pin straight into its card.
+ */
+import Photo from '../Photo.astro';
+import SectionHeading from '../SectionHeading.astro';
+import Chip from '../Chip.astro';
+import Icon from '../Icon.astro';
+import Button from '../Button.astro';
+import { getCopy, plural } from '../../data/load-copy';
+import { site } from '../../data/site';
+import { url } from '../../lib/url';
+import { cropFor } from '../property/crops';
+import { borders, cityPoints, graticule, lakes, land } from './us-map';
+import type { HomeCopy } from './types';
+
+const { map } = getCopy<HomeCopy>('home');
+const properties = getCopy('properties');
+const labels = properties.detailPage;
+const money = new Intl.NumberFormat(site.locale, { style: 'currency', currency: site.currency, maximumFractionDigits: 0 });
+
+/* Label direction keeps neighbouring pills apart (NYC / Brooklyn, LA / Palm Springs, Seattle at the top edge).
+   Phone nudges (px) keep the 44px hit areas of near-identical points from overlapping. */
+const layout: Record<string, { dir: 'up' | 'down'; nx: number; ny: number; dx?: number; dy?: number; px?: number }> = {
+  // dx/dy nudge the dot on desktop (NYC and Brooklyn sit 2px apart); px shifts a pill that would leave the map frame.
+  'skyline-penthouse-nyc': { dir: 'up', nx: 0, ny: -22, dy: -5 },
+  'brownstone-brooklyn': { dir: 'down', nx: 0, ny: 22, dy: 5 },
+  'victorian-flat-san-francisco': { dir: 'up', nx: 0, ny: -16, px: 26 },
+  'loft-chicago': { dir: 'up', nx: 0, ny: -10 },
+  'farmhouse-nashville': { dir: 'down', nx: 0, ny: 10 },
+  'hillside-villa-la': { dir: 'up', nx: -18, ny: 4 },
+  'courtyard-villa-palm-springs': { dir: 'down', nx: 18, ny: 14 },
+  'lakefront-house-seattle': { dir: 'down', nx: 0, ny: 0 },
+  'beach-house-carolina': { dir: 'up', nx: 0, ny: 18 },
+};
+
+const pins = properties.listings.map((listing, i) => {
+  const point = cityPoints[listing.address.city];
+  if (!point) throw new Error(`MapSection: no map point for city "${listing.address.city}" (${listing.slug}).`);
+  const place = { dx: 0, dy: 0, px: 0, ...(layout[listing.slug] ?? { dir: 'up' as const, nx: 0, ny: 0 }) };
+  return {
+    listing,
+    i,
+    x: (point[0] / 10).toFixed(2),
+    y: (point[1] / 6.2).toFixed(2),
+    ...place,
+    price: money.format(listing.price),
+    image: listing.images[0],
+  };
+});
+---
+
+<section class="map-section section" data-scheme="night" aria-labelledby="map-title" data-map-section>
+  <div class="container grid map-section__grid">
+    <div class="map-section__head">
+      <SectionHeading eyebrow={map.eyebrow} html={map.headline} lead={map.lead} id="map-title" size="display-m" />
+      <div class="cluster map-section__chips" role="group" aria-label={map.chipsLabel} data-map-chips>
+        {
+          map.chips.map((chip, i) => (
+            <Chip pressed={i === 0} data-map-filter={chip.id}>
+              {chip.label}
+            </Chip>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="map-section__map">
+      <div class="usmap" data-map data-speed-scope data-ambient>
+        <svg class="usmap__svg" viewBox="0 0 1000 620" role="img" aria-label={map.mapLabel} focusable="false">
+          <g class="usmap__graticule">{graticule.map((d) => <path d={d} />)}</g>
+          <path class="usmap__land" d={land} />
+          <path class="usmap__borders" d={borders} />
+          <g class="usmap__lakes">{lakes.map((d) => <path d={d} />)}</g>
+          <g class="usmap__coast" data-map-coast>
+            <path d={land} pathLength="1" />
+            {lakes.map((d) => <path d={d} pathLength="1" />)}
+          </g>
+        </svg>
+
+        {
+          pins.map(({ listing, i, x, y, dir, nx, ny, dx, dy, px, price, image }) => (
+            <Fragment>
+              <button
+                type="button"
+                class:list={['pin', `pin--${dir}`]}
+                style={`--x: ${x}%; --y: ${y}%; --i: ${i}; --nx: ${nx}px; --ny: ${ny}px; --dx: ${dx}px; --dy: ${dy}px; --px: ${px}px`}
+                aria-label={listing.mapPin.ariaLabel}
+                aria-expanded="false"
+                aria-controls={`map-popup-${listing.slug}`}
+                data-pin={listing.slug}
+                data-status={listing.status}
+              >
+                {/* Depth float (motion.ts settle layer): three depths, landed on the point by the time the map's
+                    top is 35% down the viewport. The button box itself never moves. */}
+                <span class="pin__float" data-speed={(0.06 + (i % 3) * 0.06).toFixed(2)} data-speed-mode="settle">
+                  <span class="pin__pill small tabular" aria-hidden="true">
+                    {listing.mapPin.label}
+                  </span>
+                  <span class="pin__tick" aria-hidden="true" />
+                  <span class="pin__dot" aria-hidden="true">
+                    <span class="pin__pulse" />
+                  </span>
+                </span>
+              </button>
+              <div
+                class="map-popup"
+                id={`map-popup-${listing.slug}`}
+                role="group"
+                aria-labelledby={`map-popup-${listing.slug}-title`}
+                hidden
+                data-popup={listing.slug}
+              >
+                {image && (
+                  <Photo
+                    src={image.file}
+                    alt=""
+                    aspect="16 / 10"
+                    sizes="288px"
+                    widths={[288, 576]}
+                    position={cropFor(image.file)}
+                    class="map-popup__photo"
+                  />
+                )}
+                <div class="map-popup__body">
+                  <p class="map-popup__price tabular">
+                    {listing.status === 'rent' ? `${price}${labels.priceSuffixRent}` : price}
+                  </p>
+                  <h3 class="title map-popup__title" id={`map-popup-${listing.slug}-title`}>
+                    {listing.title}
+                  </h3>
+                  <p class="small muted">
+                    {listing.beds} {plural(listing.beds, labels.facts.beds)} · {listing.baths}{' '}
+                    {plural(listing.baths, labels.facts.baths)} · {listing.sqftLabel}
+                  </p>
+                  <a class="map-popup__link small" href={url(`/properties/${listing.slug}`)}>
+                    {map.popup.viewHome}
+                    <span class="visually-hidden">: {listing.title}</span>
+                    <Icon name="chevron-right" size={16} />
+                  </a>
+                </div>
+                <Button variant="icon" icon="x" label={map.popup.closeLabel} class="map-popup__close" data-popup-close />
+              </div>
+            </Fragment>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="map-section__list">
+      <h3 class="visually-hidden">{map.listHeading}</h3>
+      <ul class="map-list" role="list">
+        {
+          pins.map(({ listing, price, image }) => (
+            <li class="map-list__row" data-row={listing.slug} data-status={listing.status}>
+              <article class="map-card">
+                <div class="map-card__media">
+                  {image && (
+                    <Photo
+                      src={image.file}
+                      alt=""
+                      aspect="16 / 10"
+                      sizes="(min-width: 64rem) 8rem, (min-width: 48rem) 7rem, 80vw"
+                      widths={[256, 512, 768]}
+                      position={cropFor(image.file)}
+                      class="map-card__photo"
+                    />
+                  )}
+                  <span class="chip chip--status label map-card__status">{labels.status[listing.status]}</span>
+                </div>
+                <div class="map-card__body">
+                  <p class="label map-card__city">
+                    {listing.address.city}, {listing.address.state}
+                  </p>
+                  <h4 class="map-card__title">
+                    <a class="map-card__link stretched-link" href={url(`/properties/${listing.slug}`)}>
+                      {listing.title}
+                    </a>
+                  </h4>
+                  <p class="map-card__price tabular">
+                    {listing.status === 'rent' ? `${price}${labels.priceSuffixRent}` : price}
+                  </p>
+                </div>
+                <span class="map-card__go" aria-hidden="true">
+                  <Icon name="chevron-right" size={18} />
+                </span>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,313 @@
+---
+/**
+ * Testimonial slider: APG carousel, basic, no auto-rotation (DESIGN.md 10.10).
+ * Only the current slide is exposed (others `inert`); chevron buttons, arrow keys on the controls, swipe (40px),
+ * wraps around. M19 runs in CSS. Without JS all slides are listed one after another and the controls are hidden.
+ */
+import Photo from './Photo.astro';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { fmt, type Testimonial } from '../data/load-copy';
+import { url } from '../lib/url';
+
+interface Props {
+  items: Testimonial[];
+  labels: {
+    carouselLabel: string;
+    /** "{index} of {count}" */
+    slideLabel: string;
+    previous: string;
+    next: string;
+    /** "{index} / {count}" */
+    counter: string;
+  };
+  /** "{rating} out of 5": when set, the quote icon and the star rating show (DESIGN.md H10). */
+  ratingLabel?: string;
+  class?: string;
+}
+
+const { items, labels, ratingLabel, class: className } = Astro.props;
+const count = items.length;
+---
+
+<section class:list={['slider', className]} aria-roledescription="carousel" aria-label={labels.carouselLabel} data-slider>
+  <div class="slider__slides" aria-live="polite" data-slider-slides>
+    {
+      items.map((item, i) => (
+        <figure
+          class:list={['slider__slide', { 'is-current': i === 0 }]}
+          role="group"
+          aria-roledescription="slide"
+          aria-label={fmt(labels.slideLabel, { index: i + 1, count })}
+          data-slide
+        >
+          <div class="slider__photo">
+            <Photo src={item.photo} alt={item.alt} aspect="4 / 5" sizes="(min-width: 64rem) 30vw, (min-width: 48rem) 40vw, 90vw" widths={[400, 640, 900]} />
+          </div>
+          <div class="slider__text">
+            {ratingLabel && <Icon name="quote" size={32} class="slider__mark" />}
+            <blockquote class="slider__quote display-s">
+              <p>{item.quote}</p>
+            </blockquote>
+            <figcaption class="slider__caption">
+              <span class="title">{item.name}</span>
+              {item.href ? (
+                <a class="small slider__detail" href={url(item.href)}>
+                  {item.detail}
+                </a>
+              ) : (
+                <span class="small muted">{item.detail}</span>
+              )}
+              {ratingLabel && item.rating && (
+                <span class="slider__rating">
+                  {Array.from({ length: 5 }, (_, s) => (
+                    <Icon name="star" size={16} filled={s < (item.rating ?? 0)} />
+                  ))}
+                  <span class="visually-hidden">{fmt(ratingLabel, { rating: item.rating })}</span>
+                </span>
+              )}
+            </figcaption>
+          </div>
+        </figure>
+      ))
+    }
+  </div>
+
+  <div class="slider__controls" data-slider-controls>
+    <Button variant="icon" icon="chevron-left" label={labels.previous} data-slider-prev />
+    <span class="slider__counter small tabular" aria-hidden="true" data-slider-counter data-template={labels.counter}>
+      {fmt(labels.counter, { index: 1, count })}
+    </span>
+    <Button variant="icon" icon="chevron-right" label={labels.next} data-slider-next />
+  </div>
+</section>
+
+<style is:global>
+  .slider {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .slider__slides {
+    display: grid;
+    gap: var(--space-16);
+  }
+
+  .slider__slide {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .slider__slide {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-12);
+    }
+  }
+
+  .slider__photo {
+    border-radius: var(--radius-sm);
+    overflow: clip;
+  }
+
+  .slider__quote {
+    margin: 0;
+  }
+
+  .slider__quote p {
+    margin: 0;
+  }
+
+  .slider__quote p::before {
+    content: "\201C";
+  }
+
+  .slider__quote p::after {
+    content: "\201D";
+  }
+
+  .slider__caption {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-6);
+  }
+
+  .slider__mark {
+    display: block;
+    margin-bottom: var(--space-4);
+    color: var(--color-accent-graphic);
+  }
+
+  .slider__detail {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--color-border-control);
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    min-height: var(--tap-min);
+    margin-block: calc((var(--tap-min) - 1.5em) / -2);
+  }
+
+  .slider__detail:hover {
+    color: var(--color-text);
+  }
+
+  .slider__rating {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    color: var(--color-accent-graphic);
+  }
+
+  /* Controls sit below the stories, on the right: under the text column when the photo and text sit side by side. */
+  .slider__controls {
+    display: none;
+    align-items: center;
+    justify-self: end;
+    gap: var(--space-2);
+  }
+
+  @media (min-width: 48rem) {
+    .slider {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--space-12);
+    }
+
+    .slider__slides {
+      grid-column: 1 / -1;
+    }
+
+    .slider__controls {
+      grid-column: 2;
+    }
+  }
+
+  /* JS: one cell, current slide only. */
+  .js .slider__slides {
+    touch-action: pan-y;
+    gap: 0;
+  }
+
+  .js .slider__slide {
+    grid-area: 1 / 1;
+  }
+
+  .js .slider__slide:not(.is-current) {
+    visibility: hidden;
+  }
+
+  .js .slider__controls {
+    display: flex;
+  }
+
+  .slider__counter {
+    min-width: 4ch;
+    text-align: center;
+  }
+
+  /* M19 */
+  .motion-ok .slider__text {
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      translate var(--dur-slow) var(--ease-out);
+  }
+
+  .motion-ok .slider__slide:not(.is-current) .slider__text {
+    opacity: 0;
+    translate: 0 12px;
+  }
+
+  .motion-ok .slider__slide.is-leaving .slider__text {
+    translate: 0 -12px;
+  }
+
+  .motion-ok .slider__slide.is-leaving {
+    visibility: visible !important;
+  }
+
+  .motion-ok .slider__slide.is-current {
+    z-index: 1;
+  }
+
+  .motion-ok .slider__slide.is-current .slider__photo {
+    animation: slider-photo-in var(--dur-slower) var(--ease-out-expo);
+  }
+
+  @keyframes slider-photo-in {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-slider]').forEach((slider) => {
+    const slides = Array.from(slider.querySelectorAll<HTMLElement>('[data-slide]'));
+    const prev = slider.querySelector<HTMLButtonElement>('[data-slider-prev]');
+    const next = slider.querySelector<HTMLButtonElement>('[data-slider-next]');
+    const counter = slider.querySelector<HTMLElement>('[data-slider-counter]');
+    const controls = slider.querySelector<HTMLElement>('[data-slider-controls]');
+    const template = counter?.dataset.template ?? '{index} / {count}';
+    let index = 0;
+    let leaveTimer = 0;
+
+    const show = (to: number) => {
+      const target = (to + slides.length) % slides.length;
+      if (target === index) return;
+      const old = slides[index];
+      window.clearTimeout(leaveTimer);
+      slides.forEach((s) => s.classList.remove('is-leaving'));
+      if (old) {
+        old.classList.add('is-leaving');
+        leaveTimer = window.setTimeout(() => old.classList.remove('is-leaving'), 500);
+      }
+      index = target;
+      slides.forEach((slide, i) => {
+        const current = i === index;
+        slide.classList.toggle('is-current', current);
+        slide.inert = !current;
+      });
+      if (counter) counter.textContent = template.replace('{index}', String(index + 1)).replace('{count}', String(slides.length));
+    };
+
+    slides.forEach((slide, i) => {
+      slide.inert = i !== 0;
+    });
+    prev?.addEventListener('click', () => show(index - 1));
+    next?.addEventListener('click', () => show(index + 1));
+    controls?.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') show(index - 1);
+      else if (event.key === 'ArrowRight') show(index + 1);
+      else return;
+      event.preventDefault();
+    });
+
+    /* Swipe: horizontal pointer drag of 40px or more. */
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+    slider.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') return;
+      tracking = true;
+      startX = event.clientX;
+      startY = event.clientY;
+    });
+    slider.addEventListener('pointerup', (event) => {
+      if (!tracking) return;
+      tracking = false;
+      const dx = event.clientX - startX;
+      if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(event.clientY - startY)) show(dx < 0 ? index + 1 : index - 1);
+    });
+    slider.addEventListener('pointercancel', () => {
+      tracking = false;
+    });
+  });
+</script>

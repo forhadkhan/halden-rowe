@@ -1,0 +1,141 @@
+---
+/**
+ * Newsletter panel (DESIGN.md H14, reused at the end of journal posts): sunken panel, heading (M2) + line,
+ * email field and "Subscribe" on one row from 480px, consent line, key drawing (M10). Shared Form/Field give
+ * validation, endpoint and demo fallback. Class names differ from F2a's home/Newsletter.astro on purpose.
+ */
+import Form from '../Form.astro';
+import Field from '../Field.astro';
+import DrawSvg from '../DrawSvg.astro';
+import { getCopy } from '../../data/load-copy';
+
+const { newsletter } = getCopy('site');
+const errors = getCopy('errors').forms.errors;
+---
+
+<section class="signup section" aria-labelledby="signup-title">
+  <div class="container">
+    <div class="signup__panel">
+      <DrawSvg name="key" class="signup__key" speed={-0.1} />
+      <div class="signup__intro">
+        <h2 id="signup-title" class="display-m" data-split>{newsletter.headline}</h2>
+        <p>{newsletter.line}</p>
+      </div>
+      <div class="signup__form">
+        <Form
+          name="newsletter"
+          submitLabel={newsletter.submit}
+          success={{ heading: newsletter.success, text: newsletter.successLine }}
+          failure={newsletter.failure}
+        >
+          <Field
+            name="email"
+            id="signup-email"
+            type="email"
+            label={newsletter.label}
+            placeholder={newsletter.placeholder}
+            autocomplete="email"
+            required
+            messages={{ required: errors.emailRequired ?? newsletter.error, invalid: newsletter.error }}
+          />
+        </Form>
+        <p class="small muted signup__consent">{newsletter.consent}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .signup__panel {
+    position: relative;
+    display: grid;
+    gap: var(--space-8);
+    padding: var(--space-10) var(--space-5);
+    overflow: clip;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-sunken);
+  }
+
+  .signup__key {
+    --draw-width: 140px;
+  }
+
+  .signup__intro h2 {
+    margin: 0;
+  }
+
+  .signup__intro p {
+    margin: var(--space-4) 0 0;
+    max-width: var(--measure-narrow);
+  }
+
+  .signup__consent {
+    margin: var(--space-4) 0 0;
+  }
+
+  .signup .form__actions .btn {
+    --btn-h: 52px;
+    width: 100%;
+  }
+
+  /* The status line takes no room until it has a message (it stays in the page for screen readers). */
+  .signup .form__actions {
+    gap: 0;
+  }
+
+  .signup .form__status {
+    min-height: 0;
+  }
+
+  .signup .form__status:not(:empty) {
+    margin-top: var(--space-3);
+  }
+
+  /* Field and button on one row once there is room (>= 480px of form). */
+  @media (min-width: 30rem) {
+    .signup .form__form {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: var(--space-3);
+    }
+
+    .signup .form__summary,
+    .signup .form__form > input {
+      grid-column: 1 / -1;
+    }
+
+    .signup .form__actions {
+      display: contents;
+    }
+
+    .signup .form__actions .btn {
+      --btn-h: 52px;
+      --btn-px: var(--space-5);
+      width: auto;
+    }
+
+    .signup .form__status {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .signup__panel {
+      grid-template-columns: 5fr 6fr;
+      column-gap: var(--space-gutter);
+      align-items: end;
+      padding: var(--space-16);
+    }
+
+    .signup__key {
+      --draw-width: 200px;
+      position: absolute;
+      top: var(--space-8);
+      right: var(--space-8);
+    }
+
+    .signup__intro {
+      padding-top: var(--space-16);
+    }
+  }
+</style>

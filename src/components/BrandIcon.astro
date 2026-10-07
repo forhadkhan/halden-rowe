@@ -1,0 +1,26 @@
+---
+/** Social brand mark from Simple Icons (DESIGN.md 9). Always decorative: the wrapping link carries the name. */
+import { siFacebook, siInstagram, siPinterest, siX, siYoutube } from 'simple-icons';
+import type { SocialNetwork } from '../data/load-copy';
+
+interface Props {
+  network: SocialNetwork;
+  size?: number;
+}
+
+const icons = { instagram: siInstagram, facebook: siFacebook, x: siX, youtube: siYoutube, pinterest: siPinterest };
+const { network, size = 20 } = Astro.props;
+const icon = icons[network];
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={icon.path} />
+</svg>

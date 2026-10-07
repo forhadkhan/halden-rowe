@@ -1,0 +1,153 @@
+---
+/**
+ * Hero search panel (DESIGN.md 10.6). Buy and Rent are GET forms to /properties (mode, city, type, price, beds);
+ * Sell is a GET form to /contact (intent=sell, address). With JS the three forms become APG tabs (automatic
+ * activation, arrow keys) and the price select turns into min/max (home.ts). Without JS all three forms show,
+ * each under its own visible heading, and every field is visible.
+ */
+import Icon from '../Icon.astro';
+import Button from '../Button.astro';
+import { getCopy } from '../../data/load-copy';
+import { url } from '../../lib/url';
+import type { PriceRange, SearchCopy } from './types';
+
+const { search } = getCopy<SearchCopy>('search');
+const cities = getCopy('site').cities;
+const { labels, options } = search;
+
+const priceValue = (r: PriceRange) => `${r.min ?? ''}-${r.max ?? ''}`;
+const selects = (mode: 'buy' | 'rent') => [
+  {
+    key: 'type',
+    name: 'type',
+    label: labels.type,
+    options: [{ value: '', label: options.anyType }, ...options.types.map((t) => ({ value: t, label: t }))],
+  },
+  {
+    key: 'price',
+    name: 'price',
+    label: labels.price,
+    options: [
+      { value: '', label: options.anyPrice },
+      ...(mode === 'buy' ? options.priceBuy : options.priceRent).map((r) => ({ value: priceValue(r), label: r.label })),
+    ],
+  },
+  {
+    key: 'beds',
+    name: 'beds',
+    label: labels.beds,
+    options: [{ value: '', label: options.anyBeds }, ...options.beds.map((b) => ({ value: String(b.value), label: b.label }))],
+  },
+];
+const tabs = search.tabs;
+---
+
+<div class="search" data-search>
+  <h2 class="visually-hidden" id="search-title">{search.label}</h2>
+  <div class="search__tabs" role="tablist" aria-labelledby="search-title" data-search-tabs>
+    {
+      tabs.map((tab, i) => (
+        <button
+          type="button"
+          role="tab"
+          class="search__tab small"
+          id={`search-tab-${tab.id}`}
+          aria-controls={`search-panel-${tab.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          data-search-tab={tab.id}
+        >
+          {tab.label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    tabs.map((tab, i) => (
+      <div
+        class:list={['search__panel', { 'is-active': i === 0 }]}
+        id={`search-panel-${tab.id}`}
+        role="tabpanel"
+        aria-labelledby={`search-tab-${tab.id}`}
+        data-search-panel={tab.id}
+      >
+        <h3 class="search__panel-title label">{tab.label}</h3>
+        {tab.id === 'sell' ? (
+          <form class="search__form search__form--sell" method="get" action={url('/contact')}>
+            <input type="hidden" name="intent" value="sell" />
+            <p class="search__sell-copy">{search.sell.copy}</p>
+            <div class="search__field search__field--address">
+              <label class="label search__label" for="search-address">
+                {search.sell.addressLabel}
+              </label>
+              <div class="search__control">
+                <input
+                  class="search__input"
+                  id="search-address"
+                  name="address"
+                  type="text"
+                  autocomplete="street-address"
+                  placeholder={search.sell.addressPlaceholder}
+                />
+              </div>
+            </div>
+            <Button type="submit" class="search__submit" icon="chevron-right" iconPosition="end">
+              {search.sell.submit}
+            </Button>
+          </form>
+        ) : (
+          <form class="search__form" method="get" action={url('/properties')} data-search-form>
+            <input type="hidden" name="mode" value={tab.id} />
+            <div class="search__field search__field--location">
+              <label class="label search__label" for={`search-${tab.id}-q`}>
+                {labels.location}
+              </label>
+              <div class="search__control">
+                <select class="search__select" id={`search-${tab.id}-q`} name="city">
+                  <option value="">{options.anyLocation}</option>
+                  {cities.map((city) => (
+                    <option value={city}>{city}</option>
+                  ))}
+                </select>
+                <Icon name="chevron-down" size={20} class="search__chevron" />
+              </div>
+            </div>
+            <button
+              type="button"
+              class="search__more-toggle small"
+              aria-expanded="false"
+              aria-controls={`search-${tab.id}-more`}
+              data-search-more
+              data-label-more={search.moreOptions}
+              data-label-fewer={search.fewerOptions}
+            >
+              <span data-search-more-label>{search.moreOptions}</span>
+              <Icon name="chevron-down" size={20} class="search__more-icon" />
+            </button>
+            <div class="search__more" id={`search-${tab.id}-more`}>
+              {selects(tab.id).map((field) => (
+                <div class:list={['search__field', `search__field--${field.key}`]}>
+                  <label class="label search__label" for={`search-${tab.id}-${field.key}`}>
+                    {field.label}
+                  </label>
+                  <div class="search__control">
+                    <select class="search__select" id={`search-${tab.id}-${field.key}`} name={field.name}>
+                      {field.options.map((o) => (
+                        <option value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                    <Icon name="chevron-down" size={20} class="search__chevron" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button type="submit" class="search__submit" icon="search">
+              {search.submit}
+            </Button>
+          </form>
+        )}
+      </div>
+    ))
+  }
+</div>

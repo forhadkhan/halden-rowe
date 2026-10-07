@@ -1,0 +1,50 @@
+---
+/**
+ * Section header: eyebrow on a dimension line as wide as the heading (max --measure-narrow), the heading,
+ * and an optional lead (DESIGN.md 1.3, 3.2). Eyebrows are paragraphs, not headings (DESIGN.md 12).
+ * The heading text may contain one <em> (Quill marks it); pass it as `html` only from trusted copy files.
+ */
+import DimensionLine from './DimensionLine.astro';
+
+interface Props {
+  eyebrow?: string;
+  /** Heading text; may contain <em>. From copy files only. */
+  html: string;
+  level?: 1 | 2 | 3;
+  size?: 'display-xl' | 'display-l' | 'display-m' | 'display-s';
+  lead?: string;
+  id?: string;
+  split?: boolean;
+  class?: string;
+}
+
+const { eyebrow, html, level = 2, size = 'display-l', lead, id, split = true, class: className } = Astro.props;
+const Heading = `h${level}` as const;
+---
+
+<header class:list={['section-heading', className]}>
+  {eyebrow && <DimensionLine as="p" label={eyebrow} class="section-heading__eyebrow" />}
+  <Heading id={id} class:list={[size, 'section-heading__title']} data-split={split ? '' : undefined} set:html={html} />
+  {lead && <p class="lead muted section-heading__lead">{lead}</p>}
+  <slot />
+</header>
+
+<style is:global>
+  .section-heading {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  .section-heading__eyebrow {
+    width: min(100%, var(--measure-narrow));
+  }
+
+  .section-heading__title {
+    max-width: 18ch;
+  }
+
+  .section-heading__lead {
+    max-width: var(--measure-narrow);
+  }
+</style>

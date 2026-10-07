@@ -1,0 +1,118 @@
+---
+/**
+ * Key facts row (DESIGN.md 11.3): icon 20 + value (--text-title) + label (--text-small muted).
+ * 2x3 on phones, 3 per row from 768. The floor area sits on a dimension line (M21).
+ * M6 entrance with a 40ms stagger is the shared data-reveal batch.
+ */
+import Icon from '../Icon.astro';
+import DimensionLine from '../DimensionLine.astro';
+import { plural, type Listing, type Plural } from '../../data/load-copy';
+
+interface Props {
+  listing: Listing;
+  labels: {
+    heading: string;
+    beds: Plural;
+    baths: Plural;
+    area: string;
+    yearBuilt: string;
+    lot: string;
+    lotNone: string;
+    parking: string;
+  };
+}
+
+const { listing, labels } = Astro.props;
+const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+---
+
+<section class="facts" aria-labelledby="facts-heading">
+  <h2 id="facts-heading" class="visually-hidden">{labels.heading}</h2>
+  <dl class="facts__list">
+    <div class="facts__item" data-reveal>
+      <dt class="small muted"><Icon name="bed-double" size={20} />{capital(plural(listing.beds, labels.beds))}</dt>
+      <dd class="title tabular">{listing.beds}</dd>
+    </div>
+    <div class="facts__item" data-reveal>
+      <dt class="small muted"><Icon name="bath" size={20} />{capital(plural(listing.baths, labels.baths))}</dt>
+      <dd class="title tabular">{listing.baths}</dd>
+    </div>
+    <div class="facts__item facts__item--area" data-reveal>
+      <dt class="small muted"><Icon name="ruler-dimension-line" size={20} />{labels.area}</dt>
+      <dd class="title tabular">
+        <DimensionLine label={listing.sqftLabel} as="span" align="start" class="facts__dim" />
+      </dd>
+    </div>
+    <div class="facts__item" data-reveal>
+      <dt class="small muted"><Icon name="calendar" size={20} />{labels.yearBuilt}</dt>
+      <dd class="title tabular">{listing.yearBuilt}</dd>
+    </div>
+    <div class="facts__item" data-reveal>
+      <dt class="small muted"><Icon name="trees" size={20} />{labels.lot}</dt>
+      <dd class="title tabular">{listing.lot ?? labels.lotNone}</dd>
+    </div>
+    <div class="facts__item" data-reveal>
+      <dt class="small muted"><Icon name="car-front" size={20} />{labels.parking}</dt>
+      <dd class="facts__parking">{listing.parking}</dd>
+    </div>
+  </dl>
+</section>
+
+<style is:global>
+  .facts__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-5);
+    margin: 0;
+    padding-block: var(--space-6);
+    border-block: 1px solid var(--color-border);
+  }
+
+  .facts__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .facts__item dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .facts__item dt .icon {
+    flex: none;
+    color: var(--color-text);
+  }
+
+  .facts__item dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .facts__parking {
+    font-size: var(--text-body);
+    line-height: var(--leading-small);
+  }
+
+  /* The visible dimension line carries the area; screen readers get the plain text once. */
+  .facts__dim {
+    --dim-width: 100%;
+  }
+
+  .facts__dim .dim__label {
+    font-size: var(--text-title);
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: var(--weight-ui);
+  }
+
+  /* 3 per row from 768. DESIGN.md asks for 6 in a row at >=1280, but the main column is ~130px per fact
+     there and "4,320 sq ft" on its dimension line does not fit; kept at 3 (reported to Picasso). */
+  @media (min-width: 48rem) {
+    .facts__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

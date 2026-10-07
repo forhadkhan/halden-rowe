@@ -1,0 +1,146 @@
+---
+/**
+ * Journal card (DESIGN.md H13 / 11.6). `card`: image 3:2, category + date label, title, read time.
+ * `feature`: the newest post on /journal as a row (image 16:10 cols 1-7, text cols 8-12) with the excerpt and a
+ * "Read article" text link; stacked with a 3:2 image on phones. The whole card is one link (stretched title link).
+ * Hover: the Featured homes treatment (styles/card-hover.css): arrow disc on the photo, hairline frame, dark text panel.
+ */
+import type { CollectionEntry } from 'astro:content';
+import Photo from '../Photo.astro';
+import Icon from '../Icon.astro';
+import { fmt, getCopy } from '../../data/load-copy';
+import { url } from '../../lib/url';
+import '../../styles/card-hover.css';
+
+interface Props {
+  post: CollectionEntry<'journal'>;
+  variant?: 'card' | 'feature';
+  headingLevel?: 2 | 3;
+  priority?: boolean;
+}
+
+const { post, variant = 'card', headingLevel = 3, priority = false } = Astro.props;
+const journal = getCopy<{
+  readLabel: string;
+  readingTime: string;
+  categories: Record<string, string>;
+}>('journal');
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+const { title, description, date, category, cover, coverAlt, readingTime } = post.data;
+const dateLabel = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(date);
+const href = url(`/journal/${post.id}`);
+const feature = variant === 'feature';
+---
+
+<article class:list={['post-card', { 'post-card--feature': feature }]} data-reveal={feature ? undefined : ''}>
+  <div class="post-card__media" data-clip={feature ? '' : undefined} data-parallax="desktop">
+    <Photo
+      src={cover}
+      alt={coverAlt}
+      sizes={feature ? '(min-width: 64rem) 56vw, 100vw' : '(min-width: 64rem) 30vw, (min-width: 48rem) 45vw, 92vw'}
+      widths={feature ? [640, 960, 1280, 1600] : [480, 720, 960]}
+      priority={priority}
+    />
+    <span class="post-card__go" aria-hidden="true">
+      <Icon name="arrow-up-right" size={28} strokeWidth={1.5} />
+    </span>
+  </div>
+  <div class="post-card__body">
+    <p class="label muted post-card__meta">
+      <span>{journal.categories[category] ?? category}</span>
+      <span aria-hidden="true"> · </span>
+      <time datetime={date.toISOString().slice(0, 10)}>{dateLabel}</time>
+    </p>
+    <Heading class:list={[feature ? 'display-m' : 'display-s', 'post-card__title']}>
+      <a href={href} class="stretched-link"><span class="hc-text">{title}</span></a>
+    </Heading>
+    {feature && <p class="lead post-card__excerpt">{description}</p>}
+    <p class="small muted post-card__time">{fmt(journal.readingTime, { minutes: readingTime })}</p>
+    {
+      feature && (
+        <p class="post-card__more" aria-hidden="true">
+          <span>{journal.readLabel}</span>
+          <Icon name="chevron-right" size={20} />
+        </p>
+      )
+    }
+  </div>
+</article>
+
+<style is:global>
+  .post-card {
+    --hc-gap: var(--space-5);
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--hc-gap);
+  }
+
+  .post-card__media {
+    aspect-ratio: 3 / 2;
+    overflow: clip;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-skeleton);
+  }
+
+  .post-card__media .photo,
+  .post-card__media .photo-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .post-card__media .photo-img {
+    object-fit: cover;
+    transition: scale var(--dur-slower) var(--ease-out-expo);
+  }
+
+  .motion-ok .post-card:focus-within .post-card__media .photo-img {
+    scale: 1.05;
+  }
+
+  @media (hover: hover) {
+    .motion-ok .post-card:hover .post-card__media .photo-img {
+      scale: 1.05;
+    }
+  }
+
+  .post-card__meta,
+  .post-card__time,
+  .post-card__excerpt {
+    margin: 0;
+  }
+
+  .post-card__title {
+    margin: var(--space-2) 0 var(--space-3);
+  }
+
+  .post-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .post-card__excerpt {
+    margin-bottom: var(--space-4);
+    color: var(--color-text-muted);
+  }
+
+  .post-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: var(--space-6) 0 0;
+    font-weight: var(--weight-ui);
+  }
+
+  @media (min-width: 64rem) {
+    .post-card--feature {
+      grid-template-columns: 7fr 5fr;
+      align-items: center;
+      gap: var(--space-gutter);
+    }
+
+    .post-card--feature .post-card__media {
+      aspect-ratio: 16 / 10;
+    }
+  }
+</style>

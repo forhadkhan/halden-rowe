@@ -1,0 +1,63 @@
+---
+/**
+ * H8 Neighbourhoods: four large rows linking to /properties?q=<city>. From 768px a sticky frame shows the
+ * hovered or focused row's photo (M23, home.ts); phones show each photo inline above its name instead.
+ */
+import Photo from '../Photo.astro';
+import SectionHeading from '../SectionHeading.astro';
+import DimensionLine from '../DimensionLine.astro';
+import Icon from '../Icon.astro';
+import { getCopy } from '../../data/load-copy';
+import { url } from '../../lib/url';
+import { toPropertiesContract, type HomeCopy } from './types';
+
+const { places } = getCopy<HomeCopy>('home');
+---
+
+<section class="places section" id="neighborhoods" aria-labelledby="places-title" data-places>
+  <div class="container grid places__grid">
+    <div class="places__main">
+      <SectionHeading eyebrow={places.eyebrow} html={places.headline} id="places-title" />
+      <ul class="places__list" role="list">
+        {
+          places.items.map((place, i) => (
+            <li class="place" data-reveal>
+              <a class="place__link" href={url(toPropertiesContract(place.href))} data-place={i}>
+                <Photo
+                  src={place.image.file}
+                  alt=""
+                  aspect="16 / 9"
+                  sizes="92vw"
+                  widths={[400, 640, 800]}
+                  class="place__inline-photo"
+                />
+                <span class="place__name">{place.name}</span>
+                <span class="place__meta">
+                  <DimensionLine as="span" label={place.meta} align="center" animate={false} class="place__dim" />
+                  <Icon name="chevron-right" size={24} class="place__chevron" />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="places__frame-wrap" aria-hidden="true">
+      <div class="places__frame" data-places-frame>
+        {
+          places.items.map((place, i) => (
+            <div class:list={['places__layer', { 'is-active': i === 0 }]} data-place-layer={i}>
+              <Photo
+                src={place.image.file}
+                alt=""
+                aspect="4 / 5"
+                sizes="(min-width: 64rem) 36vw, 45vw"
+                widths={[480, 720, 960, 1200]}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

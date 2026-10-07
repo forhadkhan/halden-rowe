@@ -1,0 +1,486 @@
+---
+/**
+ * APG accordion (DESIGN.md 10.9), dressed as doors: each question is a hinged door with the question on it. Opening swings
+ * the leaf away on its hinge and reveals a lit room holding the answer; closing swings it shut again.
+ * The real control is the flat <button aria-expanded aria-controls> inside a heading (it never rotates, so its hit area and
+ * focus ring stay put). The leaf and its printed copy of the title are decorative (aria-hidden). Several can be open; all
+ * start closed. Without JS every answer is shown and the doors are not drawn (the closed state needs `.js`).
+ * M18: room rows 0fr -> 1fr, leaf rotateY about the left hinge. FAQPage JSON-LD: `faqJsonLd()` in lib/jsonld.ts.
+ */
+import Icon from './Icon.astro';
+
+interface Item {
+  id: string;
+  q: string;
+  a: string;
+}
+
+interface Props {
+  items: Item[];
+  headingLevel?: 2 | 3 | 4;
+  /** Prefix for element ids, unique per page. */
+  idPrefix?: string;
+  class?: string;
+}
+
+const { items, headingLevel = 3, idPrefix = 'faq', class: className } = Astro.props;
+const Heading = `h${headingLevel}` as const;
+---
+
+<div class:list={['accordion', className]} data-accordion>
+  {
+    items.map((item, index) => {
+      const buttonId = `${idPrefix}-${item.id}-q`;
+      const panelId = `${idPrefix}-${item.id}-a`;
+      const number = String(index + 1).padStart(2, '0');
+      return (
+        <div class="accordion__item door">
+          <div class="door__room" aria-hidden="true" />
+          <div class="door__leaf" aria-hidden="true">
+            <span class="door__hinge" />
+            <span class="door__hinge" />
+            <span class="door__face">
+              <span class="door__no">{number}</span>
+              <span class="door__title">{item.q}</span>
+            </span>
+            <span class="door__handle" />
+          </div>
+          <Heading class="accordion__heading">
+            <button type="button" id={buttonId} class="accordion__button" aria-controls={panelId}>
+              <span class="door__no" aria-hidden="true">{number}</span>
+              <span class="accordion__question">{item.q}</span>
+              <Icon name="chevron-down" size={20} class="accordion__chevron" />
+            </button>
+          </Heading>
+          <div id={panelId} class="accordion__panel">
+            <p class="accordion__answer">{item.a}</p>
+          </div>
+        </div>
+      );
+    })
+  }
+</div>
+
+<style is:global>
+  .accordion {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  /* The doorway: a casing of two hairlines round a recessed opening. */
+  .accordion__item {
+    --door-leaf: var(--hr-ink-800);
+    --door-leaf-lit: #3b4240;
+    --door-brass: linear-gradient(135deg, #e6cb9b, var(--hr-brass-300) 40%, var(--hr-brass-600));
+    --door-swing: 640ms;
+    --door-ease: cubic-bezier(0.55, 0, 0.2, 1);
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto;
+    border-radius: var(--radius-sm);
+    box-shadow:
+      0 0 0 1px var(--color-border),
+      0 0 0 5px var(--color-surface),
+      0 0 0 6px var(--color-border);
+    perspective: 1100px;
+    perspective-origin: 12% 40%;
+    transition: grid-template-rows var(--door-swing) var(--door-ease);
+  }
+
+  .js .accordion__item {
+    grid-template-rows: auto 0fr;
+  }
+
+  .js .accordion__item.is-open {
+    grid-template-rows: auto 1fr;
+  }
+
+  .accordion__heading {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font: inherit;
+  }
+
+  .accordion__button {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) 3.5rem;
+    align-items: center;
+    column-gap: var(--space-3);
+    width: 100%;
+    min-height: 5.5rem;
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: var(--text-title);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-title);
+    text-align: start;
+  }
+
+  .door__no {
+    color: var(--color-accent-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    font-weight: var(--weight-strong);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+  }
+
+  .accordion__chevron {
+    justify-self: end;
+    margin-inline-end: var(--space-2);
+    color: var(--color-accent-text);
+    transition:
+      rotate var(--dur-base) var(--ease-in-out),
+      opacity var(--dur-base) var(--ease-standard);
+  }
+
+  .accordion__button[aria-expanded="true"] .accordion__chevron {
+    rotate: 180deg;
+  }
+
+  .accordion__panel {
+    position: relative;
+    z-index: 2;
+    min-height: 0;
+    overflow: clip;
+  }
+
+  .accordion__answer {
+    max-width: var(--measure);
+    margin: 0;
+    padding: 0 var(--space-5) var(--space-6) calc(var(--space-5) + 2.25rem + var(--space-3));
+    color: var(--color-text);
+  }
+
+  /* ----- Doors (JS only) -------------------------------------------------- */
+  .door__room,
+  .door__leaf {
+    display: none;
+  }
+
+  .js .door__room,
+  .js .door__leaf {
+    display: block;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Behind the door: a lit room, deeper at the hinge side, with a floor line. */
+  .js .door__room {
+    z-index: 0;
+    overflow: clip;
+    background:
+      linear-gradient(to top, rgb(122 88 35 / 0.14), transparent 3px),
+      radial-gradient(130% 120% at 100% 0%, #fbf2dc, transparent 62%),
+      var(--color-surface);
+    box-shadow:
+      inset 14px 0 22px -14px rgb(26 30 29 / 0.28),
+      inset 0 12px 18px -14px rgb(26 30 29 / 0.22);
+  }
+
+  /* The open door's edge and hinges stay on the wall at the left of the room. */
+  .js .door__room::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(var(--hr-brass-300), var(--hr-brass-600)) 0 0.9rem / 6px 2rem no-repeat,
+      linear-gradient(var(--hr-brass-300), var(--hr-brass-600)) 0 calc(100% - 0.9rem) / 6px 2rem no-repeat,
+      linear-gradient(90deg, var(--door-leaf) 0 4px, transparent 4px);
+  }
+
+  /* The leaf swings about its left hinge, away from the viewer, and is gone at 98deg (back face hidden). */
+  .js .door__leaf {
+    z-index: 1;
+    overflow: visible;
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.05), transparent 18%, rgb(0 0 0 / 0.16)),
+      var(--door-leaf);
+    transform-origin: 0 50%;
+    backface-visibility: hidden;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+    transition:
+      transform var(--door-swing) var(--door-ease),
+      background-color var(--dur-base) var(--ease-standard);
+  }
+
+  /* Raised panel moulding on the leaf. */
+  .js .door__leaf::before {
+    content: "";
+    position: absolute;
+    inset: var(--space-3) 5rem var(--space-3) var(--space-3);
+    border-radius: var(--radius-xs);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.1),
+      inset 0 2px 8px rgb(0 0 0 / 0.35),
+      0 1px 0 rgb(255 255 255 / 0.05);
+    pointer-events: none;
+  }
+
+  /* Light on the leaf falls off as it turns. */
+  .js .door__leaf::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: #000;
+    opacity: 0;
+    transition: opacity var(--door-swing) var(--door-ease);
+    pointer-events: none;
+  }
+
+  .js .accordion__item.is-open .door__leaf {
+    transform: rotateY(98deg);
+  }
+
+  .js .accordion__item.is-open .door__leaf::after {
+    opacity: 0.55;
+  }
+
+  /* Hardware. */
+  .door__hinge {
+    position: absolute;
+    left: -2px;
+    width: 6px;
+    height: 2rem;
+    border-radius: 1px;
+    background: var(--door-brass);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  }
+
+  .door__hinge:nth-of-type(1) {
+    top: 0.9rem;
+  }
+
+  .door__hinge:nth-of-type(2) {
+    bottom: 0.9rem;
+  }
+
+  .door__handle {
+    position: absolute;
+    top: 50%;
+    right: var(--space-5);
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-top: -1.125rem;
+    border-radius: 50%;
+    background: var(--door-brass);
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 0.45),
+      inset 0 0 0 1px rgb(255 255 255 / 0.25);
+    transition: filter var(--dur-base) var(--ease-standard);
+  }
+
+  /* The lever. */
+  .door__handle::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    width: 1.9rem;
+    height: 0.45rem;
+    margin-top: -0.225rem;
+    border-radius: 999px;
+    background: var(--door-brass);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.4);
+  }
+
+  /* The keyhole. */
+  .door__handle::after {
+    content: "";
+    position: absolute;
+    inset: 0.8rem 0.9rem;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.55);
+  }
+
+  /* The title printed on the door, aligned with the real button's text. */
+  .door__face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) 3.5rem;
+    align-items: center;
+    column-gap: var(--space-3);
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+    color: var(--hr-ivory);
+    font-family: var(--font-display);
+    font-size: var(--text-title);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-title);
+  }
+
+  .door__face .door__no {
+    color: var(--hr-brass-300);
+  }
+
+  /* While the door is closed the real button is transparent: the door carries the type. */
+  .js .accordion__button[aria-expanded="false"] .accordion__question,
+  .js .accordion__button[aria-expanded="false"] .door__no,
+  .js .accordion__button[aria-expanded="false"] .accordion__chevron {
+    opacity: 0;
+  }
+
+  .js .accordion__question,
+  .js .door__no,
+  .js .accordion__chevron {
+    transition: opacity var(--dur-base) var(--ease-standard);
+  }
+
+  .js .accordion__button[aria-expanded="true"] .accordion__question,
+  .js .accordion__button[aria-expanded="true"] .door__no,
+  .js .accordion__button[aria-expanded="true"] .accordion__chevron {
+    transition-delay: calc(var(--door-swing) * 0.3);
+  }
+
+  .js .accordion__panel {
+    transition: visibility 0s linear 0s;
+  }
+
+  .js .accordion__panel:not(.is-open) {
+    visibility: hidden;
+    transition: visibility 0s linear var(--door-swing);
+  }
+
+  .js .accordion__panel .accordion__answer {
+    opacity: 1;
+    transition: opacity var(--dur-base) var(--ease-standard) calc(var(--door-swing) * 0.45);
+  }
+
+  .js .accordion__panel:not(.is-open) .accordion__answer {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+
+  /* Hover and focus on a closed door: the handle warms and a seam of light shows at the free edge. */
+  .js .accordion__item:not(.is-open):hover .door__handle,
+  .js .accordion__item:not(.is-open):has(.accordion__button:focus-visible) .door__handle {
+    filter: brightness(1.18);
+  }
+
+  .js .accordion__item:not(.is-open):hover .door__leaf,
+  .js .accordion__item:not(.is-open):has(.accordion__button:focus-visible) .door__leaf {
+    background-color: var(--door-leaf-lit);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.06),
+      inset -2px 0 0 var(--hr-brass-300);
+  }
+
+  /* No JS: a plain stacked list, every answer visible. */
+  html:not(.js) .accordion__chevron {
+    display: none;
+  }
+
+  html:not(.js) .accordion__item {
+    box-shadow: none;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+  }
+
+  html:not(.js) .accordion__button {
+    min-height: 0;
+  }
+
+  /* Phones: tighter door furniture so long questions keep their width. */
+  @media (max-width: 29.99rem) {
+    .accordion__item {
+      --door-swing: 560ms;
+    }
+
+    .accordion__button,
+    .door__face {
+      grid-template-columns: 1.75rem minmax(0, 1fr) 3rem;
+      column-gap: var(--space-2);
+      padding-inline: var(--space-4) var(--space-3);
+    }
+
+    .accordion__answer {
+      padding-inline: var(--space-4) var(--space-4);
+    }
+
+    .door__handle {
+      right: var(--space-4);
+    }
+
+    .js .door__leaf::before {
+      right: 4rem;
+    }
+  }
+
+  /* Reduced motion: no swing and no sliding rows. The door fades away over 400ms and the answer is simply there. */
+  @media (prefers-reduced-motion: reduce) {
+    .accordion__item {
+      --door-swing: 400ms;
+      transition: none;
+    }
+
+    .js .door__leaf {
+      transition:
+        opacity var(--door-swing) var(--ease-standard),
+        background-color var(--dur-base) var(--ease-standard);
+    }
+
+    .js .accordion__item.is-open .door__leaf {
+      transform: none;
+      opacity: 0;
+    }
+
+    .accordion__chevron {
+      transition: none;
+    }
+  }
+
+  /* Windows high contrast: drop the painted doors, keep a plain accordion. */
+  @media (forced-colors: active) {
+    .js .door__room,
+    .js .door__leaf {
+      display: none;
+    }
+
+    .js .accordion__button[aria-expanded="false"] .accordion__question,
+    .js .accordion__button[aria-expanded="false"] .door__no,
+    .js .accordion__button[aria-expanded="false"] .accordion__chevron {
+      opacity: 1;
+    }
+
+    .accordion__item {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-accordion]').forEach((accordion) => {
+    /* aria-expanded only once JS can honour it; without JS every answer is visible. */
+    accordion.querySelectorAll('.accordion__button').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    accordion.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('.accordion__button');
+      if (!button || !accordion.contains(button)) return;
+      const panel = document.getElementById(button.getAttribute('aria-controls') ?? '');
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(open));
+      panel?.classList.toggle('is-open', open);
+      button.closest('.accordion__item')?.classList.toggle('is-open', open);
+    });
+    /* APG: Up/Down move between the questions, Home/End jump to the first/last. */
+    accordion.addEventListener('keydown', (event) => {
+      const current = (event.target as Element).closest<HTMLButtonElement>('.accordion__button');
+      if (!current || !accordion.contains(current)) return;
+      const buttons = Array.from(accordion.querySelectorAll<HTMLButtonElement>('.accordion__button'));
+      const at = buttons.indexOf(current);
+      const target =
+        event.key === 'ArrowDown' ? buttons[(at + 1) % buttons.length]
+        : event.key === 'ArrowUp' ? buttons[(at - 1 + buttons.length) % buttons.length]
+        : event.key === 'Home' ? buttons[0]
+        : event.key === 'End' ? buttons[buttons.length - 1]
+        : undefined;
+      if (!target) return;
+      event.preventDefault();
+      target.focus();
+    });
+  });
+</script>

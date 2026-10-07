@@ -1,0 +1,87 @@
+---
+/**
+ * Agent card for the detail aside (DESIGN.md 11.3): 80px 1:1 portrait, name, role, phone and email icon buttons.
+ * The icon buttons are real tel:/mailto: links with accessible names from site.json a11y patterns.
+ */
+import Photo from '../Photo.astro';
+import Button from '../Button.astro';
+import { fmt, getCopy, type Agent } from '../../data/load-copy';
+import { cropFor } from './crops';
+
+interface Props {
+  agent: Agent;
+  heading: string;
+  headingLevel?: 2 | 3;
+}
+
+const { agent, heading, headingLevel = 2 } = Astro.props;
+const a11y = getCopy('site').a11y;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<section class="agent-card" aria-labelledby={`agent-${agent.id}`}>
+  <p class="label agent-card__eyebrow">{heading}</p>
+  <div class="agent-card__row">
+    <div class="agent-card__portrait">
+      <Photo src={agent.photo} alt={agent.alt} sizes="80px" widths={[160, 240]} position={cropFor(agent.photo)} />
+    </div>
+    <div class="agent-card__who">
+      <Heading id={`agent-${agent.id}`} class="title agent-card__name">{agent.name}</Heading>
+      <p class="small muted">{agent.role}</p>
+    </div>
+    <div class="agent-card__actions">
+      <Button variant="icon" icon="phone" href={agent.phoneHref} label={fmt(a11y.phoneLinkPattern, { name: agent.name, phone: agent.phone })} magnetic={false} />
+      <Button variant="icon" icon="mail" href={`mailto:${agent.email}`} label={fmt(a11y.emailLinkPattern, { name: agent.name, email: agent.email })} magnetic={false} />
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .agent-card__eyebrow {
+    margin: 0 0 var(--space-4);
+  }
+
+  .agent-card__row {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .agent-card__portrait {
+    width: 80px;
+    aspect-ratio: 1;
+    overflow: clip;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-skeleton);
+  }
+
+  .agent-card__portrait .photo,
+  .agent-card__portrait .photo-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .agent-card__portrait .photo-img {
+    object-fit: cover;
+    object-position: var(--photo-position, 50% 20%);
+  }
+
+  .agent-card__name {
+    margin: 0;
+  }
+
+  .agent-card__who p {
+    margin: var(--space-1) 0 0;
+  }
+
+  .agent-card__actions {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .agent-card__actions .btn--icon {
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+  }
+</style>

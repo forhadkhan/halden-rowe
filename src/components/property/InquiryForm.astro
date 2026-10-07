@@ -1,0 +1,149 @@
+---
+/**
+ * Listing enquiry form (DESIGN.md 10.8 / 11.3) on the shared Form: name, email, phone (optional), message prefilled
+ * with the listing title, preferred viewing date (optional, not in the past), consent. Endpoint or demo fallback,
+ * validation and status microcopy all come from Form.astro + errors.json.
+ */
+import Form from '../Form.astro';
+import Field from '../Field.astro';
+import { fmt, getCopy, type Listing } from '../../data/load-copy';
+
+interface Props {
+  listing: Listing;
+  agentName: string;
+  labels: {
+    heading: string;
+    intro: string;
+    messageDefault: string;
+    viewingDateLabel: string;
+    viewingDateHint: string;
+    submit: string;
+    successHeading: string;
+    successText: string;
+    sendAnother: string;
+  };
+}
+
+const { listing, agentName, labels } = Astro.props;
+const forms = getCopy('errors').forms;
+const f = forms.fields;
+const e = forms.errors;
+const MESSAGE_MAX = 2000;
+// Browsers compile `pattern` with the `v` flag, where ( ) - must be escaped inside a class, or the pattern is ignored.
+---
+
+<section class="inquiry" id="inquiry" aria-labelledby="inquiry-heading" data-inquiry>
+  <h2 id="inquiry-heading" class="display-s">{labels.heading}</h2>
+  <p class="inquiry__intro muted">{fmt(labels.intro, { agentName })}</p>
+  <Form
+    name="inquiry"
+    subject={`Inquiry: ${listing.title}`}
+    submitLabel={labels.submit}
+    success={{
+      heading: labels.successHeading,
+      text: fmt(labels.successText, { agentName, title: listing.title }),
+      sendAnother: labels.sendAnother,
+    }}
+  >
+    <input type="hidden" name="listing" value={listing.slug} />
+    <div class="inquiry__pair">
+      <Field
+        name="name"
+        id="inquiry-name"
+        label={f.name.label}
+        autocomplete={f.name.autocomplete}
+        required
+        messages={{ required: e.nameRequired }}
+      />
+      <Field
+        name="email"
+        id="inquiry-email"
+        type="email"
+        label={f.email.label}
+        hint={f.email.hint}
+        autocomplete={f.email.autocomplete}
+        required
+        messages={{ required: e.emailRequired, invalid: e.emailInvalid }}
+      />
+    </div>
+    <Field
+      name="phone"
+      id="inquiry-phone"
+      type="tel"
+      label={f.phone.label}
+      hint={f.phone.hint}
+      autocomplete={f.phone.autocomplete}
+      optionalLabel={forms.optional}
+      pattern="[0-9 \(\)\+\.\-]{7,20}"
+      messages={{ invalid: e.phoneInvalid }}
+    />
+    <Field
+      name="message"
+      id="inquiry-message"
+      type="textarea"
+      label={f.message.label}
+      hint={f.message.hint}
+      value={fmt(labels.messageDefault, { title: listing.title })}
+      required
+      maxlength={MESSAGE_MAX}
+      rows={5}
+      messages={{ required: e.messageRequired, tooLong: e.messageTooLong }}
+    />
+    <Field
+      name="viewing-date"
+      id="inquiry-date"
+      type="date"
+      label={labels.viewingDateLabel}
+      hint={labels.viewingDateHint}
+      optionalLabel={forms.optional}
+      messages={{ past: e.dateInPast }}
+      class="inquiry__date"
+    />
+    <Field
+      name="consent"
+      id="inquiry-consent"
+      type="checkbox"
+      label={f.consent.label}
+      hint={f.consent.hint}
+      required
+      messages={{ required: e.consentRequired }}
+    />
+  </Form>
+</section>
+
+<style is:global>
+  .inquiry h2 {
+    margin: 0;
+  }
+
+  .inquiry__intro {
+    margin: var(--space-3) 0 var(--space-6);
+  }
+
+  .inquiry__pair {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .inquiry__date .field__control {
+    max-width: 16rem;
+  }
+
+  /* Tablet: the aside is full width below the main column, so name and email sit side by side. */
+  @media (min-width: 48rem) and (max-width: 63.99rem) {
+    .inquiry__pair {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+</style>
+
+<script>
+  /* The page is static: set the date picker's minimum to today in the visitor's own time zone. */
+  const date = document.querySelector<HTMLInputElement>('#inquiry-date');
+  if (date) {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    date.min = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  }
+</script>

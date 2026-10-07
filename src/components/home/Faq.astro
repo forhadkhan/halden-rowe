@@ -1,0 +1,30 @@
+---
+/** H11 FAQ: the six `home: true` questions in the shared Accordion (M18). */
+import Accordion from '../Accordion.astro';
+import SectionHeading from '../SectionHeading.astro';
+import Button from '../Button.astro';
+import { getCopy } from '../../data/load-copy';
+import type { HomeCopy } from './types';
+
+const { faq } = getCopy<HomeCopy>('home');
+const items = getCopy('faq').items.filter((item) => item.home);
+---
+
+<section class="faq section" aria-labelledby="faq-title">
+  <div class="container grid faq__grid">
+    <div class="faq__intro">
+      <SectionHeading eyebrow={faq.eyebrow} html={faq.headline} lead={faq.lead} id="faq-title" size="display-m" />
+      <p class="faq__contact faq__contact--side">
+        <span>{faq.contactPrompt}</span>
+        <Button variant="text" href={faq.contactHref} icon="chevron-right">{faq.contactLink}</Button>
+      </p>
+    </div>
+    <div class="faq__list">
+      <Accordion items={items} headingLevel={3} idPrefix="home-faq" />
+      <p class="faq__contact faq__contact--below">
+        <span>{faq.contactPrompt}</span>
+        <Button variant="text" href={faq.contactHref} icon="chevron-right">{faq.contactLink}</Button>
+      </p>
+    </div>
+  </div>
+</section>
