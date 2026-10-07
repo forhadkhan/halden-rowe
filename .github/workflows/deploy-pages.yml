@@ -1,11 +1,13 @@
-# Deploy to GitHub Pages. Not enabled: it runs only when started by hand (Actions > Deploy to GitHub Pages >
-# Run workflow). To turn on deploys from main, add `push: branches: [main]` under `on:`.
+# Deploy to GitHub Pages. Runs on every push to main, and can be started by hand (Actions > Deploy to GitHub
+# Pages > Run workflow).
 # Repo settings: Pages > Source = GitHub Actions. Repository variables (Settings > Secrets and variables >
 # Actions > Variables): SITE_URL (the build fails without a site URL; see the Build step), BASE_PATH,
 # PUBLIC_FORM_ENDPOINT, PUBLIC_FORM_ACCESS_KEY (a public, domain-locked key).
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

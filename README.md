@@ -62,8 +62,8 @@ Use it for any new link: `<a href={url('/contact/')}>`.
 ### GitHub Pages
 
 1. Repo Settings > Pages > Source: **GitHub Actions**.
-2. `.github/workflows/deploy-pages.yml` is not enabled: it runs only from Actions > Deploy to GitHub Pages >
-   Run workflow. Add `push: branches: [main]` under `on:` to deploy on every push.
+2. `.github/workflows/deploy-pages.yml` deploys on every push to `main`, and can also be started from Actions >
+   Deploy to GitHub Pages > Run workflow.
 3. It builds with the repository variables `SITE_URL` and `BASE_PATH` (Settings > Secrets and variables >
    Actions > Variables). Unset, they default to `https://<owner>.github.io` and `/<repo-name>`. For a custom
    domain or a `<owner>.github.io` repo, set `SITE_URL` to that origin and `BASE_PATH=/`.
