@@ -84,4 +84,17 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
     border: 1px solid var(--color-border);
     border-radius: 50%;
   }
+
+  /* Phones: photo and the two buttons on one line, name and role under the photo. */
+  @media (max-width: 47.99rem) {
+    .agent-card__row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-4);
+    }
+
+    .agent-card__who {
+      grid-row: 2;
+      grid-column: 1 / -1;
+    }
+  }
 </style>
