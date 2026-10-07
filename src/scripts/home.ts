@@ -4,7 +4,6 @@
  *   search panel tabs, "More options", price range -> min/max (10.6)
  *   hero dome scale-in + tower rise
  *   featured scroll moment (scrubbed clip on the large photo, row drift; timed M4 below 64rem)
- *   services scroll region + progress line (H5)
  *   map: coast draw, M11 pin drop + pulse, chips, M22 popups, list <-> pin highlight (10.13)
  *   M9 pinned how-it-works (desktop + motion)
  *   M23 neighbourhood photo swap
@@ -146,31 +145,6 @@ function initFeatured() {
       if (img && phone) tl.from(img, { scale: 1.12, duration: 1.1, ease: 'expo.out' }, 0);
     },
   );
-}
-
-/* ------------------------------------------------------------------ services row (H5, phones) */
-function initServices() {
-  const row = $('[data-services-row]');
-  const fill = $('[data-services-progress]');
-  if (!row) return;
-  // The region is a tab stop only while it actually scrolls (phones).
-  const sync = () => {
-    const scrolls = row.scrollWidth > row.clientWidth + 1;
-    if (scrolls) row.setAttribute('tabindex', '0');
-    else row.removeAttribute('tabindex');
-    update();
-  };
-  const update = () => {
-    if (!fill) return;
-    const max = row.scrollWidth - row.clientWidth;
-    const visible = row.clientWidth / row.scrollWidth;
-    const progress = max > 0 ? row.scrollLeft / max : 1;
-    fill.style.setProperty('--size', String(visible));
-    fill.style.setProperty('--pos', String(progress * (1 - visible)));
-  };
-  row.addEventListener('scroll', update, { passive: true });
-  new ResizeObserver(sync).observe(row);
-  sync();
 }
 
 /* ------------------------------------------------------------------ map (10.13) */
@@ -397,7 +371,6 @@ function initPlaces() {
 initSearch();
 initHero();
 initFeatured();
-initServices();
 initMap();
 initSteps();
 initPlaces();

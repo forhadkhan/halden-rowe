@@ -1107,22 +1107,10 @@
   max-width: var(--measure-narrow);
 }
 
-.services__scroller {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-
-.services__scroller::-webkit-scrollbar {
-  display: none;
-}
-
 .services__list {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 78%;
-  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-12);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1133,7 +1121,6 @@
   display: grid;
   gap: var(--space-5);
   align-content: start;
-  scroll-snap-align: start;
 }
 
 /* Each card gets its own top: arch, quarter round left, quarter round right, wide dome (photos are 3 / 4). */
@@ -1158,8 +1145,7 @@
   overflow: clip;
 }
 
-/* M29 drift: the four shapes float down and back out of step (translate only; downward, so a phone's scroll row
-   never clips their tops). */
+/* M29 drift: the four shapes float down and back out of step (translate only, downward). */
 .motion-ok .service__media {
   animation: service-drift var(--dur-drift) var(--ease-in-out) calc(var(--i, 0) * -2.75s) infinite alternate;
   animation-play-state: var(--ambient-play, running);
@@ -1214,36 +1200,17 @@
   text-decoration-color: currentColor;
 }
 
-.services__progress {
-  position: relative;
-  height: 1px;
-  margin-top: var(--space-6);
-  background-color: var(--color-border);
-}
-
-.services__progress-fill {
-  position: absolute;
-  top: -1px;
-  left: calc(var(--pos, 0) * 100%);
-  width: calc(var(--size, 1) * 100%);
-  height: 3px;
-  background-color: var(--color-accent-graphic);
+/* Phones: one card per row, a little shorter than the tablet 3 / 4 so a full-width arch fits the screen. */
+@media (max-width: 47.99rem) {
+  .service__photo.photo {
+    --photo-aspect: 4 / 5;
+  }
 }
 
 @media (min-width: 48rem) {
-  .services__scroller {
-    overflow: visible;
-    scroll-snap-type: none;
-  }
-
   .services__list {
-    grid-auto-flow: row;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-12) var(--space-gutter);
-  }
-
-  .services__progress {
-    display: none;
   }
 }
 

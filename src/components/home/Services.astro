@@ -1,7 +1,6 @@
 ---
 /**
- * H5 Services: four arched cards. Phones get a scroll-snap row (a focusable region so keyboards can scroll it)
- * with a decorative progress line; tablets 2x2; desktop one row. M4 per arch, M6 on the text.
+ * H5 Services: four arched cards. Phones stack them one per row; tablets 2x2; desktop one row. M4 per arch, M6 on the text.
  */
 import Photo from '../Photo.astro';
 import SectionHeading from '../SectionHeading.astro';
@@ -20,7 +19,7 @@ const { services } = getCopy<HomeCopy>('home');
       <p class="services__intro">{services.intro}</p>
     </div>
   </div>
-  <div class="services__scroller container" role="region" aria-label={services.regionLabel} tabindex="0" data-services-row>
+  <div class="container">
     <ul class="services__list" role="list" data-ambient>
       {
         services.items.map((item, i) => (
@@ -47,8 +46,5 @@ const { services } = getCopy<HomeCopy>('home');
         ))
       }
     </ul>
-  </div>
-  <div class="container services__progress" aria-hidden="true">
-    <span class="services__progress-fill" data-services-progress></span>
   </div>
 </section>
