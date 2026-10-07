@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-labelledby="hr-monogram-title">
+  <title id="hr-monogram-title">Halden &amp; Rowe</title>
+  <!-- H/R ligature inside an arched doorway (Picasso, 2026-10-07). The H crossbar runs on as the
+       foot of the R bowl; the H right stem is the R stem. Single colour via currentColor.
+       Minimum size: 24 CSS px (below that use public/favicon.svg, which has heavier strokes). -->
+  <g fill="none" stroke="currentColor" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4">
+    <path stroke-width="2.4" d="M7.75 45.25V21A16.25 16.25 0 0 1 40.25 21V45.25Z"/>
+    <path stroke-width="3.4" d="M14.5 22V39M23.5 22V39M14.5 30.5H29.25A4.25 4.25 0 0 0 29.25 22H23.5M29.5 30.5L34.5 39"/>
+  </g>
+</svg>

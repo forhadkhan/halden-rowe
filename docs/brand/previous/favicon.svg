@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Halden & Rowe favicon (Picasso, 2026-10-07): the H/R doorway monogram, ivory on an ink tile.
+       Heavier strokes and no threshold line compared with src/assets/brand/monogram.svg, so it holds at 16 px.
+       The ink tile keeps it visible on both light and dark browser chrome. -->
+  <rect width="32" height="32" rx="7" fill="#1A1E1D"/>
+  <g fill="none" stroke="#ECE8DF" stroke-linecap="butt" stroke-linejoin="miter">
+    <path stroke-width="2.6" d="M6 28V15A10 10 0 0 1 26 15V28"/>
+    <path stroke-width="3.2" d="M10.5 15.5V26.5M16 15.5V26.5M10.5 21H18.75A2.75 2.75 0 0 0 18.75 15.5H16M18.75 21L22.25 26.5"/>
+  </g>
+</svg>
