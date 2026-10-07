@@ -32,6 +32,17 @@ jobs:
 
       - run: npm ci
 
+      # Astro's processed images and fonts. Files are named by a hash of the source and the size/format, so a
+      # restored cache is always safe: unchanged photos are reused, new or edited ones are rebuilt. The key changes
+      # when a photo does; restore-keys starts from the latest older cache. Most of the build time is image work.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.astro/assets
+            node_modules/.astro/fonts
+          key: astro-cache-${{ hashFiles('src/assets/**', 'public/**', 'astro.config.*') }}
+          restore-keys: astro-cache-
+
       - name: Build
         env:
           # SITE_URL is required by `astro build` (canonical, Open Graph and sitemap URLs). Set the repository
