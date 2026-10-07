@@ -1,0 +1,25 @@
+{
+  "title": "Journal",
+  "lead": "Practical notes from our agents on buying, selling and renting a home, written from what we see at viewings and closings.",
+  "breadcrumb": ["Home", "Journal"],
+  "readLabel": "Read article",
+  "readingTime": "{minutes} min read",
+  "categories": {
+    "buying": "Buying",
+    "selling": "Selling",
+    "money": "Money"
+  },
+  "post": {
+    "writtenBy": "Written by",
+    "publishedOn": "Published {date}",
+    "shareHeading": "Share this article",
+    "share": {
+      "x": "Share on X",
+      "facebook": "Share on Facebook",
+      "pinterest": "Share on Pinterest",
+      "copy": "Copy link"
+    },
+    "moreHeading": "More from the journal",
+    "progressLabel": "Reading progress"
+  }
+}

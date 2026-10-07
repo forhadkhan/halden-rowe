@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240" fill="none" stroke="currentColor" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+  <!-- Floor plan line drawing (Picasso, 2026-10-07): used for step 2 of "How it works". Every path has pathLength="1".
+       data-layer orders the draw: walls, partitions, openings, furniture, dimensions. Decorative: always aria-hidden. -->
+  <g data-layer="walls" stroke-width="2.5">
+    <path pathLength="1" d="M64 40H40V200H140M164 200H280V150M280 90V40H256M190 40H120"/>
+  </g>
+  <g data-layer="partitions" stroke-width="1.5">
+    <path pathLength="1" d="M160 40V120M40 120H120M144 120H160M100 120V130M100 154V200"/>
+  </g>
+  <g data-layer="openings" stroke-width=".75">
+    <path pathLength="1" d="M64 37.5H120M64 42.5H120M190 37.5H256M190 42.5H256M277.5 90V150M282.5 90V150"/>
+    <path pathLength="1" d="M140 200V176M164 200A24 24 0 0 0 140 176"/>
+    <path pathLength="1" d="M144 120V144M120 120A24 24 0 0 0 144 144"/>
+    <path pathLength="1" d="M100 130H76M100 154A24 24 0 0 1 76 130"/>
+  </g>
+  <g data-layer="furniture" stroke-width=".75">
+    <path pathLength="1" d="M58 54H104V104H58ZM58 66H104"/>
+    <path pathLength="1" d="M196 156H262V176H196ZM196 162H262"/>
+    <path pathLength="1" d="M208 96H250V128H208Z"/>
+  </g>
+  <g data-layer="dimensions" stroke-width=".75">
+    <path pathLength="1" d="M40 22H280M40 16V28M160 16V28M280 16V28"/>
+    <path pathLength="1" d="M22 40V200M16 40H28M16 200H28"/>
+  </g>
+</svg>

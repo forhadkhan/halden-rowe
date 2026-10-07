@@ -1,0 +1,77 @@
+{
+  "items": [
+    {
+      "id": "hannah-leo",
+      "quote": "Clara told us which rooms would need work before we asked. We bought the house knowing what we were taking on, with a budget that held.",
+      "name": "Hannah and Leo M.",
+      "detail": "Bought in Park Slope, Brooklyn",
+      "href": "/properties?city=Brooklyn",
+      "agentId": "clara-halden",
+      "rating": 5,
+      "photo": "clients/client-1.jpg",
+      "alt": "Hannah and Leo standing close and smiling in a garden beside a stone wall.",
+      "slider": true
+    },
+    {
+      "id": "ana-marcus",
+      "quote": "We were selling from another state. Thomas sent photos of every repair and a short note each Friday until the keys changed hands.",
+      "name": "Ana and Marcus R.",
+      "detail": "Sold in Palm Springs",
+      "href": "/properties?city=Palm%20Springs",
+      "agentId": "thomas-rowe",
+      "rating": 5,
+      "photo": "clients/client-2.jpg",
+      "alt": "Ana and Marcus embracing in front of a burnt-orange studio backdrop.",
+      "slider": true
+    },
+    {
+      "id": "jess-tom",
+      "quote": "Maya showed us four lofts in one afternoon and told us plainly that two of them were noisy. We signed for the third and still like it.",
+      "name": "Jess and Tom K.",
+      "detail": "Rented in the West Loop, Chicago",
+      "href": "/properties?city=Chicago",
+      "agentId": "maya-chen",
+      "rating": 5,
+      "photo": "clients/client-3.jpg",
+      "alt": "Jess and Tom in denim and knitwear, leaning their heads together and smiling.",
+      "slider": true
+    },
+    {
+      "id": "robert-a",
+      "quote": "Elena's valuation came in lower than we hoped, and she showed us the sales behind it. We priced the house on her figure and had no regrets.",
+      "name": "Robert A.",
+      "detail": "Sold in Laurelhurst, Seattle",
+      "href": "/properties?city=Seattle",
+      "agentId": "elena-marsh",
+      "rating": 5,
+      "photo": null,
+      "alt": null,
+      "slider": false
+    },
+    {
+      "id": "priya-s",
+      "quote": "Owen walked the dune with us and pulled the flood insurance history before we made an offer. That conversation kept us from buying the wrong house.",
+      "name": "Priya S.",
+      "detail": "Bought in Wrightsville Beach",
+      "href": "/properties?city=Wrightsville%20Beach",
+      "agentId": "owen-whitlock",
+      "rating": 5,
+      "photo": null,
+      "alt": null,
+      "slider": false
+    },
+    {
+      "id": "sam-w",
+      "quote": "Daniel answered every question about the inspection, including the ones I sent late at night. He never pushed me to raise my offer.",
+      "name": "Sam W.",
+      "detail": "Bought in Hyde Park, Austin",
+      "href": "/properties?city=Austin",
+      "agentId": "daniel-reyes",
+      "rating": 5,
+      "photo": null,
+      "alt": null,
+      "slider": false
+    }
+  ],
+  "ratingLabel": "{rating} out of 5"
+}

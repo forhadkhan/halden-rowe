@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "id": "viewings",
+      "home": true,
+      "q": "How do viewings work?",
+      "a": "Send an inquiry from the home's page or call the agent named on it. They will offer you two or three times, usually within the week, and meet you at the door. Every viewing is with the same agent who knows the home, and there is no charge to view."
+    },
+    {
+      "id": "accessible-viewings",
+      "home": true,
+      "q": "Can you adjust a viewing to suit my access needs?",
+      "a": "Yes. Tell us what you need when you book: step-free routes, more time, a quieter slot or a video walk-through before you visit. The agent will describe steps, elevators and doorways beforehand, so you know what to expect."
+    },
+    {
+      "id": "selling-fee",
+      "home": true,
+      "q": "What does it cost to sell with you?",
+      "a": "Our fee is a percentage of the final sale price, agreed in writing before we list your home. We set out what it covers, including photography, viewings and negotiation, so there are no extra charges later. You pay nothing until the sale closes."
+    },
+    {
+      "id": "valuation",
+      "home": true,
+      "q": "Can I get a valuation without committing to sell?",
+      "a": "Yes. A valuation is free and carries no obligation. An agent visits, measures the home and sends you a written price range with the recent sales behind it. Many owners keep it on file for a year or two before they decide."
+    },
+    {
+      "id": "before-an-offer",
+      "home": true,
+      "q": "What do I need before I make an offer?",
+      "a": "For most purchases, a mortgage pre-approval letter or proof of funds, and an idea of your timing. Your agent will explain the earnest money deposit, the inspection period and any other conditions before you sign anything."
+    },
+    {
+      "id": "renting-upfront",
+      "home": true,
+      "q": "What do renters pay up front?",
+      "a": "Usually the first month's rent and a security deposit, as set out on each rental's page. Some cities and states limit deposits and fees, and your agent will tell you what applies before you apply. We never ask for payment before you have seen the home."
+    },
+    {
+      "id": "floor-areas",
+      "home": false,
+      "q": "How do you measure floor areas?",
+      "a": "Our agents measure each home themselves and record the finished interior area in square feet. Measurement methods differ between agencies and public records, so ask us how a figure was reached if you are comparing homes."
+    },
+    {
+      "id": "other-cities",
+      "home": false,
+      "q": "Do you work outside these twelve cities?",
+      "a": "We list homes only in the cities on this site. If you are moving somewhere else, tell us where and we will try to introduce you to an agent we know there."
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "siteName": "Halden & Rowe",
+  "titleTemplate": "{title} | Halden & Rowe",
+  "locale": "en_US",
+  "defaultOgImageAlt": "Halden & Rowe wordmark over a photo of a modern villa at dusk.",
+  "twitterHandle": "@haldenrowe",
+  "pages": {
+    "home": {
+      "path": "/",
+      "title": "Halden & Rowe | Homes for sale and rent in 12 US cities",
+      "description": "A small agency selling and renting homes in twelve US cities, from a Brooklyn brownstone to a Palm Springs courtyard house. One named agent for every home."
+    },
+    "properties": {
+      "path": "/properties",
+      "title": "Homes for sale and rent | Halden & Rowe",
+      "description": "Browse twelve homes for sale and rent in Los Angeles, San Francisco, Seattle, New York, Miami, Chicago and more. Filter by city, type, price and bedrooms."
+    },
+    "about": {
+      "path": "/about",
+      "title": "About us and our agents | Halden & Rowe",
+      "description": "Founded in Brooklyn in 2012 by an architect and an appraiser. Meet the six agents who measure, list and show every home themselves."
+    },
+    "contact": {
+      "path": "/contact",
+      "title": "Contact an agent or book a valuation | Halden & Rowe",
+      "description": "Ask about a home, book a free valuation or tell us what you are looking for. Call (212) 555-0140 or send a message, and an agent will reply."
+    },
+    "journal": {
+      "path": "/journal",
+      "title": "Journal: buying, selling and renting | Halden & Rowe",
+      "description": "Practical articles from our agents on reading listings, preparing a home for photos and understanding closing costs."
+    },
+    "notFound": {
+      "path": "/404",
+      "title": "Page not found | Halden & Rowe",
+      "description": "This page has moved or never existed. Search our homes for sale and rent, or return to the Halden & Rowe homepage."
+    }
+  },
+  "listings": {
+    "hillside-villa-la": {
+      "title": "4-bed villa with pool, Hollywood Hills | Halden & Rowe",
+      "description": "For sale at $4,850,000: a 4-bed, 4,320 sq ft glass and stone villa in the Hollywood Hills with a heated pool, level lawn and solar power."
+    },
+    "lakefront-house-seattle": {
+      "title": "Lakefront timber house, Laurelhurst | Halden & Rowe",
+      "description": "For sale at $3,975,000: a 4-bed timber and glass house on Lake Washington in Seattle's Laurelhurst, with a private dock and double-height living room."
+    },
+    "brownstone-brooklyn": {
+      "title": "5-bed Park Slope brownstone | Halden & Rowe",
+      "description": "For sale at $4,395,000: a four-story 1899 brownstone in Park Slope, Brooklyn, with a parlor bay, wood stove, rear garden and new systems."
+    },
+    "skyline-penthouse-nyc": {
+      "title": "Penthouse for rent, Hudson Yards | Halden & Rowe",
+      "description": "For rent at $28,500/month: a 3-bed Hudson Yards penthouse with a private roof terrace, skyline views and a full-time doorman."
+    },
+    "garden-home-austin": {
+      "title": "Craftsman house with garden, Hyde Park | Halden & Rowe",
+      "description": "For sale at $1,385,000: a 1924 craftsman house in Austin's Hyde Park with a deep porch, stone fireplace and planted garden, renovated in 2021."
+    },
+    "beach-house-carolina": {
+      "title": "Oceanfront beach house, Wrightsville | Halden & Rowe",
+      "description": "For sale at $3,250,000: a 4-bed shingled beach house in Wrightsville Beach, NC, with a private boardwalk over the dune and a porch facing the sea."
+    },
+    "loft-chicago": {
+      "title": "Warehouse loft for rent, West Loop | Halden & Rowe",
+      "description": "For rent at $5,400/month: a 2-bed, 2-bath warehouse loft in Chicago's West Loop with arched windows, exposed brick and heat and water included."
+    },
+    "courtyard-villa-palm-springs": {
+      "title": "Mid-century courtyard house, Palm Springs | Halden & Rowe",
+      "description": "For sale at $2,950,000: a 1961 mid-century house in Vista Las Palmas with a zigzag roofline and round courtyard pool, restored in 2018."
+    },
+    "mountain-lodge-aspen": {
+      "title": "5-bed timber house, Red Mountain, Aspen | Halden & Rowe",
+      "description": "For sale at $14,500,000: a 5-bed timber house on Red Mountain in Aspen with a stone fireplace, a vaulted cedar ceiling, a long deck and mountain views."
+    },
+    "condo-miami": {
+      "title": "Condo for rent with a balcony, Edgewater | Halden & Rowe",
+      "description": "For rent at $7,200/month: a 2-bed, 2-bath condo in Miami's Edgewater with floor-to-ceiling windows and a balcony over the marina."
+    },
+    "farmhouse-nashville": {
+      "title": "Renovated farmhouse, East Nashville | Halden & Rowe",
+      "description": "For sale at $1,895,000: a 4-bed 1938 farmhouse in Nashville's Inglewood, renovated in 2024, with a fireplace, a large kitchen island and a two-car garage."
+    },
+    "victorian-flat-san-francisco": {
+      "title": "Victorian flat for rent, Alamo Square | Halden & Rowe",
+      "description": "For rent at $6,400/month: a 2-bed upper flat in an 1896 Victorian in San Francisco's Alamo Square, with a bay window, wainscoting, and heat and water included."
+    }
+  },
+  "posts": {
+    "how-to-read-a-listing": {
+      "title": "How to read a listing and what to ask | Halden & Rowe",
+      "description": "What the numbers on a listing tell you, what they leave out, and the questions that turn a twenty-minute viewing into a decision."
+    },
+    "staging-for-photography": {
+      "title": "Getting your home ready for listing photos | Halden & Rowe",
+      "description": "A room-by-room plan for the week before the photographer arrives: what to clear, what to fix, what to put away and what to leave alone."
+    },
+    "understanding-closing-costs": {
+      "title": "Closing costs, explained line by line | Halden & Rowe",
+      "description": "What buyers pay at closing beyond the down payment, where each charge appears on your loan paperwork, and which costs you can shop for."
+    },
+    "renting-or-buying-monthly-cost": {
+      "title": "Renting or buying: the real monthly cost | Halden & Rowe",
+      "description": "A mortgage payment and a rent check are not the same kind of number. How to put both on one footing, with a worked example you can copy."
+    }
+  },
+  "jsonLd": {
+    "organization": {
+      "@type": "RealEstateAgent",
+      "name": "Halden & Rowe",
+      "description": "A small agency selling and renting homes in twelve US cities, with one named agent for every home.",
+      "url": "https://haldenrowe.example",
+      "telephone": "+1-212-555-0140",
+      "email": "hello@haldenrowe.example",
+      "foundingDate": "2012",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "40 Larchmere Street, Fourth Floor",
+        "addressLocality": "New York",
+        "addressRegion": "NY",
+        "postalCode": "10014",
+        "addressCountry": "US"
+      },
+      "areaServed": [
+        "Los Angeles, CA",
+        "Seattle, WA",
+        "Brooklyn, NY",
+        "New York, NY",
+        "Austin, TX",
+        "Wrightsville Beach, NC",
+        "Chicago, IL",
+        "Palm Springs, CA",
+        "Aspen, CO",
+        "Miami, FL",
+        "Nashville, TN",
+        "San Francisco, CA"
+      ],
+      "openingHours": ["Mo-Fr 09:00-18:00", "Sa 10:00-16:00"],
+      "priceRange": "$5,400/month to $14,500,000",
+      "sameAs": []
+    },
+    "listingDefaults": {
+      "residenceType": {
+        "House": "SingleFamilyResidence",
+        "Villa": "SingleFamilyResidence",
+        "Townhouse": "SingleFamilyResidence",
+        "Penthouse": "Apartment",
+        "Loft": "Apartment",
+        "Apartment": "Apartment"
+      },
+      "offer": {
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "businessFunction": {
+          "sale": "http://purl.org/goodrelations/v1#Sell",
+          "rent": "http://purl.org/goodrelations/v1#LeaseOut"
+        },
+        "rentUnitText": "MONTH"
+      }
+    },
+    "faqSource": "faq.json#items"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "We describe homes exactly as they are.",
+  "lead": "Halden & Rowe is a small agency for buying, selling and renting homes in twelve US cities. We started in Brooklyn in 2012 and have kept the team small on purpose.",
+  "teamImage": {
+    "file": "about/team.jpg",
+    "alt": "Four colleagues gathered around a table reviewing papers together."
+  },
+  "story": {
+    "eyebrow": "Our story",
+    "headline": "Started with a tape measure and a spreadsheet",
+    "paragraphs": [
+      "Clara Halden spent her first years after architecture school drawing other people's homes. Thomas Rowe spent ten years appraising them. They met over a Brooklyn townhouse whose advertised floor area was larger than its plans, and agreed that buyers deserved better information than that.",
+      "They opened Halden & Rowe in 2012 with three habits that still shape the agency. We measure every home ourselves. We tell buyers and renters what we know about a home's condition before they visit. And each home has one agent, whose name and number are on the listing, from the first call to the handover of the keys."
+    ]
+  },
+  "values": [
+    {
+      "name": "Measured",
+      "line": "Every floor area is one we checked.",
+      "body": "Our agents measure each home before it is listed. If a figure comes from public records or the owner instead, the listing says so."
+    },
+    {
+      "name": "Plain",
+      "line": "Fees and terms in writing, before anything is signed.",
+      "body": "Sellers see our fee and what it covers in their agreement. Renters see the deposit, term and pet policy on the listing page."
+    },
+    {
+      "name": "Named",
+      "line": "One agent for each home, from first call to keys.",
+      "body": "You deal with the same person throughout. If they are away, they tell you who is covering and for how long."
+    }
+  ],
+  "trustSource": "home.json#trust",
+  "team": {
+    "eyebrow": "Our team",
+    "headline": "Six agents, one way of working",
+    "lead": "Each agent works in the cities they know, and each one shows their own homes."
+  },
+  "detailImage": {
+    "file": "about/detail.jpg",
+    "alt": "Ornate stone facade with carved cornice and arched windows catching warm light."
+  },
+  "founderQuote": "If the floor area and the description are accurate, a viewing is about whether you like the house, not about what we left out.",
+  "founderName": "Clara Halden, founding partner",
+  "ctaSource": "home.json#cta"
+}

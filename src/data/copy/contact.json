@@ -1,0 +1,62 @@
+{
+  "title": "Talk to an agent",
+  "lead": "Ask about a home, book a valuation or tell us what you're looking for. An agent replies by email or phone, usually within one business day.",
+  "sell": {
+    "title": "Get a free valuation",
+    "lead": "Tell us the address and an agent will arrange a visit to value your home. We reply by email or phone, usually within one business day."
+  },
+  "details": {
+    "heading": "Our office",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Office",
+    "hours": "Hours",
+    "visitNote": "Visits to the office are by appointment."
+  },
+  "image": {
+    "file": "contact/office.jpg",
+    "alt": "Modern office building with a dark ribbed facade against a blue sky."
+  },
+  "form": {
+    "heading": "Send us a message",
+    "topic": {
+      "label": "What is this about?",
+      "options": [
+        { "value": "buying", "label": "Buying" },
+        { "value": "selling", "label": "Selling" },
+        { "value": "renting", "label": "Renting" },
+        { "value": "valuation", "label": "Valuation" },
+        { "value": "other", "label": "Something else" }
+      ]
+    },
+    "address": {
+      "label": "Property address",
+      "hint": "The home you'd like to sell or have valued. Street, city and ZIP code.",
+      "autocomplete": "street-address"
+    },
+    "preferredContact": {
+      "legend": "How should we reply?",
+      "options": [
+        { "value": "email", "label": "Email" },
+        { "value": "phone", "label": "Phone" }
+      ],
+      "phoneNeeded": "Add a phone number so we can call you."
+    },
+    "messagePlaceholders": {
+      "buying": "Which cities or homes are you interested in, and when would you like to move?",
+      "selling": "Tell us about the home and when you're thinking of selling.",
+      "renting": "Which city, how many bedrooms, and when would you like to move in?",
+      "valuation": "Anything we should know before we visit, such as recent work on the home.",
+      "other": "How can we help?"
+    },
+    "fieldsSource": "errors.json#forms",
+    "submit": "Send message",
+    "success": {
+      "heading": "Message sent",
+      "text": "Thank you. An agent will reply by email or phone, usually within one business day.",
+      "sendAnother": "Send another message"
+    },
+    "failure": "We couldn't send your message. Check your connection and try again, or email hello@haldenrowe.example.",
+    "demoNote": "Demo site: nothing was sent."
+  }
+}

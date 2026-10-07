@@ -1,0 +1,956 @@
+{
+  "listings": [
+    {
+      "slug": "hillside-villa-la",
+      "title": "Glass and stone villa with a lit pool",
+      "status": "sale",
+      "tag": null,
+      "featured": true,
+      "featuredOrder": 1,
+      "listed": "2026-09-29",
+      "price": 4850000,
+      "priceLabel": "$4,850,000",
+      "address": {
+        "street": "2417 Corvel Drive",
+        "city": "Los Angeles",
+        "state": "CA",
+        "postalCode": "90068",
+        "neighborhood": "Hollywood Hills",
+        "oneLine": "2417 Corvel Drive, Los Angeles, CA 90068"
+      },
+      "beds": 4,
+      "baths": 4.5,
+      "sqft": 4320,
+      "sqftLabel": "4,320 sq ft",
+      "lot": "0.31 acres",
+      "yearBuilt": 2019,
+      "type": "Villa",
+      "parking": "2-car garage",
+      "description": [
+        "A house of glass, concrete and stone on a level lot in the Hollywood Hills. The lawn runs straight to the edge of a heated pool, and at dusk the glazed ground floor and the pool light up together.",
+        "The living room has rounded armchairs, a cream sofa and tall black-framed windows that look into mature trees. The kitchen is built around a marble waterfall island, with wood cabinets and herringbone oak floors. Upstairs, the bedrooms look onto woodland, and the primary bath has a freestanding tub under a black-framed window.",
+        "Completed in 2019, the house has solar panels on the flat roof with battery storage in the garage. The drive is gated and there is room for two cars inside. Thomas Rowe shows the house on weekdays and Saturday mornings."
+      ],
+      "features": [
+        "Heated pool with lit steps",
+        "Level lawn beside the pool",
+        "Marble waterfall island",
+        "Herringbone oak floors",
+        "Black steel window frames",
+        "Freestanding tub in the primary bath",
+        "Solar panels with battery storage",
+        "Gated drive",
+        "Two-car garage with EV charger"
+      ],
+      "neighborhoodFacts": [
+        "Quiet, winding residential streets with little through traffic.",
+        "Runyon Canyon Park and its hiking trails are in the same hills.",
+        "The restaurants and shops of Sunset Boulevard are a short drive downhill."
+      ],
+      "agentId": "thomas-rowe",
+      "images": [
+        { "file": "listings/hillside-villa-la/exterior.jpg", "caption": "The pool and lawn at dusk.", "alt": "Modern house of glass, concrete and stone with a glowing blue pool and a lawn under a pink dusk sky." },
+        { "file": "listings/hillside-villa-la/living.jpg", "caption": "Living room with rounded armchairs facing the trees.", "alt": "Light living room with rounded tan armchairs, a cream sofa and large black-framed windows onto trees." },
+        { "file": "listings/hillside-villa-la/kitchen.jpg", "caption": "Marble waterfall island and herringbone floor.", "alt": "Kitchen with a marble waterfall island, wooden cabinets and herringbone flooring." },
+        { "file": "listings/hillside-villa-la/bedroom.jpg", "caption": "A bedroom with windows onto woodland.", "alt": "Bedroom with a striped blanket on a wooden bed, a woven pendant lamp and windows onto woodland." },
+        { "file": "listings/hillside-villa-la/bath-or-detail.jpg", "caption": "Freestanding tub in the primary bath.", "alt": "Freestanding white bathtub under a black-framed window with gray curtains." }
+      ],
+      "location": {
+        "neighborhood": "Hollywood Hills",
+        "city": "Los Angeles",
+        "water": null,
+        "streets": ["Corvel Drive", "Larkin Way", "Ashby Terrace"],
+        "park": "Ridgeline Park",
+        "note": "Hollywood Hills, Los Angeles. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$4.85M",
+        "ariaLabel": "4 bed villa in Los Angeles, $4,850,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "lakefront-house-seattle",
+      "title": "Timber and glass house on Lake Washington",
+      "status": "sale",
+      "tag": null,
+      "featured": true,
+      "featuredOrder": 2,
+      "listed": "2026-09-15",
+      "price": 3975000,
+      "priceLabel": "$3,975,000",
+      "address": {
+        "street": "4108 Wren Shore Lane",
+        "city": "Seattle",
+        "state": "WA",
+        "postalCode": "98105",
+        "neighborhood": "Laurelhurst",
+        "oneLine": "4108 Wren Shore Lane, Seattle, WA 98105"
+      },
+      "beds": 4,
+      "baths": 3.5,
+      "sqft": 3680,
+      "sqftLabel": "3,680 sq ft",
+      "lot": "0.42 acres",
+      "yearBuilt": 2016,
+      "type": "House",
+      "parking": "Detached 2-car garage",
+      "description": [
+        "A gabled timber house with a tall glazed front, set back from the street in a mossy garden. The lot runs down to private frontage on Lake Washington, with a dock at the water's edge.",
+        "The main room is double height and painted white, with tall windows onto the trees, a dining table with bentwood chairs and a white sofa. The kitchen pairs a concrete-topped island with dark cabinetry and a gas range set beside the windows. The primary bedroom has a wood-slat headboard wall and glass on two sides, and the bathrooms are lined in timber.",
+        "The house was built in 2016 with radiant floor heating throughout and triple-glazed windows on the lake side. A detached garage has space for two cars and a workbench. Elena Marsh can show the house and the dock on weekdays or by appointment at weekends."
+      ],
+      "features": [
+        "Private lake frontage with a dock",
+        "Double-height living and dining room",
+        "Concrete-topped kitchen island",
+        "Gas range",
+        "Radiant floor heating",
+        "Triple-glazed windows on the lake side",
+        "Timber-lined bathrooms",
+        "Primary bedroom with glass on two sides",
+        "Detached garage with workbench"
+      ],
+      "neighborhoodFacts": [
+        "Laurelhurst sits on the west shore of Lake Washington, in northeast Seattle.",
+        "The University of Washington campus is a short drive west.",
+        "Streets are residential and tree-lined, with little through traffic."
+      ],
+      "agentId": "elena-marsh",
+      "images": [
+        { "file": "listings/lakefront-house-seattle/exterior.jpg", "caption": "The glazed gable front at dusk.", "alt": "Gabled timber house with a tall glazed front and lit windows in a mossy garden at dusk." },
+        { "file": "listings/lakefront-house-seattle/living.jpg", "caption": "Double-height living and dining room.", "alt": "Double-height white room with tall windows onto trees, a dining table with bentwood chairs and a white sofa." },
+        { "file": "listings/lakefront-house-seattle/kitchen.jpg", "caption": "Concrete-topped island and gas range by the windows.", "alt": "Kitchen with a concrete-topped island, dark cabinetry and a gas range beside tall windows." },
+        { "file": "listings/lakefront-house-seattle/bedroom.jpg", "caption": "A bedroom with a wood-slat headboard wall and glass on two sides.", "alt": "Bedroom with a white bed against a wood-slat headboard and glass walls looking onto fields." },
+        { "file": "listings/lakefront-house-seattle/bath-or-detail.jpg", "caption": "Timber-lined bathroom with a backlit mirror.", "alt": "Timber-lined bathroom with a round backlit mirror, a black basin and a glass shower." }
+      ],
+      "location": {
+        "neighborhood": "Laurelhurst",
+        "city": "Seattle",
+        "water": "lake",
+        "streets": ["Wren Shore Lane", "Alder Bluff Road", "Pell Avenue"],
+        "park": "Shoreline Green",
+        "note": "Laurelhurst, Seattle. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$3.98M",
+        "ariaLabel": "4 bed house in Seattle, $3,975,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "brownstone-brooklyn",
+      "title": "Four-story brownstone with a parlor bay",
+      "status": "sale",
+      "tag": null,
+      "featured": true,
+      "featuredOrder": 3,
+      "listed": "2026-09-08",
+      "price": 4395000,
+      "priceLabel": "$4,395,000",
+      "address": {
+        "street": "71 Linnet Place",
+        "city": "Brooklyn",
+        "state": "NY",
+        "postalCode": "11215",
+        "neighborhood": "Park Slope",
+        "oneLine": "71 Linnet Place, Brooklyn, NY 11215"
+      },
+      "beds": 5,
+      "baths": 3.5,
+      "sqft": 3600,
+      "sqftLabel": "3,600 sq ft",
+      "lot": "20 × 100 ft",
+      "yearBuilt": 1899,
+      "type": "Townhouse",
+      "parking": "Street parking",
+      "description": [
+        "A single-family brownstone in a row of matching houses on a tree-lined Park Slope street, with a gas lamp at the stoop and shrubs in the front yard. It has four floors above a garden level and a deep rear garden.",
+        "The parlor floor has a bay window and a black wood stove, with room for armchairs and a wall of books. The kitchen keeps one wall of exposed brick, with white cabinets, a white peninsula and a lantern pendant. Upstairs there are five bedrooms, and the main bathroom has a clawfoot tub with brass taps under a window.",
+        "Built in 1899, the house had its wiring, plumbing and roof replaced in 2021, and the receipts are in the seller's file. Much of Park Slope is a designated historic district, so changes to the front of the house need approval from the city's Landmarks Preservation Commission. Clara Halden can share the full file before a viewing."
+      ],
+      "features": [
+        "Parlor-floor bay window",
+        "Working wood stove",
+        "Exposed brick kitchen wall",
+        "Clawfoot tub with brass taps",
+        "Original stoop and gas lamp",
+        "Deep rear garden",
+        "Rewired and replumbed in 2021",
+        "New roof in 2021",
+        "Five bedrooms over three floors"
+      ],
+      "neighborhoodFacts": [
+        "Prospect Park runs along the eastern edge of Park Slope.",
+        "Seventh Avenue and Fifth Avenue are the neighborhood's main streets for shops and restaurants.",
+        "Much of the neighborhood is a designated historic district."
+      ],
+      "agentId": "clara-halden",
+      "images": [
+        { "file": "listings/brownstone-brooklyn/exterior.jpg", "caption": "The brownstone row with its gas lamp.", "alt": "Row of brownstone townhouses with a gas lamp and green shrubs on a tree-lined street." },
+        { "file": "listings/brownstone-brooklyn/living.jpg", "caption": "Parlor bay with the wood stove lit.", "alt": "Living room with a bay window, a black wood stove with a fire, two dark olive armchairs and a tall stack of books." },
+        { "file": "listings/brownstone-brooklyn/kitchen.jpg", "caption": "Kitchen with an exposed brick wall and white peninsula.", "alt": "White kitchen with an exposed brick wall, a white peninsula and a lantern pendant light." },
+        { "file": "listings/brownstone-brooklyn/bedroom.jpg", "caption": "A white bedroom with a wooden dresser.", "alt": "White bedroom with a made bed, a wooden dresser, bedside tables and a framed picture on the wall." },
+        { "file": "listings/brownstone-brooklyn/bath-or-detail.jpg", "caption": "Clawfoot tub with brass taps.", "alt": "White clawfoot bathtub with brass taps beneath a window in a bright bathroom." }
+      ],
+      "location": {
+        "neighborhood": "Park Slope",
+        "city": "Brooklyn",
+        "water": null,
+        "streets": ["Linnet Place", "Garnet Street", "Ostrow Avenue"],
+        "park": "Linden Square",
+        "note": "Park Slope, Brooklyn. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$4.40M",
+        "ariaLabel": "5 bed townhouse in Brooklyn, $4,395,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "skyline-penthouse-nyc",
+      "title": "Penthouse with a roof terrace over the West Side",
+      "status": "rent",
+      "tag": null,
+      "featured": true,
+      "featuredOrder": 4,
+      "listed": "2026-10-01",
+      "price": 28500,
+      "priceLabel": "$28,500/month",
+      "address": {
+        "street": "12 Halvard Place, Penthouse 58",
+        "city": "New York",
+        "state": "NY",
+        "postalCode": "10001",
+        "neighborhood": "Hudson Yards",
+        "oneLine": "12 Halvard Place, Penthouse 58, New York, NY 10001"
+      },
+      "beds": 3,
+      "baths": 3.5,
+      "sqft": 2650,
+      "sqftLabel": "2,650 sq ft",
+      "lot": null,
+      "yearBuilt": 2019,
+      "type": "Penthouse",
+      "parking": "Garage parking in the building, available separately",
+      "description": [
+        "A three-bedroom penthouse on the top floor of a slim glass tower on Manhattan's West Side, with a private roof terrace above it. From the living room window you look across high-rise towers to the waterfront.",
+        "The open kitchen has a white island with seating for four, gray cabinets and a sliding glass door. The primary bedroom has a slanted glass wall facing the skyscrapers. Up one flight, the roof terrace has outdoor seating behind a black iron railing, with the skyline on every side.",
+        "The building has a doorman, a fitness room and a package room, and the apartment comes unfurnished. Leases run for 12 or 24 months. Maya Chen arranges viewings, including evening visits so you can see the terrace after dark."
+      ],
+      "features": [
+        "Private roof terrace",
+        "Slanted glass wall in the primary bedroom",
+        "Kitchen island with seating for four",
+        "In-unit washer and dryer",
+        "Central air conditioning",
+        "Full-time doorman",
+        "Fitness room in the building",
+        "Package room",
+        "Garage parking available separately"
+      ],
+      "neighborhoodFacts": [
+        "The northern end of the High Line is at Hudson Yards.",
+        "The 34 St–Hudson Yards station on the 7 line is in the neighborhood.",
+        "Hudson River Park runs along the waterfront to the west."
+      ],
+      "agentId": "maya-chen",
+      "images": [
+        { "file": "listings/skyline-penthouse-nyc/exterior.jpg", "caption": "The tower at sunset.", "alt": "Slim glass skyscraper lit gold by the setting sun above the city skyline." },
+        { "file": "listings/skyline-penthouse-nyc/living.jpg", "caption": "The view from the living room window.", "alt": "View of high-rise towers and a waterfront through a large window, with a lamp and chair at the edges of the frame." },
+        { "file": "listings/skyline-penthouse-nyc/kitchen.jpg", "caption": "Open kitchen with a white island.", "alt": "Open kitchen with a white island, stools and gray cabinets next to a sliding glass door." },
+        { "file": "listings/skyline-penthouse-nyc/bedroom.jpg", "caption": "Bedroom with a slanted glass wall.", "alt": "Bedroom with a large bed, a wall-mounted television and a slanted glass wall onto skyscrapers." },
+        { "file": "listings/skyline-penthouse-nyc/bath-or-detail.jpg", "caption": "The roof terrace.", "alt": "Rooftop terrace with a blue chevron rug, gray outdoor seating and a city skyline beyond a black iron railing." }
+      ],
+      "location": {
+        "neighborhood": "Hudson Yards",
+        "city": "New York",
+        "water": "river",
+        "streets": ["Halvard Place", "Tenley Street", "Marrow Lane"],
+        "park": "Westbank Green",
+        "note": "Hudson Yards, New York. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$28.5k/mo",
+        "ariaLabel": "3 bed penthouse for rent in New York, $28,500 a month"
+      },
+      "rentalTerms": {
+        "deposit": "One month's rent",
+        "term": "12 or 24 months",
+        "available": "November 1, 2026",
+        "pets": "Considered case by case. Assistance animals are always accepted.",
+        "furnished": "Unfurnished"
+      }
+    },
+    {
+      "slug": "garden-home-austin",
+      "title": "Craftsman house with a deep porch and garden",
+      "status": "sale",
+      "tag": "New",
+      "featured": false,
+      "featuredOrder": null,
+      "listed": "2026-10-03",
+      "price": 1385000,
+      "priceLabel": "$1,385,000",
+      "address": {
+        "street": "4502 Bellwood Avenue",
+        "city": "Austin",
+        "state": "TX",
+        "postalCode": "78751",
+        "neighborhood": "Hyde Park",
+        "oneLine": "4502 Bellwood Avenue, Austin, TX 78751"
+      },
+      "beds": 3,
+      "baths": 2.5,
+      "sqft": 2240,
+      "sqftLabel": "2,240 sq ft",
+      "lot": "0.23 acres",
+      "yearBuilt": 1924,
+      "type": "House",
+      "parking": "Detached garage and driveway",
+      "description": [
+        "A craftsman house with a wide porch on white columns, hanging flower baskets and a front lawn. Behind it, the garden is planted with flowering shrubs and grasses, with space for a chair in the shade.",
+        "Inside, the living room has exposed ceiling beams and a stone fireplace, with the staircase to one side. The kitchen keeps the beams and adds a butcher-block island under three pendant lights. The bedrooms are upstairs and take the low evening sun.",
+        "Built in 1924, the house was renovated in 2021, with new electrics, a new HVAC system and a second-floor bathroom added. The original porch columns and front door were kept. Daniel Reyes has the inspection report from the renovation and can walk you through it at the viewing."
+      ],
+      "features": [
+        "Deep front porch on white columns",
+        "Planted rear garden",
+        "Stone wood-burning fireplace",
+        "Exposed ceiling beams",
+        "Butcher-block kitchen island",
+        "Renovated in 2021",
+        "New electrics and HVAC in 2021",
+        "Original front door and porch columns",
+        "Detached garage"
+      ],
+      "neighborhoodFacts": [
+        "Hyde Park is one of Austin's older neighborhoods, with many early twentieth-century houses.",
+        "The University of Texas campus is just to the south.",
+        "Streets are shaded by mature trees, and many houses have front porches."
+      ],
+      "agentId": "daniel-reyes",
+      "images": [
+        { "file": "listings/garden-home-austin/exterior.jpg", "caption": "The porch and front lawn.", "alt": "Craftsman-style house with a wide white-columned porch, hanging flower baskets and a lawn." },
+        { "file": "listings/garden-home-austin/living.jpg", "caption": "Living room with a stone fireplace and exposed beams.", "alt": "Living room with exposed ceiling beams, a stone fireplace with a fire lit, and a staircase on the left." },
+        { "file": "listings/garden-home-austin/kitchen.jpg", "caption": "Butcher-block island under three pendants.", "alt": "Kitchen with exposed beams, a butcher-block island and three pendant lights." },
+        { "file": "listings/garden-home-austin/bedroom.jpg", "caption": "A bedroom in the low evening sun.", "alt": "Bedroom in warm evening sun, with white built-in wardrobes and a bed in pale linen and a patterned duvet." },
+        { "file": "listings/garden-home-austin/bath-or-detail.jpg", "caption": "Flowering shrubs and grasses around the garden chairs.", "alt": "Garden of flowering shrubs and grasses around a brick path, with two Adirondack chairs by a white garden gate." }
+      ],
+      "location": {
+        "neighborhood": "Hyde Park",
+        "city": "Austin",
+        "water": null,
+        "streets": ["Bellwood Avenue", "Pecan Row", "Holloway Street"],
+        "park": "Bellwood Commons",
+        "note": "Hyde Park, Austin. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$1.39M",
+        "ariaLabel": "3 bed house in Austin, $1,385,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "beach-house-carolina",
+      "title": "Shingled beach house above the dune",
+      "status": "sale",
+      "tag": null,
+      "featured": true,
+      "featuredOrder": 5,
+      "listed": "2026-08-27",
+      "price": 3250000,
+      "priceLabel": "$3,250,000",
+      "address": {
+        "street": "12 Sandreed Way",
+        "city": "Wrightsville Beach",
+        "state": "NC",
+        "postalCode": "28480",
+        "neighborhood": "North End",
+        "oneLine": "12 Sandreed Way, Wrightsville Beach, NC 28480"
+      },
+      "beds": 4,
+      "baths": 4,
+      "sqft": 2980,
+      "sqftLabel": "2,980 sq ft",
+      "lot": "0.18 acres",
+      "yearBuilt": 2004,
+      "type": "House",
+      "parking": "Covered parking for 3 cars under the house",
+      "description": [
+        "A blue-gray shingled beach house with a wide deck, raised above a dune planted with beach grass. A private boardwalk crosses the dune to the sand.",
+        "The living room is bright and plain, with a cream sofa, a rustic coffee table and French doors. The kitchen has a white island with stools and glass doors onto a covered patio. The bedrooms are calm and light, with ceiling fans, and a covered porch with white arches faces the sea.",
+        "The house was built in 2004 on pilings, with parking for three cars underneath. Owen Whitlock has the elevation certificate, the flood insurance history and the most recent wind mitigation report, and sends them to anyone who books a viewing."
+      ],
+      "features": [
+        "Oceanfront, with a private boardwalk over the dune",
+        "Covered porch facing the sea",
+        "Wide deck on the dune side",
+        "Kitchen island with seating",
+        "Glass doors onto a covered patio",
+        "Ceiling fans in every bedroom",
+        "Outdoor shower",
+        "Built on pilings",
+        "Covered parking for three cars",
+        "Elevation certificate on file"
+      ],
+      "neighborhoodFacts": [
+        "Wrightsville Beach is a barrier island town east of Wilmington.",
+        "Downtown Wilmington is a short drive across the Intracoastal Waterway.",
+        "The North End is mostly houses, with fewer shops than the south end of the island."
+      ],
+      "agentId": "owen-whitlock",
+      "images": [
+        { "file": "listings/beach-house-carolina/exterior.jpg", "caption": "The house and deck above the dune grass.", "alt": "Blue-gray beach house with a deck and an American flag above a dune covered in beach grass." },
+        { "file": "listings/beach-house-carolina/living.jpg", "caption": "Living room with French doors.", "alt": "Bright coastal living room with a cream sofa, a rustic coffee table and French doors." },
+        { "file": "listings/beach-house-carolina/kitchen.jpg", "caption": "Kitchen island and glass doors to the covered patio.", "alt": "Open kitchen with a white island, stools and glass doors onto a covered patio." },
+        { "file": "listings/beach-house-carolina/bedroom.jpg", "caption": "A bedroom with pale green walls and a ceiling fan.", "alt": "Bedroom with a white bed and floral quilt, pale green walls and a ceiling fan." },
+        { "file": "listings/beach-house-carolina/bath-or-detail.jpg", "caption": "The covered porch facing the sea.", "alt": "Covered porch with white arches and wicker loungers looking over a blue sea." }
+      ],
+      "location": {
+        "neighborhood": "North End",
+        "city": "Wrightsville Beach",
+        "water": "coast",
+        "streets": ["Sandreed Way", "Gull Point Road", "Tern Lane"],
+        "park": "Dune Walk Park",
+        "note": "North End, Wrightsville Beach. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$3.25M",
+        "ariaLabel": "4 bed beach house in Wrightsville Beach, $3,250,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "loft-chicago",
+      "title": "Warehouse loft with arched windows",
+      "status": "rent",
+      "tag": null,
+      "featured": false,
+      "featuredOrder": null,
+      "listed": "2026-09-22",
+      "price": 5400,
+      "priceLabel": "$5,400/month",
+      "address": {
+        "street": "218 North Avelyn Street, Unit 4B",
+        "city": "Chicago",
+        "state": "IL",
+        "postalCode": "60607",
+        "neighborhood": "West Loop",
+        "oneLine": "218 North Avelyn Street, Unit 4B, Chicago, IL 60607"
+      },
+      "beds": 2,
+      "baths": 2,
+      "sqft": 1650,
+      "sqftLabel": "1,650 sq ft",
+      "lot": null,
+      "yearBuilt": 1908,
+      "type": "Loft",
+      "parking": "One garage space, $250/month",
+      "description": [
+        "A two-bedroom loft in a red-brick warehouse building with rows of tall arched windows. The building was converted to homes in 2003 and keeps its brick, timber and concrete.",
+        "The living space has exposed brick walls, tall windows and room for a large sofa. The kitchen has white cabinets, a double oven and track lighting on the concrete ceiling. The bedroom is quiet and simple, with a perforated metal screen, and a second sitting area has two brick columns and full afternoon light.",
+        "Both bathrooms have walk-in showers, and there is a washer and dryer in the unit. Heat and water are included in the rent; electricity is separate. Maya Chen shows the loft on weekday evenings and Saturday mornings."
+      ],
+      "features": [
+        "Tall arched windows",
+        "Exposed brick walls and columns",
+        "Concrete ceilings with track lighting",
+        "Double oven",
+        "Two bathrooms with walk-in showers",
+        "In-unit washer and dryer",
+        "Heat and water included",
+        "Elevator building",
+        "Garage space available"
+      ],
+      "neighborhoodFacts": [
+        "Fulton Market's restaurants are at the northern end of the West Loop.",
+        "Morgan station on the Green and Pink lines serves the neighborhood.",
+        "Union Station is within walking distance for Metra and Amtrak trains."
+      ],
+      "agentId": "maya-chen",
+      "images": [
+        { "file": "listings/loft-chicago/exterior.jpg", "caption": "The brick facade and arched windows.", "alt": "Red-brick building facade with rows of arched, dark-framed windows." },
+        { "file": "listings/loft-chicago/living.jpg", "caption": "Living space with exposed brick and tall windows.", "alt": "Loft living room with exposed brick, tall windows, a leather sofa and a person seated in the background." },
+        { "file": "listings/loft-chicago/kitchen.jpg", "caption": "Kitchen with a double oven and track lighting.", "alt": "Loft kitchen with white cabinets, a concrete ceiling with track lighting and a double oven." },
+        { "file": "listings/loft-chicago/bedroom.jpg", "caption": "Bedroom with a perforated metal screen.", "alt": "Minimal bedroom with a low bed, gray bedding and a perforated metal screen." },
+        { "file": "listings/loft-chicago/bath-or-detail.jpg", "caption": "Sitting area between two brick columns.", "alt": "Sunlit loft room with two exposed brick columns, tall windows and a gray sofa." }
+      ],
+      "location": {
+        "neighborhood": "West Loop",
+        "city": "Chicago",
+        "water": "river",
+        "streets": ["Avelyn Street", "Corran Street", "Mill Row"],
+        "park": "Foundry Park",
+        "note": "West Loop, Chicago. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$5.4k/mo",
+        "ariaLabel": "2 bed loft for rent in Chicago, $5,400 a month"
+      },
+      "rentalTerms": {
+        "deposit": "One month's rent",
+        "term": "12 months",
+        "available": "November 15, 2026",
+        "pets": "Considered case by case. Assistance animals are always accepted.",
+        "furnished": "Unfurnished"
+      }
+    },
+    {
+      "slug": "courtyard-villa-palm-springs",
+      "title": "Mid-century house with a courtyard pool",
+      "status": "sale",
+      "tag": null,
+      "featured": true,
+      "featuredOrder": 6,
+      "listed": "2026-08-18",
+      "price": 2950000,
+      "priceLabel": "$2,950,000",
+      "address": {
+        "street": "1290 North Calloway Drive",
+        "city": "Palm Springs",
+        "state": "CA",
+        "postalCode": "92262",
+        "neighborhood": "Vista Las Palmas",
+        "oneLine": "1290 North Calloway Drive, Palm Springs, CA 92262"
+      },
+      "beds": 4,
+      "baths": 3,
+      "sqft": 3150,
+      "sqftLabel": "3,150 sq ft",
+      "lot": "0.45 acres",
+      "yearBuilt": 1961,
+      "type": "Villa",
+      "parking": "2-car carport",
+      "description": [
+        "A low mid-century house with a zigzag roofline, set against the mountain with cactus and desert planting in front. The rooms are arranged around a walled courtyard with a round pool.",
+        "The living room has wood-framed glass walls, a low sofa and a black fireplace. The kitchen pairs walnut upper cabinets with a white island and a red range under a large window. Bedrooms have walnut and wood furniture and tall windows, and the courtyard is lit at night under whitewashed arches.",
+        "Built in 1961, the house was restored in 2018 with new glazing, a new roof membrane and updated electrics, keeping the original roofline and fireplace. Thomas Rowe can share the restoration drawings and the contractor's notes."
+      ],
+      "features": [
+        "Original zigzag roofline",
+        "Walled courtyard with a round pool",
+        "Wood-framed glass walls",
+        "Black fireplace in the living room",
+        "Walnut kitchen cabinets",
+        "Desert planting with low water use",
+        "Restored in 2018",
+        "New glazing and roof membrane",
+        "Two-car carport"
+      ],
+      "neighborhoodFacts": [
+        "Vista Las Palmas sits at the foot of the San Jacinto Mountains, west of downtown.",
+        "Palm Canyon Drive, the main street for shops and restaurants, is a short drive away.",
+        "Palm Springs holds Modernism Week, a festival of mid-century architecture, each February."
+      ],
+      "agentId": "thomas-rowe",
+      "images": [
+        { "file": "listings/courtyard-villa-palm-springs/exterior.jpg", "caption": "The zigzag roofline against the mountain.", "alt": "Low mid-century house with a zigzag roofline in front of a desert mountain, with cactus in the foreground." },
+        { "file": "listings/courtyard-villa-palm-springs/living.jpg", "caption": "Living room with wood-framed glass walls.", "alt": "Living room with wood-framed glass walls, a low sofa, a black fireplace, a wooden coffee table and abstract art." },
+        { "file": "listings/courtyard-villa-palm-springs/kitchen.jpg", "caption": "Walnut cabinets and a red range.", "alt": "Kitchen with walnut upper cabinets, a white island and a red range by a large window." },
+        { "file": "listings/courtyard-villa-palm-springs/bedroom.jpg", "caption": "A bedroom with a walnut bed frame.", "alt": "Bedroom with a walnut bed frame, a wooden dresser, a gray blanket and tall windows." },
+        { "file": "listings/courtyard-villa-palm-springs/bath-or-detail.jpg", "caption": "The courtyard pool at night.", "alt": "Courtyard with a round pool, whitewashed arches and trees lit at night." }
+      ],
+      "location": {
+        "neighborhood": "Vista Las Palmas",
+        "city": "Palm Springs",
+        "water": null,
+        "streets": ["Calloway Drive", "Mesquite Lane", "Sorrel Way"],
+        "park": "Canyon View Park",
+        "note": "Vista Las Palmas, Palm Springs. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$2.95M",
+        "ariaLabel": "4 bed villa in Palm Springs, $2,950,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "mountain-lodge-aspen",
+      "title": "Timber house with a stone fireplace and mountain views",
+      "status": "sale",
+      "tag": null,
+      "featured": false,
+      "featuredOrder": null,
+      "listed": "2026-09-18",
+      "price": 14500000,
+      "priceLabel": "$14,500,000",
+      "address": {
+        "street": "1180 Quillan Ridge Road",
+        "city": "Aspen",
+        "state": "CO",
+        "postalCode": "81611",
+        "neighborhood": "Red Mountain",
+        "oneLine": "1180 Quillan Ridge Road, Aspen, CO 81611"
+      },
+      "beds": 5,
+      "baths": 5.5,
+      "sqft": 4650,
+      "sqftLabel": "4,650 sq ft",
+      "lot": "0.92 acres",
+      "yearBuilt": 2016,
+      "type": "House",
+      "parking": "Attached 2-car garage and heated driveway",
+      "description": [
+        "A dark timber-clad house with tall windows and a long wood deck, set among trees on Red Mountain above Aspen. In winter the deck looks out over snow and woods.",
+        "The living room has a vaulted cedar ceiling, a stone fireplace and a large sectional sofa, with the kitchen open beyond it. The kitchen has walnut cabinets, stainless steel appliances and a long window above the sink. One bedroom has three windows onto the snowy peaks, and the main bathroom has a double stone vanity and a freestanding soaking tub under large windows.",
+        "Built in 2016, the house has radiant floor heating, a heated driveway and an attached two-car garage. Elena Marsh has the roof's snow load report and the last two winters' heating bills, and sends them to anyone who books a viewing."
+      ],
+      "features": [
+        "Long wood deck",
+        "Vaulted cedar ceiling in the living room",
+        "Stone wood-burning fireplace",
+        "Walnut kitchen cabinets",
+        "Bedroom with three windows onto the mountains",
+        "Freestanding soaking tub",
+        "Double stone vanity",
+        "Radiant floor heating",
+        "Heated driveway",
+        "Attached two-car garage"
+      ],
+      "neighborhoodFacts": [
+        "Red Mountain rises on the north side of the Roaring Fork River, across from downtown Aspen.",
+        "Downtown Aspen and the gondola up Aspen Mountain are a short drive away.",
+        "Aspen/Pitkin County Airport is a few miles northwest of town."
+      ],
+      "agentId": "elena-marsh",
+      "images": [
+        { "file": "listings/mountain-lodge-aspen/exterior.jpg", "caption": "The house and its long deck in the snow.", "alt": "Dark timber-clad contemporary house with a long wood deck and tall windows in a snowy wooded landscape." },
+        { "file": "listings/mountain-lodge-aspen/living.jpg", "caption": "Living room with a cedar ceiling and a stone fireplace.", "alt": "Vaulted living room with a cedar ceiling, a stone fireplace, a sectional sofa and an open kitchen beyond." },
+        { "file": "listings/mountain-lodge-aspen/kitchen.jpg", "caption": "Walnut cabinets and a long window over the sink.", "alt": "Kitchen with walnut cabinets, stainless steel appliances and a long window above the sink." },
+        { "file": "listings/mountain-lodge-aspen/bedroom.jpg", "caption": "A bedroom with three windows onto the mountains.", "alt": "Bright bedroom with three windows framing snowy mountains and a bed dressed in dark green bedding." },
+        { "file": "listings/mountain-lodge-aspen/bath-or-detail.jpg", "caption": "Soaking tub and double stone vanity.", "alt": "Bathroom with a double stone vanity, a freestanding soaking tub and large windows." }
+      ],
+      "location": {
+        "neighborhood": "Red Mountain",
+        "city": "Aspen",
+        "water": "river",
+        "streets": ["Quillan Ridge Road", "Hollis Lane", "Spruce Bench Drive"],
+        "park": "Larkspur Meadow",
+        "note": "Red Mountain, Aspen. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$14.5M",
+        "ariaLabel": "5 bed house in Aspen, $14,500,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "condo-miami",
+      "title": "Condo with a balcony over the marina",
+      "status": "rent",
+      "tag": "New",
+      "featured": false,
+      "featuredOrder": null,
+      "listed": "2026-10-05",
+      "price": 7200,
+      "priceLabel": "$7,200/month",
+      "address": {
+        "street": "3300 Marlowe Bay Drive, Unit 2104",
+        "city": "Miami",
+        "state": "FL",
+        "postalCode": "33137",
+        "neighborhood": "Edgewater",
+        "oneLine": "3300 Marlowe Bay Drive, Unit 2104, Miami, FL 33137"
+      },
+      "beds": 2,
+      "baths": 2,
+      "sqft": 1240,
+      "sqftLabel": "1,240 sq ft",
+      "lot": null,
+      "yearBuilt": 2008,
+      "type": "Apartment",
+      "parking": "One assigned space in the building garage",
+      "description": [
+        "A two-bedroom condo on the 21st floor of a white tower on the water in Edgewater. The balcony looks over a marina and along the coastline.",
+        "The living room has floor-to-ceiling windows above the treetops, a gray sofa and room for a desk. The white kitchen has a granite breakfast counter, with space for a small dining table by the tall windows. The second bedroom has two beds with navy headboards, which suits guests or children.",
+        "The building has impact-resistant windows, a pool deck and a lobby attendant at all hours. Water is included in the rent; electricity is separate. Owen Whitlock shows the condo and can explain the building's hurricane procedures before you sign."
+      ],
+      "features": [
+        "Balcony over the marina",
+        "Floor-to-ceiling windows",
+        "Granite breakfast counter",
+        "Two bathrooms",
+        "In-unit washer and dryer",
+        "Central air conditioning",
+        "Impact-resistant windows",
+        "Pool deck in the building",
+        "Lobby attendant at all hours",
+        "One assigned garage space"
+      ],
+      "neighborhoodFacts": [
+        "Edgewater runs along Biscayne Bay, north of downtown Miami.",
+        "Margaret Pace Park is on the bayfront in the neighborhood.",
+        "Wynwood, known for its murals and galleries, is just to the west."
+      ],
+      "agentId": "owen-whitlock",
+      "images": [
+        { "file": "listings/condo-miami/exterior.jpg", "caption": "Towers along the water.", "alt": "Aerial view of a row of white high-rise condominium towers along the water." },
+        { "file": "listings/condo-miami/living.jpg", "caption": "Living room with floor-to-ceiling windows.", "alt": "Bright living room with a gray sofa, a yellow credenza and floor-to-ceiling windows over treetops." },
+        { "file": "listings/condo-miami/kitchen.jpg", "caption": "White kitchen with a granite breakfast counter.", "alt": "White kitchen with a granite breakfast counter and a small dining table beside tall windows." },
+        { "file": "listings/condo-miami/bedroom.jpg", "caption": "The second bedroom, with two beds.", "alt": "Two beds with navy headboards and teal bedding in a white room with turquoise plates on the wall." },
+        { "file": "listings/condo-miami/bath-or-detail.jpg", "caption": "The view from the balcony.", "alt": "View from a high-rise condo balcony over a marina and the coastline." }
+      ],
+      "location": {
+        "neighborhood": "Edgewater",
+        "city": "Miami",
+        "water": "coast",
+        "streets": ["Marlowe Bay Drive", "Palmetta Street", "Tarpon Lane"],
+        "park": "Bayside Green",
+        "note": "Edgewater, Miami. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$7.2k/mo",
+        "ariaLabel": "2 bed condo for rent in Miami, $7,200 a month"
+      },
+      "rentalTerms": {
+        "deposit": "One month's rent",
+        "term": "12 months",
+        "available": "November 15, 2026",
+        "pets": "Considered case by case. Assistance animals are always accepted.",
+        "furnished": "Unfurnished"
+      }
+    },
+    {
+      "slug": "farmhouse-nashville",
+      "title": "Renovated farmhouse in white board and batten",
+      "status": "sale",
+      "tag": null,
+      "featured": false,
+      "featuredOrder": null,
+      "listed": "2026-09-26",
+      "price": 1895000,
+      "priceLabel": "$1,895,000",
+      "address": {
+        "street": "1418 Corwin Avenue",
+        "city": "Nashville",
+        "state": "TN",
+        "postalCode": "37216",
+        "neighborhood": "Inglewood",
+        "oneLine": "1418 Corwin Avenue, Nashville, TN 37216"
+      },
+      "beds": 4,
+      "baths": 3.5,
+      "sqft": 3280,
+      "sqftLabel": "3,280 sq ft",
+      "lot": "0.31 acres",
+      "yearBuilt": 1938,
+      "type": "House",
+      "parking": "2-car garage and driveway",
+      "description": [
+        "A farmhouse in white board and batten, with a covered entry, a wood front door and a garage with glass doors. It sits on a deep lot in Inglewood, in East Nashville.",
+        "The living room has white sofas, a fireplace, black-framed windows and a black chandelier over light hardwood floors. The long kitchen has light wood cabinets with brass pulls and a large island. One bedroom has light oak floors and a long window above the bed, and a bathroom has a light wood double vanity, a freestanding tub and a glass shower.",
+        "Built in 1938, the house was renovated down to the frame in 2024, with new wiring, plumbing, HVAC, windows and roof. Daniel Reyes has the permits and the pre-listing inspection report, and goes through both with you at the viewing."
+      ],
+      "features": [
+        "White board-and-batten siding",
+        "Covered front entry",
+        "Fireplace in the living room",
+        "Black-framed windows",
+        "Large kitchen island",
+        "Light wood cabinets with brass pulls",
+        "Freestanding tub and glass shower",
+        "Renovated in 2024",
+        "New wiring, plumbing, HVAC and roof in 2024",
+        "Two-car garage with glass doors"
+      ],
+      "neighborhoodFacts": [
+        "Inglewood is in East Nashville, across the Cumberland River from downtown.",
+        "Gallatin Pike, the main road through the neighborhood, has shops and restaurants.",
+        "Shelby Bottoms Greenway and Nature Park, along the Cumberland River, is a short drive away."
+      ],
+      "agentId": "daniel-reyes",
+      "images": [
+        { "file": "listings/farmhouse-nashville/exterior.jpg", "caption": "The covered entry and glass garage doors.", "alt": "White board-and-batten house with a covered entry, a wood front door and glass garage doors." },
+        { "file": "listings/farmhouse-nashville/living.jpg", "caption": "Living room with a fireplace and black-framed windows.", "alt": "Living room with white sofas, a fireplace, black-framed windows and a black chandelier over light hardwood floors." },
+        { "file": "listings/farmhouse-nashville/kitchen.jpg", "caption": "Light wood cabinets and a large island.", "alt": "Long kitchen with light wood cabinets, brass pulls and a large island with lit toe-kick." },
+        { "file": "listings/farmhouse-nashville/bedroom.jpg", "caption": "A bedroom with light oak floors.", "alt": "Bedroom with an upholstered bed, light oak floors and a long window above the headboard." },
+        { "file": "listings/farmhouse-nashville/bath-or-detail.jpg", "caption": "Freestanding tub and double vanity.", "alt": "Bathroom with a light wood double vanity, a freestanding tub and a glass shower." }
+      ],
+      "location": {
+        "neighborhood": "Inglewood",
+        "city": "Nashville",
+        "water": null,
+        "streets": ["Corwin Avenue", "Ashby Lane", "Delmore Street"],
+        "park": "Corwin Park",
+        "note": "Inglewood, Nashville. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$1.90M",
+        "ariaLabel": "4 bed farmhouse in Nashville, $1,895,000"
+      },
+      "rentalTerms": null
+    },
+    {
+      "slug": "victorian-flat-san-francisco",
+      "title": "Upper flat in a Victorian with a bay window",
+      "status": "rent",
+      "tag": null,
+      "featured": false,
+      "featuredOrder": null,
+      "listed": "2026-09-30",
+      "price": 6400,
+      "priceLabel": "$6,400/month",
+      "address": {
+        "street": "618 Fennimore Street, Upper Flat",
+        "city": "San Francisco",
+        "state": "CA",
+        "postalCode": "94117",
+        "neighborhood": "Alamo Square",
+        "oneLine": "618 Fennimore Street, Upper Flat, San Francisco, CA 94117"
+      },
+      "beds": 2,
+      "baths": 1,
+      "sqft": 1380,
+      "sqftLabel": "1,380 sq ft",
+      "lot": null,
+      "yearBuilt": 1896,
+      "type": "Apartment",
+      "parking": "Street parking with a residential permit",
+      "description": [
+        "The upper flat of a white Victorian with ornate bay windows, on a street of Victorian houses in Alamo Square. A staircase leads up from the sidewalk to the front door.",
+        "The living room has teal walls, a bay window and hardwood floors, with room for a sofa and an armchair. The kitchen keeps its vintage wooden cabinets and tiled backsplash, with a gas range. The bedroom has wood wainscoting, and the bathroom has a pedestal sink, brass fixtures, white paneling and a bathtub.",
+        "Heat and water are included in the rent; electricity and gas are separate. There is a shared washer and dryer in the basement. Maya Chen arranges viewings and can tell you what the street is like early in the morning and late at night."
+      ],
+      "features": [
+        "Bay window in the living room",
+        "Hardwood floors",
+        "Wood wainscoting in the bedroom",
+        "Vintage wooden kitchen cabinets",
+        "Gas range",
+        "Pedestal sink and brass fixtures",
+        "Bathtub",
+        "Shared washer and dryer in the basement",
+        "Heat and water included"
+      ],
+      "neighborhoodFacts": [
+        "Alamo Square Park sits on a hilltop with views toward downtown.",
+        "The Painted Ladies, a row of Victorian houses on Steiner Street, face the park.",
+        "Divisadero Street, with its cafes and restaurants, is just to the west."
+      ],
+      "agentId": "maya-chen",
+      "images": [
+        { "file": "listings/victorian-flat-san-francisco/exterior.jpg", "caption": "Bay windows on a street of Victorian houses.", "alt": "Row of white and cream Victorian houses with ornate bay windows and a front staircase." },
+        { "file": "listings/victorian-flat-san-francisco/living.jpg", "caption": "Living room with teal walls and a bay window.", "alt": "Living room with teal walls, a bay window, hardwood floors, a striped sofa and a leather armchair." },
+        { "file": "listings/victorian-flat-san-francisco/kitchen.jpg", "caption": "Vintage wooden cabinets and a gas range.", "alt": "Kitchen with vintage wooden cabinets, a tiled backsplash and a gas range." },
+        { "file": "listings/victorian-flat-san-francisco/bedroom.jpg", "caption": "Bedroom with wood wainscoting.", "alt": "Bedroom with a white bed, wood wainscoting and an ornate carved dresser with a mirror." },
+        { "file": "listings/victorian-flat-san-francisco/bath-or-detail.jpg", "caption": "Pedestal sink and brass fixtures.", "alt": "Bathroom with a pedestal sink, brass fixtures, white paneling and a bathtub behind a patterned curtain." }
+      ],
+      "location": {
+        "neighborhood": "Alamo Square",
+        "city": "San Francisco",
+        "water": null,
+        "streets": ["Fennimore Street", "Laurel Row", "Harlan Court"],
+        "park": "Hayes Hill Green",
+        "note": "Alamo Square, San Francisco. Exact address shared on inquiry."
+      },
+      "mapPin": {
+        "label": "$6.4k/mo",
+        "ariaLabel": "2 bed flat for rent in San Francisco, $6,400 a month"
+      },
+      "rentalTerms": {
+        "deposit": "One month's rent",
+        "term": "12 months",
+        "available": "December 1, 2026",
+        "pets": "Considered case by case. Assistance animals are always accepted.",
+        "furnished": "Unfurnished"
+      }
+    }
+  ],
+  "detailPage": {
+    "breadcrumbLabel": "Breadcrumb",
+    "breadcrumb": ["Home", "Properties"],
+    "status": { "sale": "For sale", "rent": "For rent", "new": "New", "underOffer": "Under offer" },
+    "priceSuffixRent": "/mo",
+    "actions": {
+      "save": "Save {title}",
+      "saved": "Saved to your list",
+      "unsaved": "Removed from your list",
+      "share": "Share this home",
+      "shareText": "{title}, {priceLabel}, listed by Halden & Rowe",
+      "linkCopied": "Link copied",
+      "copyFailed": "Couldn't copy the link. Copy it from the address bar instead.",
+      "print": "Print this page"
+    },
+    "gallery": {
+      "showAll": "Show all {count} photos",
+      "showAllShort": "Show all",
+      "open": "Open photo {index} of {count}",
+      "counter": "{index} / {count}",
+      "close": "Close gallery",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "loadError": "This photo couldn't load.",
+      "regionLabel": "Photos of {title}"
+    },
+    "facts": {
+      "heading": "Key facts",
+      "beds": { "one": "bed", "other": "beds" },
+      "baths": { "one": "bath", "other": "baths" },
+      "area": "Floor area",
+      "yearBuilt": "Year built",
+      "lot": "Lot size",
+      "lotNone": "No private lot",
+      "parking": "Parking",
+      "type": "Type"
+    },
+    "descriptionHeading": "About this home",
+    "featuresHeading": "Features",
+    "locationHeading": "Location",
+    "neighborhoodHeading": "The neighborhood",
+    "mapScaleLabel": "650 ft",
+    "mapLabel": "Drawn plan of the streets around {title}",
+    "rentalTermsHeading": "Rental terms",
+    "rentalTerms": {
+      "deposit": "Deposit",
+      "term": "Lease term",
+      "available": "Available from",
+      "pets": "Pets",
+      "furnished": "Furnishing"
+    },
+    "agentHeading": "Your agent",
+    "similarHeadline": "Similar homes",
+    "stickyBar": { "cta": "Inquire" },
+    "enquiry": {
+      "heading": "Ask about this home",
+      "intro": "{agentName} will reply by email or phone, usually within one business day.",
+      "messageDefault": "I'd like to arrange a viewing of {title}.",
+      "viewingDateLabel": "Preferred viewing date (optional)",
+      "viewingDateHint": "We'll confirm a time that suits you and the owner.",
+      "submit": "Send inquiry",
+      "sending": "Sending…",
+      "successHeading": "Inquiry sent",
+      "successText": "Thank you. {agentName} has your message about {title} and will reply by email or phone, usually within one business day.",
+      "sendAnother": "Send another inquiry"
+    },
+    "calculator": {
+      "heading": "Estimate your monthly payment",
+      "homePrice": "Home price",
+      "downPayment": "Down payment",
+      "downPaymentPercent": "Down payment (%)",
+      "downPaymentAmount": "{amount} down",
+      "rate": "Interest rate (%)",
+      "rateHint": "Illustrative rate. Your lender will quote your own.",
+      "rateDecrease": "Lower the rate by 0.05%",
+      "rateIncrease": "Raise the rate by 0.05%",
+      "term": "Loan term",
+      "termOption": "{years} years",
+      "resultLabel": "Estimated monthly payment",
+      "loanAmount": "Loan amount",
+      "totalInterest": "Total interest",
+      "totalCost": "Total cost of the loan",
+      "principal": "Principal",
+      "interest": "Interest",
+      "emptyResult": "Enter a home price to see a payment",
+      "errors": {
+        "price": "Enter a home price, like 1,250,000 or 1.25m.",
+        "priceMax": "Enter a home price up to $100,000,000.",
+        "downCap": "The calculator caps the down payment at 60%.",
+        "rate": "Enter an interest rate from 0 to 15%."
+      },
+      "disclaimer": "An estimate of principal and interest only. It leaves out property tax, homeowners insurance, HOA dues and mortgage insurance, and it is not a loan offer. Ask a licensed lender for a quote."
+    }
+  }
+}

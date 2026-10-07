@@ -1,0 +1,124 @@
+{
+  "search": {
+    "label": "Search homes",
+    "tabs": [
+      { "id": "buy", "label": "Buy" },
+      { "id": "rent", "label": "Rent" },
+      { "id": "sell", "label": "Sell" }
+    ],
+    "labels": {
+      "location": "Location",
+      "type": "Type",
+      "price": "Price",
+      "beds": "Beds"
+    },
+    "options": {
+      "anyLocation": "Any city",
+      "anyType": "Any type",
+      "anyPrice": "Any price",
+      "anyBeds": "Any",
+      "beds": [
+        { "value": 1, "label": "1+" },
+        { "value": 2, "label": "2+" },
+        { "value": 3, "label": "3+" },
+        { "value": 4, "label": "4+" }
+      ],
+      "types": ["House", "Villa", "Townhouse", "Penthouse", "Loft", "Apartment"],
+      "priceBuy": [
+        { "min": null, "max": 1500000, "label": "Up to $1,500,000" },
+        { "min": 1500000, "max": 3000000, "label": "$1,500,000 to $3,000,000" },
+        { "min": 3000000, "max": 4500000, "label": "$3,000,000 to $4,500,000" },
+        { "min": 4500000, "max": null, "label": "$4,500,000 and up" }
+      ],
+      "priceRent": [
+        { "min": null, "max": 5000, "label": "Up to $5,000/month" },
+        { "min": 5000, "max": 10000, "label": "$5,000 to $10,000/month" },
+        { "min": 10000, "max": null, "label": "$10,000/month and up" }
+      ]
+    },
+    "moreOptions": "More options",
+    "fewerOptions": "Fewer options",
+    "submit": "Search homes",
+    "sell": {
+      "copy": "Thinking of selling? Tell us the address and an agent will arrange a free valuation.",
+      "addressLabel": "Property address",
+      "addressPlaceholder": "Street, city and ZIP code",
+      "submit": "Book a valuation"
+    }
+  },
+  "properties": {
+    "breadcrumb": ["Home", "Properties"],
+    "title": "Homes for sale and rent",
+    "lead": "Twelve homes in twelve cities, each with a named agent. Filter by status, city, type, price and size.",
+    "titleBuy": "Homes for sale",
+    "titleRent": "Homes for rent"
+  },
+  "filters": {
+    "barLabel": "Filter homes",
+    "status": {
+      "label": "Status",
+      "any": "All",
+      "buy": "Buy",
+      "rent": "Rent"
+    },
+    "location": "Location",
+    "type": "Type",
+    "priceMin": "Min price",
+    "priceMax": "Max price",
+    "noMin": "No min",
+    "noMax": "No max",
+    "priceStepsBuy": [1000000, 1500000, 2000000, 3000000, 4000000, 5000000],
+    "priceStepsRent": [3000, 5000, 10000, 20000, 30000],
+    "beds": "Beds",
+    "keyword": "Search",
+    "keywordPlaceholder": "City, neighborhood or street",
+    "sort": "Sort by",
+    "open": "Filters",
+    "openWithCount": "Filters ({count})",
+    "sheetTitle": "Filter homes",
+    "closeSheet": "Close filters",
+    "show": { "one": "Show 1 home", "other": "Show {count} homes", "zero": "No homes to show" },
+    "clearAll": "Clear all",
+    "activeLabel": "Active filters",
+    "removeChip": "Remove filter: {label}",
+    "chip": {
+      "status": "{value}",
+      "city": "{value}",
+      "type": "{value}",
+      "min": "From {value}",
+      "max": "Up to {value}",
+      "beds": "{value}+ beds",
+      "q": "\"{value}\""
+    },
+    "saved": "Saved ({count})",
+    "noResultsSuffix": "(0)",
+    "viewToggleLabel": "Layout",
+    "gridView": "Grid view",
+    "listView": "List view"
+  },
+  "sort": {
+    "options": [
+      { "value": "newest", "label": "Newest" },
+      { "value": "price-asc", "label": "Price low to high" },
+      { "value": "price-desc", "label": "Price high to low" },
+      { "value": "largest", "label": "Largest" }
+    ]
+  },
+  "results": {
+    "count": { "zero": "No homes", "one": "1 home", "other": "{count} homes" }
+  },
+  "empty": {
+    "title": "No homes match these filters",
+    "line": "Try a wider price range or a different city, or clear the filters to see all twelve homes.",
+    "primary": "Clear all filters",
+    "closeMatches": "Close matches",
+    "savedTitle": "No saved homes yet",
+    "savedLine": "Tap the heart on any home to save it. Your list stays in this browser.",
+    "savedPrimary": "Show all homes"
+  },
+  "card": {
+    "viewHome": "View home",
+    "save": "Save {title}",
+    "imageError": "Photo unavailable"
+  }
+}

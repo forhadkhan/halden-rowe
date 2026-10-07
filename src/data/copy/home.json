@@ -1,0 +1,218 @@
+{
+  "hero": {
+    "headline": "Homes measured with <em>care</em>, shown as they are.",
+    "lead": "We sell and rent a small number of homes across the US. Each one has a named agent who has walked every room.",
+    "stat": { "value": "320+", "label": "homes sold and rented" },
+    "rating": {
+      "stars": 5,
+      "starsLabel": "Rated 5 out of 5",
+      "title": "Top rated",
+      "caption": "Professional property agents"
+    },
+    "avatars": ["agents/agent-1.jpg", "agents/agent-2.jpg", "agents/agent-3.jpg", "agents/agent-4.jpg"]
+  },
+  "trust": {
+    "eyebrow": "In numbers",
+    "statement": "A small agency, by choice. Fewer homes, each one known well.",
+    "stats": [
+      { "value": 14, "suffix": "", "label": "years in practice" },
+      { "value": 320, "suffix": "+", "label": "homes sold and rented" },
+      { "value": 12, "suffix": "", "label": "cities" },
+      { "value": 6, "suffix": "", "label": "agents" }
+    ]
+  },
+  "featured": {
+    "eyebrow": "Featured homes",
+    "headline": "On the market now",
+    "viewAll": "View all homes",
+    "viewAllHref": "/properties",
+    "cardHoverLabel": "View home"
+  },
+  "aboutTeaser": {
+    "eyebrow": "About us",
+    "headline": "An architect and an appraiser, selling homes since 2012.",
+    "lead": "Clara Halden and Thomas Rowe started the agency in Brooklyn with one rule: describe a home exactly as it is.",
+    "body": "We measure every home ourselves and tell you what we know about its condition before you visit. Each home has one agent from the first call to the closing, and that agent's name and number are on the listing.",
+    "founders": "Clara Halden and Thomas Rowe, founding partners",
+    "link": "Read our story",
+    "href": "/about",
+    "image": {
+      "file": "about/detail.jpg",
+      "alt": "Ornate stone facade with carved cornice and arched windows catching warm light."
+    }
+  },
+  "services": {
+    "eyebrow": "What we do",
+    "headline": "Buying, selling, renting and valuation",
+    "intro": "Four services, each run by an agent who knows the local market. Start with the one that fits where you are.",
+    "regionLabel": "Our services",
+    "items": [
+      {
+        "id": "buying",
+        "title": "Buying",
+        "line": "Viewings, offers and inspections, with one agent at your side.",
+        "link": "Explore buying",
+        "href": "/properties?status=buy",
+        "image": { "file": "services/buying.jpg", "alt": "Hand holding house keys with a small house-shaped tag in front of a white door lock." }
+      },
+      {
+        "id": "selling",
+        "title": "Selling",
+        "line": "Pricing, photography and viewings, agreed in writing before we list.",
+        "link": "Plan your sale",
+        "href": "/contact?topic=selling",
+        "image": { "file": "services/selling.jpg", "alt": "Staged living room with a white sofa, a lamp, an olive tree and two framed prints." }
+      },
+      {
+        "id": "renting",
+        "title": "Renting",
+        "line": "Apartments and lofts with clear terms and a move-in walk-through.",
+        "link": "Find a rental",
+        "href": "/properties?status=rent",
+        "image": { "file": "services/renting.jpg", "alt": "Modern apartment building with dark window frames against a pale sky." }
+      },
+      {
+        "id": "valuation",
+        "title": "Valuation",
+        "line": "A free written price range, with the recent sales behind it.",
+        "link": "Book a valuation",
+        "href": "/contact?topic=valuation",
+        "image": { "file": "services/valuation.jpg", "alt": "Overhead view of architectural sketches, pens and a laptop on a wooden desk with a hand drawing." }
+      }
+    ]
+  },
+  "marquee": {
+    "label": "Cities we work in",
+    "eyebrow": "Where we work",
+    "linkLabel": "See homes in {city}",
+    "items": [
+      { "name": "Los Angeles", "state": "CA" },
+      { "name": "Seattle", "state": "WA" },
+      { "name": "Brooklyn", "state": "NY" },
+      { "name": "New York", "state": "NY" },
+      { "name": "Austin", "state": "TX" },
+      { "name": "Wrightsville Beach", "state": "NC" },
+      { "name": "Chicago", "state": "IL" },
+      { "name": "Palm Springs", "state": "CA" },
+      { "name": "Aspen", "state": "CO" },
+      { "name": "Miami", "state": "FL" },
+      { "name": "Nashville", "state": "TN" },
+      { "name": "San Francisco", "state": "CA" }
+    ]
+  },
+  "map": {
+    "eyebrow": "On the map",
+    "headline": "Where our homes are",
+    "lead": "Twelve homes from the Pacific coast to the Atlantic. Choose a pin to see the home, or use the list.",
+    "mapLabel": "Map of the United States showing our twelve homes",
+    "chips": [
+      { "id": "all", "label": "All" },
+      { "id": "sale", "label": "For sale" },
+      { "id": "rent", "label": "For rent" }
+    ],
+    "chipsLabel": "Show homes",
+    "listHeading": "Homes on the map",
+    "popup": {
+      "viewHome": "View home",
+      "closeLabel": "Close"
+    }
+  },
+  "steps": {
+    "eyebrow": "How it works",
+    "headline": "From first search to keys in hand",
+    "items": [
+      {
+        "title": "Choose the place",
+        "text": "Start with the city and the street, not only the house. Tell your agent how you get to work, where you shop and what you want nearby, and they will narrow the list."
+      },
+      {
+        "title": "Walk the plan",
+        "text": "View the home with the agent who knows it. Bring a tape measure and your questions. We will tell you the floor area, the age of the roof and anything we know that the photos don't show."
+      },
+      {
+        "title": "Check the details",
+        "text": "Before you commit, your agent helps you book an inspection, read the disclosures and understand the closing costs, so you know what you will pay before you sign."
+      },
+      {
+        "title": "Get the keys",
+        "text": "Your agent stays with you through the final walk-through and the closing, then hands over the keys with a folder of manuals, warranties and contacts for the house."
+      }
+    ]
+  },
+  "places": {
+    "eyebrow": "Neighborhoods",
+    "headline": "Places worth knowing",
+    "items": [
+      {
+        "name": "New York",
+        "meta": "1 home for rent · $28,500/mo",
+        "href": "/properties?city=New%20York",
+        "image": { "file": "places/skyline.jpg", "alt": "Lower Manhattan skyline at dusk seen across the water with a rising moon." }
+      },
+      {
+        "name": "Austin",
+        "meta": "1 home for sale · $1,385,000",
+        "href": "/properties?city=Austin",
+        "image": { "file": "places/suburb.jpg", "alt": "Tree-lined suburban street with a canopy of oaks over a quiet road." }
+      },
+      {
+        "name": "Seattle",
+        "meta": "1 home for sale · $3,975,000",
+        "href": "/properties?city=Seattle",
+        "image": { "file": "places/waterfront.jpg", "alt": "City skyline across a marina with a jetty and a glass shelter at dusk." }
+      },
+      {
+        "name": "Brooklyn",
+        "meta": "1 home for sale · $4,395,000",
+        "href": "/properties?city=Brooklyn",
+        "image": { "file": "places/historic.jpg", "alt": "Narrow cobbled street between old stone buildings in a historic district." }
+      }
+    ],
+    "rowLabel": "See homes in {name}"
+  },
+  "agents": {
+    "eyebrow": "Our agents",
+    "headline": "The people you will meet at the door",
+    "link": "Meet the team",
+    "href": "/about#team",
+    "listingsCount": { "one": "1 listing", "other": "{count} listings" }
+  },
+  "testimonials": {
+    "eyebrow": "Client stories",
+    "headline": "What our clients say",
+    "carouselLabel": "Client stories",
+    "slideLabel": "{index} of {count}",
+    "previous": "Previous story",
+    "next": "Next story",
+    "counter": "{index} / {count}"
+  },
+  "faq": {
+    "eyebrow": "Questions",
+    "headline": "Before you get in touch",
+    "lead": "Short answers to the questions people ask us most. Your agent can go into detail on any of them.",
+    "contactPrompt": "Still have a question?",
+    "contactLink": "Ask an agent",
+    "contactHref": "/contact"
+  },
+  "cta": {
+    "headline": "Thinking of selling? Start with a number you can trust.",
+    "line": "An agent visits, measures your home and sends a written price range with the sales behind it. It is free and carries no obligation.",
+    "primary": "Book a valuation",
+    "primaryHref": "/contact?topic=valuation",
+    "secondary": "Browse homes",
+    "secondaryHref": "/properties",
+    "image": {
+      "file": "cta/golden-hour.jpg",
+      "alt": "Sun setting behind a field of tall grass with a small house on the horizon."
+    }
+  },
+  "journalTeaser": {
+    "eyebrow": "Journal",
+    "headline": "Practical notes from our agents",
+    "link": "All articles",
+    "href": "/journal"
+  },
+  "newsletter": {
+    "source": "site.json#newsletter"
+  }
+}

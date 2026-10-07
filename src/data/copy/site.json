@@ -1,0 +1,115 @@
+{
+  "name": "Halden & Rowe",
+  "tagline": "Homes measured with care, in twelve American cities.",
+  "positioning": "A small agency selling and renting homes in twelve US cities, with one named agent for every home.",
+  "skipLink": "Skip to content",
+  "nav": {
+    "label": "Main",
+    "links": [
+      { "label": "Buy", "href": "/properties?status=buy" },
+      { "label": "Rent", "href": "/properties?status=rent" },
+      { "label": "Sell", "href": "/contact?topic=valuation" },
+      { "label": "About", "href": "/about" },
+      { "label": "Journal", "href": "/journal" },
+      { "label": "Contact", "href": "/contact" }
+    ],
+    "cta": { "label": "Book a valuation", "href": "/contact?topic=valuation" },
+    "homeLinkLabel": "Halden & Rowe, home",
+    "menuOpen": "Menu",
+    "menuClose": "Close",
+    "currentPage": "current page"
+  },
+  "cities": [
+    "Los Angeles",
+    "Seattle",
+    "Brooklyn",
+    "New York",
+    "Austin",
+    "Wrightsville Beach",
+    "Chicago",
+    "Palm Springs",
+    "Aspen",
+    "Miami",
+    "Nashville",
+    "San Francisco"
+  ],
+  "contact": {
+    "phone": "(212) 555-0140",
+    "phoneHref": "tel:+12125550140",
+    "email": "hello@haldenrowe.example",
+    "address": {
+      "street": "40 Larchmere Street, Fourth Floor",
+      "city": "New York",
+      "state": "NY",
+      "postalCode": "10014",
+      "country": "US",
+      "oneLine": "40 Larchmere Street, Fourth Floor, New York, NY 10014"
+    },
+    "hours": [
+      { "days": "Monday to Friday", "time": "9 am to 6 pm" },
+      { "days": "Saturday", "time": "10 am to 4 pm, by appointment" },
+      { "days": "Sunday", "time": "Closed" }
+    ],
+    "hoursShort": "Mon to Fri 9 am to 6 pm, Sat 10 am to 4 pm"
+  },
+  "social": [
+    { "network": "instagram", "handle": "@haldenrowe", "href": "#", "label": "Halden & Rowe on Instagram" },
+    { "network": "facebook", "handle": "haldenrowe", "href": "#", "label": "Halden & Rowe on Facebook" },
+    { "network": "x", "handle": "@haldenrowe", "href": "#", "label": "Halden & Rowe on X" },
+    { "network": "youtube", "handle": "@haldenrowe", "href": "#", "label": "Halden & Rowe on YouTube" },
+    { "network": "pinterest", "handle": "haldenrowe", "href": "#", "label": "Halden & Rowe on Pinterest" }
+  ],
+  "footer": {
+    "positioning": "A small agency selling and renting homes in twelve US cities, with one named agent for every home.",
+    "explore": {
+      "heading": "Explore",
+      "links": [
+        { "label": "Buy", "href": "/properties?status=buy" },
+        { "label": "Rent", "href": "/properties?status=rent" },
+        { "label": "Sell", "href": "/contact?topic=valuation" },
+        { "label": "Neighborhoods", "href": "/#neighborhoods" }
+      ]
+    },
+    "company": {
+      "heading": "Company",
+      "links": [
+        { "label": "About", "href": "/about" },
+        { "label": "Journal", "href": "/journal" },
+        { "label": "Contact", "href": "/contact" }
+      ]
+    },
+    "contactHeading": "Get in touch",
+    "socialHeading": "Follow us",
+    "copyright": "© {year} Halden & Rowe",
+    "demoLine": "Demo site, listings are illustrative",
+    "creditsLabel": "Photo credits",
+    "creditsHref": "/credits",
+    "privacyLabel": "Privacy",
+    "privacyHref": "/privacy"
+  },
+  "newsletter": {
+    "headline": "Not ready to move yet?",
+    "line": "One email a month with new homes and a practical note from one of our agents.",
+    "label": "Email address",
+    "placeholder": "name@example.com",
+    "submit": "Subscribe",
+    "sending": "Subscribing…",
+    "consent": "One email a month. Every email has a one-click unsubscribe link.",
+    "success": "You're on the list.",
+    "successLine": "Your first email arrives at the start of next month.",
+    "error": "Enter an email address like name@example.com.",
+    "failure": "We couldn't add you to the list. Check your connection and try again."
+  },
+  "demo": {
+    "footerLine": "Demo site, listings are illustrative",
+    "formNote": "Demo site: nothing was sent.",
+    "galleryNote": "Demo listing. Photos are illustrative and may come from more than one property.",
+    "banner": "This is a demo site. Halden & Rowe, its agents, listings, prices and reviews are fictional."
+  },
+  "a11y": {
+    "socialLinkPattern": "Halden & Rowe on {network}",
+    "phoneLinkPattern": "Call {name}",
+    "emailLinkPattern": "Email {name}",
+    "openInNewTab": "opens in a new tab"
+  }
+}

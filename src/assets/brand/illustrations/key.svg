@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120" fill="none" stroke="currentColor" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+  <!-- House key line drawing (Picasso, 2026-10-07): round bow with a house-shaped cut-out, plain shank, two-step bit.
+       Every path has pathLength="1". data-layer orders the draw: outline, house, groove. Decorative: always aria-hidden. -->
+  <g data-layer="outline" stroke-width="1.5">
+    <path pathLength="1" d="M79.4 66A30 30 0 1 1 79.4 54H214V66H206V80H198V72H190V84H180V66Z"/>
+  </g>
+  <g data-layer="house" stroke-width="1.5">
+    <path pathLength="1" d="M38 72V58L50 47L62 58V72Z"/>
+  </g>
+  <g data-layer="groove" stroke-width=".75">
+    <path pathLength="1" d="M100 60H170"/>
+  </g>
+</svg>

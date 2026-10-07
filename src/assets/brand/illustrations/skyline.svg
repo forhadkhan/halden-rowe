@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" width="480" height="200" fill="none" stroke="currentColor" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
+  <!-- City skyline line drawing (Picasso, 2026-10-07). Every path has pathLength="1".
+       data-layer orders the draw: ground, towers (left to right), detail, water. Decorative: always aria-hidden. -->
+  <g data-layer="ground" stroke-width="1.5">
+    <path pathLength="1" d="M0 170H480"/>
+  </g>
+  <g data-layer="towers" stroke-width="1.5">
+    <path pathLength="1" d="M20 170V110H60"/>
+    <path pathLength="1" d="M60 170V90H66V78H72V70H88V78H94V90H100V170M80 70V40"/>
+    <path pathLength="1" d="M100 120H150"/>
+    <path pathLength="1" d="M150 170V62L200 50V170"/>
+    <path pathLength="1" d="M200 100H230V170"/>
+    <path pathLength="1" d="M230 96H290M254 96V90M266 96V90M252 90H268V76H252ZM250 76L260 68L270 76"/>
+    <path pathLength="1" d="M290 170V40H340V170M315 40V14"/>
+    <path pathLength="1" d="M340 116H380"/>
+    <path pathLength="1" d="M380 170V100L440 86V170"/>
+    <path pathLength="1" d="M440 130H468V170"/>
+  </g>
+  <g data-layer="detail" stroke-width=".75">
+    <path pathLength="1" d="M162 60V170M175 57V170M188 54V170"/>
+    <path pathLength="1" d="M298 52H332M298 64H332M298 76H332M298 88H332M298 100H332M298 112H332M298 124H332M298 136H332M298 148H332M298 160H332"/>
+    <path pathLength="1" d="M28 122H52M28 134H52M28 146H52M28 158H52"/>
+    <path pathLength="1" d="M392 112V170M404 109V170M416 106V170M428 103V170"/>
+  </g>
+  <g data-layer="water" stroke-width=".75">
+    <path pathLength="1" d="M20 182H120M160 182H300M330 182H460"/>
+    <path pathLength="1" d="M60 192H200M260 192H420"/>
+  </g>
+</svg>

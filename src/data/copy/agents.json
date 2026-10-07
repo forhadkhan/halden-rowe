@@ -1,0 +1,82 @@
+{
+  "agents": [
+    {
+      "id": "clara-halden",
+      "name": "Clara Halden",
+      "role": "Founding partner, New York",
+      "photo": "agents/agent-1.jpg",
+      "alt": "Clara Halden, seated and smiling, in a white shirt and black skirt.",
+      "bio": "Clara trained as an architect before she started selling houses, and she still reads a floor plan before she reads the price. She founded Halden & Rowe in Brooklyn in 2012 and handles brownstones and townhouses across the borough.",
+      "bioShort": "Trained as an architect; sells brownstones and townhouses in Brooklyn.",
+      "specialties": ["Brownstones and townhouses", "Historic district homes", "Buyers moving from out of state"],
+      "phone": "(718) 555-0101",
+      "phoneHref": "tel:+17185550101",
+      "email": "clara.halden@haldenrowe.example"
+    },
+    {
+      "id": "thomas-rowe",
+      "name": "Thomas Rowe",
+      "role": "Founding partner, Southern California",
+      "photo": "agents/agent-2.jpg",
+      "alt": "Thomas Rowe in a dark blazer and glasses, arms crossed, against a gray backdrop.",
+      "bio": "Thomas spent ten years as a residential appraiser before co-founding the agency, so his pricing advice comes with the comparable sales that support it. He looks after our homes in Los Angeles and Palm Springs.",
+      "bioShort": "Former appraiser; prices and sells homes in Los Angeles and Palm Springs.",
+      "specialties": ["Pricing and valuation", "Modern and mid-century houses", "Sellers who live out of state"],
+      "phone": "(310) 555-0102",
+      "phoneHref": "tel:+13105550102",
+      "email": "thomas.rowe@haldenrowe.example"
+    },
+    {
+      "id": "daniel-reyes",
+      "name": "Daniel Reyes",
+      "role": "Senior agent, Austin and Nashville",
+      "photo": "agents/agent-3.jpg",
+      "alt": "Daniel Reyes laughing, in a navy sweater against a light backdrop.",
+      "bio": "Daniel has sold older houses in central Austin for nine years and keeps a short list of inspectors, roofers and foundation engineers he trusts. He walks every buyer through an inspection report line by line before they decide what to ask for. In Nashville he sells houses in Inglewood.",
+      "bioShort": "Sells houses in Austin and Nashville and knows what an inspection report means.",
+      "specialties": ["Early twentieth-century houses", "Inspections and repair negotiations", "First-time buyers"],
+      "phone": "(512) 555-0103",
+      "phoneHref": "tel:+15125550103",
+      "email": "daniel.reyes@haldenrowe.example"
+    },
+    {
+      "id": "maya-chen",
+      "name": "Maya Chen",
+      "role": "Head of rentals, New York, Chicago and San Francisco",
+      "photo": "agents/agent-4.jpg",
+      "alt": "Maya Chen smiling, with a sleek ponytail, in a white top against a light backdrop.",
+      "bio": "Maya runs our rentals in New York, Chicago and San Francisco, from the first viewing to the signed lease and the move-in walk-through. She tells renters what a building is like at 8 am and at 11 pm, not only at the viewing.",
+      "bioShort": "Runs rentals in New York, Chicago and San Francisco, from first viewing to move-in day.",
+      "specialties": ["Apartments and lofts", "Lease terms and renewals", "Relocations"],
+      "phone": "(212) 555-0104",
+      "phoneHref": "tel:+12125550104",
+      "email": "maya.chen@haldenrowe.example"
+    },
+    {
+      "id": "elena-marsh",
+      "name": "Elena Marsh",
+      "role": "Senior agent and head of valuations, Seattle and Aspen",
+      "photo": "agents/agent-5.jpg",
+      "alt": "Elena Marsh with long dark hair, in a gray blazer against a pale backdrop.",
+      "bio": "Elena prepares every valuation the agency gives, with the recent sales she used and the reasons she adjusted them. In Seattle she sells waterfront and wooded-lot homes around Lake Washington, and in Aspen she sells timber houses on Red Mountain.",
+      "bioShort": "Prepares our valuations and sells homes in Seattle and Aspen.",
+      "specialties": ["Valuations", "Waterfront homes", "Timber and contemporary houses"],
+      "phone": "(206) 555-0105",
+      "phoneHref": "tel:+12065550105",
+      "email": "elena.marsh@haldenrowe.example"
+    },
+    {
+      "id": "owen-whitlock",
+      "name": "Owen Whitlock",
+      "role": "Coastal agent, North Carolina and Miami",
+      "photo": "agents/agent-6.jpg",
+      "alt": "Owen Whitlock in glasses and a dark blazer, standing in front of a bright window.",
+      "bio": "Owen sells beach houses on the North Carolina coast and asks for the elevation certificate before he asks for the asking price. In Miami he rents out condos in Edgewater. He can explain flood zones, wind insurance and dune rules in plain words.",
+      "bioShort": "Sells beach houses in North Carolina, rents homes in Miami and explains flood zones in plain words.",
+      "specialties": ["Oceanfront and soundfront homes", "Flood and wind insurance questions", "Second homes"],
+      "phone": "(910) 555-0106",
+      "phoneHref": "tel:+19105550106",
+      "email": "owen.whitlock@haldenrowe.example"
+    }
+  ]
+}
