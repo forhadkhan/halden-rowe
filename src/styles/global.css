@@ -1,0 +1,628 @@
+/* =============================================================================
+   Halden & Rowe global styles. Values come from tokens.css (Picasso); this file only consumes them.
+   Order: tokens, reset, base, type, layout, utilities, focus, motion states, view transitions, preferences.
+   ========================================================================== */
+@import './tokens.css';
+
+/* Fonts: the Fonts API (astro.config.mjs) defines --font-newsreader / --font-schibsted with metric-matched
+   fallbacks. Point the role tokens at them; tokens.css keeps the plain stacks as the no-API fallback. */
+:root {
+  --font-display: var(--font-newsreader), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: var(--font-schibsted), "Helvetica Neue", Arial, system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Reset
+   ------------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  /* Slim stone thumb on the page colour, inherited by inner scrollers. Brass hover only in the WebKit fallback below. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--hr-stone-600) var(--color-bg);
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  scroll-padding-top: calc(var(--header-height-compact) + var(--space-4));
+  hanging-punctuation: first last;
+  interpolate-size: allow-keywords;
+}
+
+/* Safari before 18.2 ignores scrollbar-color; the pseudo-elements are ignored where it is supported. */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--hr-stone-600);
+    border: 3px solid var(--color-bg);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--hr-brass-600);
+  }
+}
+
+@media (min-width: 48rem) {
+  html {
+    scroll-padding-top: calc(var(--header-height) + var(--space-4));
+  }
+}
+
+body {
+  min-height: 100svh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Backstop only (DESIGN.md 5): full-bleed rows use width: 100%, never 100vw. */
+  overflow-x: clip;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dd,
+blockquote,
+figcaption {
+  overflow-wrap: break-word;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+:target {
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+::selection {
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-fg);
+}
+
+/* `hidden` always wins over component display rules (until-found keeps its own behaviour). */
+[hidden]:not([hidden="until-found"]) {
+  display: none !important;
+}
+
+dialog {
+  padding: 0;
+  border: 0;
+  max-width: none;
+  max-height: none;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Lock page scroll while a modal dialog is open (menu, lightbox, filter sheet). */
+html:has(dialog[open]:modal) {
+  overflow: clip;
+}
+
+/* ---------------------------------------------------------------------------
+   Typography (DESIGN.md 3.2). Classes so the visual size never dictates the heading level.
+   ------------------------------------------------------------------------ */
+h1,
+h2,
+h3,
+h4,
+.display-xl,
+.display-l,
+.display-m,
+.display-s {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  font-variant-numeric: lining-nums;
+  text-wrap: balance;
+}
+
+h1 em,
+h2 em,
+h3 em,
+.display-xl em,
+.display-l em,
+.display-m em,
+.display-s em {
+  font-style: italic;
+  font-weight: var(--weight-display-italic);
+}
+
+.display-xl {
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display-xl);
+  letter-spacing: var(--tracking-display-xl);
+}
+
+/* Page H1 and section H2 share display-l (DESIGN.md 3.2); other sizes are opt-in classes. */
+h1,
+h2,
+.display-l {
+  font-size: var(--text-display-l);
+  line-height: var(--leading-display-l);
+  letter-spacing: var(--tracking-display-l);
+}
+
+.display-m {
+  font-size: var(--text-display-m);
+  line-height: var(--leading-display-m);
+  letter-spacing: var(--tracking-display-m);
+}
+
+h3,
+.display-s {
+  font-size: var(--text-display-s);
+  line-height: var(--leading-display-s);
+  letter-spacing: var(--tracking-display-s);
+  font-weight: var(--weight-body);
+}
+
+h4,
+.title {
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+  font-weight: var(--weight-ui);
+  letter-spacing: 0;
+}
+
+.stat {
+  font-family: var(--font-display);
+  font-size: var(--text-stat);
+  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.lead {
+  font-size: var(--text-lead);
+  line-height: var(--leading-lead);
+}
+
+.small {
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+  letter-spacing: var(--tracking-small);
+}
+
+.label {
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  letter-spacing: var(--tracking-label);
+  font-weight: var(--weight-strong);
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.accent {
+  color: var(--color-accent-text);
+}
+
+.tabular {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+.measure-narrow {
+  max-width: var(--measure-narrow);
+}
+
+/* Long-form body: Newsreader at lead size (journal posts). */
+.prose {
+  max-width: var(--container-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  line-height: 1.6;
+}
+
+.prose > * + * {
+  margin-top: 1em;
+}
+
+.prose a {
+  color: var(--color-accent-text);
+}
+
+/* ---------------------------------------------------------------------------
+   Layout (DESIGN.md 5): container, 4/8/12 column grid, section rhythm.
+   ------------------------------------------------------------------------ */
+.container {
+  width: min(100% - 2 * var(--space-gutter), var(--container-max));
+  margin-inline: auto;
+}
+
+.container-wide {
+  width: min(100% - 2 * var(--space-gutter), var(--container-wide));
+  margin-inline: auto;
+}
+
+.container-text {
+  width: min(100% - 2 * var(--space-gutter), var(--container-text));
+  margin-inline: auto;
+}
+
+.grid {
+  --cols: 4;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: var(--space-gutter);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    --cols: 8;
+  }
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    --cols: 12;
+  }
+}
+
+/* Children span the full row until a page sets a span; pages set `grid-column` per breakpoint. */
+.grid > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.section {
+  padding-block: var(--space-section);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-gap, var(--space-4));
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap, var(--space-3));
+}
+
+/* ---------------------------------------------------------------------------
+   Utilities
+   ------------------------------------------------------------------------ */
+.visually-hidden:not(:focus-within):not(:active) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.surface {
+  background-color: var(--color-surface);
+}
+
+.surface-sunken {
+  background-color: var(--color-surface-sunken);
+}
+
+/* Stretched link: the whole card is one link (DESIGN.md 10.5). */
+.stretched-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-raised);
+}
+
+/* ---------------------------------------------------------------------------
+   Focus (DESIGN.md 4): every focusable element, both schemes.
+   ------------------------------------------------------------------------ */
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Text fields and selects show no outline ring: the border darkens and thickens instead (still well over 3:1). */
+input.field__control:not([aria-invalid="true"]):focus,
+select.field__control:not([aria-invalid="true"]):focus,
+textarea.field__control:not([aria-invalid="true"]):focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: inset 0 0 0 1px var(--color-focus);
+}
+
+/* Programmatic focus targets (headings after form success, error summary) show no ring. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion initial states. Written only under .motion-ok, which the head script sets when JS runs and the
+   visitor has no reduced-motion preference. Without JS, content renders in its final state (DESIGN.md 6.1).
+   ------------------------------------------------------------------------ */
+.motion-ok [data-reveal] {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.motion-ok [data-reveal="fade"] {
+  transform: none;
+}
+
+.motion-ok [data-clip] {
+  clip-path: inset(100% 0 0 0);
+}
+
+.motion-ok [data-split] {
+  visibility: hidden;
+}
+
+/* M26 auto reveal: motion.ts only tags blocks below the fold, so nothing on screen is ever hidden. */
+.motion-ok [data-auto] {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+
+.motion-soft [data-auto] {
+  opacity: 0;
+}
+
+/* M27-M33 ambient loops run only under .motion-ok and read their play state from --ambient-play, which
+   motion.ts pauses for a [data-ambient] block that is off screen and for a hidden tab. Transform and opacity only,
+   no cycle shorter than 6s. */
+[data-ambient].is-offscreen,
+.is-tab-hidden [data-ambient] {
+  --ambient-play: paused;
+}
+
+/* M31 light sweep: a soft warm band crosses a photo frame (CTA band) every 11s. The parent must clip. */
+.light-sweep {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.motion-ok .light-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 45%;
+  background-image: linear-gradient(100deg, transparent, rgb(255 236 204 / 0.16), transparent);
+  translate: -100% 0;
+  animation: light-sweep var(--dur-sweep) var(--ease-in-out) 1.5s infinite;
+  animation-play-state: var(--ambient-play, running);
+}
+
+@keyframes light-sweep {
+  0% {
+    translate: -100% 0;
+  }
+
+  30%,
+  100% {
+    translate: 230% 0;
+  }
+}
+
+/* Depth layers (motion.ts data-speed) get their own compositor layer while they move. */
+.is-layer {
+  will-change: translate;
+}
+
+.motion-ok [data-draw] path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* Split-line masks (M2): descenders survive the clip. */
+.split-line-mask {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.split-line {
+  display: block;
+}
+
+/* ---------------------------------------------------------------------------
+   Cross-document view transitions (M17)
+   ------------------------------------------------------------------------ */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-base);
+  animation-timing-function: var(--ease-standard);
+}
+
+/* ---------------------------------------------------------------------------
+   User preferences (DESIGN.md 12)
+   ------------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Lenis (fine pointer + motion only). Rules from lenis/dist/lenis.css, which the package does not export. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* M8 marquee: a track holding two copies (the second aria-hidden) moves -50% per loop. Paused on hover,
+   focus-within and by the pause button. Without motion the items wrap, centred, and the button is hidden. */
+[data-marquee] {
+  overflow: clip;
+}
+
+[data-marquee-track] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4) var(--space-10);
+}
+
+[data-marquee-track] > [aria-hidden="true"],
+[data-marquee-toggle] {
+  display: none;
+}
+
+.motion-ok [data-marquee-track] {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: max-content;
+  gap: 0;
+  animation: marquee var(--dur-marquee) linear infinite;
+}
+
+/* Each copy carries its own trailing gap so -50% lands exactly on the second copy. */
+.motion-ok [data-marquee-track] > * {
+  padding-inline-end: var(--space-10);
+}
+
+.motion-ok [data-marquee-track] > [aria-hidden="true"] {
+  display: flex;
+}
+
+.motion-ok [data-marquee-toggle] {
+  display: inline-flex;
+}
+
+.motion-ok [data-marquee]:hover [data-marquee-track],
+.motion-ok [data-marquee]:focus-within [data-marquee-track],
+.motion-ok [data-marquee].is-paused [data-marquee-track] {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root,
+  [data-scheme="night"],
+  .scheme-night {
+    --color-border: var(--color-border-control);
+    --scrim-hero-top: linear-gradient(var(--scrim-strong), var(--scrim-strong));
+    --scrim-hero-bottom: linear-gradient(var(--scrim-strong), var(--scrim-strong));
+  }
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}

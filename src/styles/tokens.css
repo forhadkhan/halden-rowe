@@ -1,0 +1,295 @@
+/* =============================================================================
+   Halden & Rowe design tokens
+   Owner: Picasso (design). Spec: docs/DESIGN.md. Fena consumes; do not edit values in components.
+   Layers: primitives (--hr-*) -> role tokens (--color-*, --font-*, ...). Components use role tokens only.
+   Schemes: light (default, :root) and night ([data-scheme="night"] on a section, or .scheme-night).
+   Contrast of every text/control pair is checked in DESIGN.md, section 2.3.
+   ========================================================================== */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     1. Colour primitives (never used directly in components)
+     ------------------------------------------------------------------------ */
+  --hr-ivory: #f8f6f0;          /* raised surfaces: cards, panels, inputs on light */
+  --hr-limewash: #eeece5;       /* page background */
+  --hr-stone-200: #e2ded4;      /* sunken bands, skeletons */
+  --hr-stone-250: #e4e1d7;      /* map land */
+  --hr-stone-300: #cfc9bc;      /* decorative hairlines only (no meaning) */
+  --hr-stone-600: #7b766b;      /* control borders (3:1 on all light surfaces) */
+  --hr-ink-900: #1a1e1d;        /* text, primary buttons, focus ring on light */
+  --hr-ink-800: #2f3533;        /* primary hover, selected chip */
+  --hr-ink-600: #555a56;        /* muted text */
+  --hr-brass-300: #d4b27c;      /* accent on night: text, buttons, focus */
+  --hr-brass-500: #b08848;      /* decorative linework only on light (2.75:1, carries no meaning) */
+  --hr-brass-600: #94702f;      /* meaningful graphics on light: pins, active underline (>=3:1). Never put text on it. */
+  --hr-brass-700: #7a5823;      /* accent text and links on light (>=4.8:1) */
+  --hr-night-900: #121717;      /* night section background */
+  --hr-night-800: #1c2323;      /* night raised surface */
+  --hr-night-700: #2c3534;      /* night hover / hairline */
+  --hr-night-500: #7a817c;      /* night control borders */
+  --hr-mist-200: #ece8df;       /* text on night */
+  --hr-mist-400: #a7aba4;       /* muted text on night */
+  --hr-park: #d7d9c9;           /* map parks */
+  --hr-water: #c6d0cd;          /* map water */
+  --hr-clay-700: #a33a2b;       /* error on light */
+  --hr-clay-300: #e8a091;       /* error on night */
+  --hr-fern-700: #3d6845;       /* success on light */
+  --hr-fern-300: #96c49e;       /* success on night */
+  --hr-white: #ffffff;
+  --hr-scrim-rgb: 10 13 13;     /* #0a0d0d, used at --scrim-strong alpha for text over photos */
+
+  /* ---------------------------------------------------------------------------
+     2. Colour roles: light scheme (default)
+     ------------------------------------------------------------------------ */
+  --color-bg: var(--hr-limewash);
+  --color-surface: var(--hr-ivory);
+  --color-surface-sunken: var(--hr-stone-200);
+  --color-text: var(--hr-ink-900);
+  --color-text-muted: var(--hr-ink-600);
+  --color-text-inverse: var(--hr-ivory);
+  --color-accent-text: var(--hr-brass-700);
+  --color-accent-graphic: var(--hr-brass-600);
+  --color-accent-line: var(--hr-brass-500);      /* decorative dimension lines, illustrations */
+  --color-border: var(--hr-stone-300);           /* decorative dividers */
+  --color-border-control: var(--hr-stone-600);   /* inputs, outline buttons, chips, checkboxes */
+  --color-focus: var(--hr-ink-900);
+  --color-btn-bg: var(--hr-ink-900);
+  --color-btn-fg: var(--hr-ivory);
+  --color-btn-bg-hover: var(--hr-ink-800);
+  --color-chip-selected-bg: var(--hr-ink-800);
+  --color-chip-selected-fg: var(--hr-ivory);
+  --color-error: var(--hr-clay-700);
+  --color-success: var(--hr-fern-700);
+  --color-input-bg: var(--hr-ivory);
+  --color-skeleton: var(--hr-stone-200);
+  --color-selection-bg: var(--hr-brass-300);
+  --color-selection-fg: var(--hr-ink-900);
+  --color-map-land: var(--hr-stone-250);
+  --color-map-border: var(--hr-ivory);          /* light state borders */
+  --color-map-park: var(--hr-park);
+  --color-map-water: var(--hr-water);
+  --color-map-road: var(--hr-ivory);
+  --color-map-label: var(--hr-ink-600);
+  --color-pin: var(--hr-ink-900);
+  --color-pin-fg: var(--hr-ivory);
+  --color-pin-pulse: var(--hr-brass-600);
+  --scrim-strong: rgb(var(--hr-scrim-rgb) / 0.64);  /* minimum behind any text on a photo (5.51:1 worst case) */
+  --scrim-soft: rgb(var(--hr-scrim-rgb) / 0.28);    /* mood only; never behind text on its own */
+  /* Hero: two scrims stacked over the photo. Bottom one sits behind headline + lead (>=0.64 wherever text sits);
+     top one sits behind the transparent header (0.64 for the header's height, then fades). */
+  --scrim-hero-bottom: linear-gradient(
+    to top,
+    rgb(var(--hr-scrim-rgb) / 0.72) 0%,
+    rgb(var(--hr-scrim-rgb) / 0.64) 55%,
+    rgb(var(--hr-scrim-rgb) / 0) 85%
+  );
+  --scrim-hero-top: linear-gradient(
+    to bottom,
+    rgb(var(--hr-scrim-rgb) / 0.64) 0,
+    rgb(var(--hr-scrim-rgb) / 0.64) 4.5rem,
+    rgb(var(--hr-scrim-rgb) / 0) 12rem
+  );
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------------------
+     3. Typography
+     Fonts: @fontsource-variable/newsreader (opsz.css + opsz-italic.css), @fontsource-variable/schibsted-grotesk (wght.css)
+     ------------------------------------------------------------------------ */
+  --font-display: "Newsreader Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "Schibsted Grotesk Variable", "Helvetica Neue", Arial, system-ui, sans-serif;
+
+  --weight-display: 360;
+  --weight-display-italic: 340;
+  --weight-body: 400;
+  --weight-ui: 500;
+  --weight-strong: 600;
+
+  /* Fluid sizes: linear from 360px to 1440px viewport, capped both ends. */
+  --text-display-xl: clamp(3rem, 1.333rem + 7.407vw, 8rem);        /* 48 -> 128  hero headline */
+  --text-display-l: clamp(2.375rem, 1.333rem + 4.63vw, 5.5rem);     /* 38 -> 88   section headline */
+  --text-display-m: clamp(1.875rem, 1.333rem + 2.407vw, 3.5rem);    /* 30 -> 56   page sub-heads, CTA band */
+  --text-display-s: clamp(1.5rem, 1.25rem + 1.111vw, 2.25rem);      /* 24 -> 36   card titles (large), h3 */
+  --text-stat: clamp(2.75rem, 1.667rem + 4.815vw, 6rem);            /* 44 -> 96   trust numbers */
+  --text-title: clamp(1.25rem, 1.167rem + 0.37vw, 1.5rem);          /* 20 -> 24   card titles, h4 (sans 500) */
+  --text-lead: clamp(1.125rem, 1.042rem + 0.37vw, 1.375rem);        /* 18 -> 22   intro paragraphs */
+  --text-body: clamp(1rem, 0.979rem + 0.093vw, 1.0625rem);          /* 16 -> 17 */
+  --text-small: clamp(0.875rem, 0.854rem + 0.093vw, 0.9375rem);     /* 14 -> 15   meta, captions */
+  --text-label: clamp(0.75rem, 0.729rem + 0.093vw, 0.8125rem);      /* 12 -> 13   eyebrows, dimension labels (uppercase) */
+
+  --leading-display-xl: 0.95;
+  --leading-display-l: 1.02;
+  --leading-display-m: 1.08;
+  --leading-display-s: 1.15;
+  --leading-title: 1.3;
+  --leading-lead: 1.5;
+  --leading-body: 1.6;
+  --leading-small: 1.5;
+  --leading-label: 1.2;
+
+  --tracking-display-xl: -0.025em;
+  --tracking-display-l: -0.02em;
+  --tracking-display-m: -0.015em;
+  --tracking-display-s: -0.01em;
+  --tracking-body: 0;
+  --tracking-small: 0.005em;
+  --tracking-label: 0.14em;
+  --tracking-button: 0.01em;
+
+  --measure: 66ch;
+  --measure-narrow: 44ch;
+
+  /* ---------------------------------------------------------------------------
+     4. Space (4px base) and fluid layout space
+     ------------------------------------------------------------------------ */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4 */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.25rem;   /* 20 */
+  --space-6: 1.5rem;    /* 24 */
+  --space-8: 2rem;      /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+  --space-20: 5rem;     /* 80 */
+  --space-24: 6rem;     /* 96 */
+  --space-32: 8rem;     /* 128 */
+  --space-40: 10rem;    /* 160 */
+
+  --space-gutter: clamp(1.25rem, 0.833rem + 1.852vw, 2.5rem);   /* 20 -> 40 page side padding and grid gap */
+  --space-block: clamp(2rem, 1.333rem + 2.963vw, 4rem);         /* 32 -> 64 heading to content */
+  --space-section: clamp(4.5rem, 2.667rem + 8.148vw, 10rem);    /* 72 -> 160 between sections */
+
+  /* ---------------------------------------------------------------------------
+     5. Layout
+     Breakpoints (use in @media / @container literally; custom properties cannot be used there):
+       sm 30rem (480) · md 48rem (768) · lg 64rem (1024) · xl 80rem (1280) · 2xl 96rem (1536) · 3xl 120rem (1920)
+     Columns: 4 below md, 8 from md, 12 from lg.
+     ------------------------------------------------------------------------ */
+  --container-max: 90rem;        /* 1440 content width */
+  --container-wide: 105rem;      /* 1680, full-bleed-ish rows at 1920+ */
+  --container-text: 46rem;       /* 736, article body */
+  --header-height: 4.5rem;       /* 72 */
+  --header-height-compact: 4rem; /* 64 */
+  --tap-min: 2.75rem;            /* 44, project choice (WCAG 2.5.8 minimum is 24) */
+
+  /* ---------------------------------------------------------------------------
+     6. Radius
+     ------------------------------------------------------------------------ */
+  --radius-0: 0;
+  --radius-xs: 2px;      /* images inside cards, map labels */
+  --radius-sm: 4px;      /* property card image, inputs, popup card */
+  --radius-md: 8px;      /* search panel, calculator, lightbox frame */
+  --radius-lg: 16px;     /* CTA band, newsletter panel */
+  --radius-pill: 999px;  /* buttons, chips, tabs, price pins */
+  --radius-arch: 999px 999px var(--radius-xs) var(--radius-xs) / 50% 50% var(--radius-xs) var(--radius-xs); /* arched images */
+
+  /* ---------------------------------------------------------------------------
+     7. Shadow (ink-tinted, never grey-blue)
+     ------------------------------------------------------------------------ */
+  --shadow-sm: 0 1px 2px rgb(26 30 29 / 0.06), 0 1px 1px rgb(26 30 29 / 0.04);
+  --shadow-md: 0 10px 24px -10px rgb(26 30 29 / 0.2);
+  --shadow-lg: 0 28px 56px -20px rgb(26 30 29 / 0.3);
+  --shadow-popup: 0 18px 40px -12px rgb(18 23 23 / 0.38), 0 2px 6px rgb(18 23 23 / 0.12);
+  --shadow-focus-gap: 0 0 0 2px var(--color-bg);   /* ring offset fill where outline-offset cannot be used */
+
+  /* ---------------------------------------------------------------------------
+     8. Borders and focus
+     ------------------------------------------------------------------------ */
+  --border-hair: 1px;
+  --border-control: 1px;
+  --border-strong: 1.5px;
+  --focus-width: 2px;
+  --focus-offset: 3px;
+
+  /* ---------------------------------------------------------------------------
+     9. Motion
+     GSAP equivalents in brackets. Reduced motion: see DESIGN.md section 6.
+     ------------------------------------------------------------------------ */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);       /* [power2.out]  UI state changes */
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);         /* [power4.out]  entrances */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);    /* [expo.out]    headline reveals, clip-path reveals */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);     /* [power3.inOut] menu, lightbox, pinned sequences */
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0);          /* [power3.in]   exits */
+  --ease-linear: linear;                              /* [none]        marquee, scroll-scrubbed */
+
+  --dur-instant: 100ms;
+  --dur-fast: 180ms;      /* hover colour, focus, chip toggle */
+  --dur-base: 280ms;      /* accordion icon, dropdowns, popup */
+  --dur-slow: 480ms;      /* card image scale, menu panel */
+  --dur-slower: 800ms;    /* card entrance, clip reveal */
+  --dur-reveal: 1100ms;   /* headline line reveal, section image reveal */
+  --dur-draw: 1600ms;     /* line-drawing accents */
+  --dur-count: 1800ms;    /* count-ups */
+  --dur-hero-zoom: 9000ms;/* hero slow zoom */
+  --dur-marquee: 48s;     /* one marquee loop */
+  --dur-float: 9s;        /* ambient float / breathe, one way (alternate) */
+  --dur-drift: 11s;       /* ambient drift of the What we do shapes, one way */
+  --dur-sweep: 11s;       /* light sweep cycle (CTA band); buttons use --dur-shine */
+  --dur-shine: 8s;        /* primary button shine cycle */
+  --stagger-xs: 40ms;
+  --stagger-sm: 70ms;
+  --stagger-md: 110ms;
+
+  /* ---------------------------------------------------------------------------
+     10. Z-index
+     ------------------------------------------------------------------------ */
+  --z-below: -1;
+  --z-base: 0;
+  --z-raised: 1;
+  --z-sticky: 100;       /* properties filter bar, sticky step media */
+  --z-header: 200;
+  --z-dropdown: 300;     /* select listboxes, sort menu */
+  --z-popup: 350;        /* map popup card */
+  --z-overlay: 400;      /* mobile menu backdrop */
+  --z-menu: 450;         /* mobile menu panel */
+  --z-modal: 500;        /* lightbox, filter sheet */
+  --z-toast: 600;
+  --z-skip: 700;
+  --z-cursor: 800;
+}
+
+/* -----------------------------------------------------------------------------
+   Night scheme: dark sections (hero overlay band, map, how it works, footer).
+   Apply data-scheme="night" (or .scheme-night) on the section element.
+   -------------------------------------------------------------------------- */
+[data-scheme="night"],
+.scheme-night {
+  --color-bg: var(--hr-night-900);
+  --color-surface: var(--hr-night-800);
+  --color-surface-sunken: var(--hr-night-900);
+  --color-text: var(--hr-mist-200);
+  --color-text-muted: var(--hr-mist-400);
+  --color-text-inverse: var(--hr-night-900);
+  --color-accent-text: var(--hr-brass-300);
+  --color-accent-graphic: var(--hr-brass-300);
+  --color-accent-line: var(--hr-brass-500);
+  --color-border: var(--hr-night-700);
+  --color-border-control: var(--hr-night-500);
+  --color-focus: var(--hr-brass-300);
+  --color-btn-bg: var(--hr-brass-300);
+  --color-btn-fg: var(--hr-night-900);
+  --color-btn-bg-hover: var(--hr-mist-200);
+  --color-chip-selected-bg: var(--hr-mist-200);
+  --color-chip-selected-fg: var(--hr-night-900);
+  --color-error: var(--hr-clay-300);
+  --color-success: var(--hr-fern-300);
+  --color-input-bg: var(--hr-night-800);
+  --color-skeleton: var(--hr-night-700);
+  --color-selection-bg: var(--hr-brass-300);
+  --color-selection-fg: var(--hr-night-900);
+  --color-map-land: var(--hr-night-800);
+  --color-map-border: color-mix(in srgb, var(--hr-night-500) 55%, var(--hr-night-800));
+  --color-map-park: #222b29;
+  --color-map-water: #18201f;
+  --color-map-road: var(--hr-night-700);
+  --color-map-label: var(--hr-mist-400);
+  --color-pin: var(--hr-brass-300);
+  --color-pin-fg: var(--hr-night-900);
+  --color-pin-pulse: var(--hr-brass-300);
+  --shadow-focus-gap: 0 0 0 2px var(--hr-night-900);
+  color-scheme: dark;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}

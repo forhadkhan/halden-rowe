@@ -1,0 +1,2421 @@
+/* Home page (DESIGN.md 11.1, H1-H14). Loaded only by src/pages/index.astro.
+   Breakpoints as global.css: 48rem (768), 64rem (1024), 80rem (1280).
+   Hidden start states live under .motion-ok only; without JS or with reduced motion everything is visible. */
+
+/* ===========================================================================
+   H1 Hero (Zentro layout, house palette): sky-to-ivory field, centred headline, tower on a dome, search pill
+   straddling the tower base, lead + stat bottom-left, rating bottom-right (stacked under the stage on phones).
+   ======================================================================== */
+.hero {
+  /* One new colour: a pale sky, mixed into the page background so it follows the scheme. */
+  --hero-sky: #b7d2e2;
+  --hero-top: var(--header-height-compact);
+  --hero-peek: 5rem;
+  /* Viewport minus the header it starts under and a strip of the next section; phones and short screens grow past it. */
+  --hero-h: min(calc(100svh - var(--hero-top) - var(--hero-peek)), 60rem);
+  --tower-h: min(46svh, 21rem);
+  --avatar: 2.5rem;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: var(--space-4);
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--hero-sky) 52%, var(--color-bg)) 0%,
+    color-mix(in oklab, var(--hero-sky) 22%, var(--color-bg)) 55%,
+    var(--color-bg) 100%
+  );
+}
+
+.hero__head {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.hero .hero__title {
+  margin: 0;
+  max-width: 20ch;
+  font-size: clamp(2.5rem, 1.6rem + 4.6vw, 5.75rem);
+  text-wrap: balance;
+}
+
+/* ---- stage: dome, tower and search pill share one grid cell; the tower is height-driven and bottom-aligned ---- */
+.hero__body {
+  flex: 1;
+  display: grid;
+  margin-top: var(--space-3);
+}
+
+.hero__stage {
+  display: grid;
+  grid-template-areas: "stack";
+  justify-items: center;
+  align-items: end;
+  min-height: var(--tower-h);
+}
+
+.hero__stage > * {
+  grid-area: stack;
+}
+
+.hero__dome {
+  z-index: 0;
+  width: min(calc(var(--tower-h) * 1.4), calc(100% + 2 * var(--space-gutter)));
+  aspect-ratio: 2 / 1;
+  border-radius: 999px 999px 0 0;
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--hero-sky) 78%, var(--color-bg)) 0%,
+    color-mix(in oklab, var(--hr-brass-300) 46%, var(--color-bg)) 100%
+  );
+  transform-origin: 50% 100%;
+}
+
+.hero__tower {
+  z-index: 1;
+  display: block;
+  height: var(--tower-h);
+  max-width: 100%;
+  pointer-events: none;
+}
+
+.hero__tower-img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+}
+
+.hero__panel {
+  z-index: 2;
+  position: relative;
+  align-self: end;
+  width: min(100%, 44rem);
+  margin-bottom: var(--space-6);
+}
+
+/* Motion start states live under .motion-ok only. The tower stays visible (never opacity 0) so it can be the LCP. */
+.motion-ok [data-hero-dome] {
+  opacity: 0;
+  transform: scale(0.86);
+}
+
+.motion-ok [data-hero-tower] {
+  opacity: 0.55;
+  transform: translateY(2.5rem);
+}
+
+/* M34 curtain: motion.ts adds .is-curtain only with full motion and only while the hero fits the viewport, so no
+   part of it is ever unreachable. The rest of the page (.home-cover) is opaque and stacks above it. */
+.hero.is-curtain {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+}
+
+.home-cover {
+  position: relative;
+  z-index: 1;
+  background-color: var(--color-bg);
+}
+
+/* M27 Ken Burns + float: the tower (the hero's one picture) floats 6px and slowly zooms 3% from its base; M28 the
+   dome breathes. Individual translate/scale properties, so they compose with the intro, depth and pointer
+   transforms on the same elements. */
+.motion-ok .hero__tower-img {
+  transform-origin: 50% 100%;
+  animation:
+    hero-float var(--dur-float) var(--ease-in-out) infinite alternate,
+    hero-zoom calc(var(--dur-float) * 2.5) var(--ease-in-out) infinite alternate;
+  animation-play-state: var(--ambient-play, running);
+}
+
+.motion-ok .hero__dome {
+  animation: hero-zoom calc(var(--dur-float) * 1.5) var(--ease-in-out) 1.4s infinite alternate;
+  animation-play-state: var(--ambient-play, running);
+}
+
+@keyframes hero-float {
+  to {
+    translate: 0 -0.375rem;
+  }
+}
+
+@keyframes hero-zoom {
+  to {
+    scale: 1.03;
+  }
+}
+
+/* ---- facts: lead, one stat, rating ---- */
+.hero__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6) var(--space-4);
+  padding-block: var(--space-5) var(--space-8);
+}
+
+.hero__lead {
+  grid-column: 1 / -1;
+  margin: 0;
+  max-width: 34ch;
+  font-size: var(--text-body);
+  line-height: var(--leading-body, 1.5);
+}
+
+.hero__stat {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  margin: 0;
+}
+
+.hero .hero__stat-value {
+  font-size: clamp(2.75rem, 2rem + 3vw, 5rem);
+  color: var(--color-text);
+}
+
+.hero__stat-label {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+}
+
+.hero__rating {
+  display: grid;
+  justify-items: end;
+  align-content: start;
+  gap: var(--space-1);
+  text-align: end;
+}
+
+.hero__rating p {
+  margin: 0;
+}
+
+.hero__avatars {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero__avatar {
+  width: var(--avatar);
+  height: var(--avatar);
+  border: 2px solid var(--color-bg);
+  border-radius: 50%;
+  overflow: clip;
+}
+
+.hero__avatar + .hero__avatar {
+  margin-inline-start: calc(var(--avatar) * -0.3);
+}
+
+.hero__avatar .photo,
+.hero__avatar .photo-img {
+  width: 100%;
+  height: 100%;
+}
+
+.hero__stars {
+  display: flex;
+  gap: 2px;
+  color: var(--color-accent-graphic);
+}
+
+.hero__rating-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+}
+
+.hero__rating-caption {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+}
+
+/* ---- search pill (the existing SearchPanel, restyled here; markup, hooks and params unchanged) ---- */
+.hero .search {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* Buy / Rent / Sell: a small segmented control above the pill. */
+.hero .search__tabs {
+  justify-self: center;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero .search__tab {
+  margin: 0;
+  padding-inline: var(--space-5);
+  border: 0;
+  border-radius: var(--radius-pill);
+}
+
+.hero .search__tab[aria-selected="true"] {
+  background-color: var(--color-btn-bg);
+  color: var(--color-btn-fg);
+}
+
+.hero .search__panel {
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+  border-radius: 1.75rem;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero .search__panel + .search__panel {
+  margin-top: var(--space-4);
+}
+
+.hero .search__panel-title {
+  margin: var(--space-2) 0 0;
+}
+
+.hero .search__form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "loc go"
+    "tog tog"
+    "more more";
+  align-items: center;
+  gap: 0 var(--space-2);
+}
+
+.hero .search__field--location {
+  grid-area: loc;
+}
+
+.hero [data-search-form] .search__submit {
+  grid-area: go;
+}
+
+.hero .search__more-toggle {
+  grid-area: tog;
+}
+
+.hero .search__more {
+  grid-area: more;
+  padding: var(--space-2) var(--space-3) var(--space-3) 0;
+}
+
+.hero .search__field {
+  gap: 0;
+  padding: var(--space-1) var(--space-3) var(--space-1) 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+}
+
+.hero .search__label {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+}
+
+/* Expanded extra fields on phones: stacked, split by hairlines. */
+.hero .search__more .search__field {
+  padding-inline: 0;
+  border-top: 1px solid var(--color-border);
+  border-radius: 0;
+}
+
+.hero .search__select,
+.hero .search__input {
+  min-height: 2.5rem;
+  padding-inline: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  text-overflow: ellipsis;
+}
+
+.hero .search__select {
+  padding-inline-end: var(--space-6);
+}
+
+.hero .search__select:hover {
+  background-color: transparent;
+}
+
+.hero .search__chevron {
+  right: 0;
+}
+
+/* Border-highlight focus on the whole field, no outline ring. */
+.hero .search__select:focus,
+.hero .search__input:focus {
+  outline: none;
+}
+
+.hero .search__field:has(:focus-visible) {
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+/* Round dark search button; its label stays for assistive tech. */
+.hero [data-search-form] .search__submit {
+  width: 3.25rem;
+  height: 3.25rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.hero [data-search-form] .search__submit .btn__inner {
+  gap: 0;
+}
+
+.hero [data-search-form] .search__submit .btn__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Sell: address + a regular pill button. */
+.hero .search__form--sell {
+  grid-template-areas:
+    "copy copy"
+    "addr go";
+  gap: var(--space-2) var(--space-2);
+}
+
+.hero .search__form--sell .search__sell-copy {
+  grid-area: copy;
+  padding-block: var(--space-2) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  line-height: var(--leading-small);
+}
+
+.hero .search__form--sell .search__field--address {
+  grid-area: addr;
+}
+
+.hero .search__form--sell .search__submit {
+  grid-area: go;
+  width: auto;
+}
+
+/* Phones: tower and dome on top; the search panel follows and overlaps only the bottom ~22% of the tower. */
+@media (max-width: 47.99rem) {
+  .hero__stage {
+    grid-template-areas: none;
+    min-height: 0;
+  }
+
+  .hero__dome,
+  .hero__tower {
+    grid-area: 1 / 1;
+  }
+
+  .hero__panel {
+    grid-area: 2 / 1;
+    margin-top: calc(var(--tower-h) * -0.22);
+    margin-bottom: 0;
+  }
+
+  .hero__facts {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  /* Map filter chips: 44px tall on phones. */
+  .chip[data-map-filter] {
+    min-height: var(--tap-min);
+  }
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    --tower-h: clamp(16rem, calc(var(--hero-h) * 0.5), 34rem);
+    min-height: var(--hero-h);
+    --avatar: 3rem;
+    padding-top: var(--space-12);
+  }
+
+  .hero .search__panel {
+    border-radius: var(--radius-pill);
+    padding-inline-start: var(--space-8);
+  }
+
+  .hero .search__form {
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) auto;
+    grid-template-areas: none;
+    gap: 0;
+  }
+
+  .hero .search__field--location,
+  .hero [data-search-form] .search__submit,
+  .hero .search__more {
+    grid-area: auto;
+  }
+
+  .hero .search__more {
+    padding: 0;
+  }
+
+  .hero .search__field {
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  .hero .search__field--location {
+    padding-inline-start: 0;
+  }
+
+  .hero .search__more .search__field {
+    padding-inline: var(--space-4);
+    border-top: 0;
+    border-inline-start: 1px solid var(--color-border);
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  .hero .search__form--sell {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto;
+    grid-template-areas: "copy addr go";
+    gap: 0 var(--space-4);
+    align-items: center;
+  }
+
+  .hero .search__form--sell .search__field {
+    border: 0;
+    padding-inline: 0;
+  }
+
+  .hero .search__form--sell .search__submit {
+    margin: 0;
+  }
+
+  .hero .search__form--sell .search__sell-copy {
+    padding: 0;
+  }
+}
+
+@media (min-width: 64rem) {
+  .hero {
+    --hero-top: var(--header-height);
+    --tower-h: clamp(18rem, calc(var(--hero-h) * 0.56), 40rem);
+  }
+
+  /* Facts overlay the stage's lower corners; the middle column is the tower's width. */
+  .hero__body {
+    grid-template-areas: "stack";
+  }
+
+  .hero__stage,
+  .hero__facts {
+    grid-area: stack;
+  }
+
+  .hero__facts {
+    align-self: end;
+    grid-template-columns: minmax(0, 1fr) clamp(16rem, 30vw, 26rem) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: end;
+    gap: var(--space-8) 0;
+    padding-block: 0 calc(var(--space-6) + 9rem);
+    pointer-events: none;
+  }
+
+  .hero__facts > * {
+    pointer-events: auto;
+  }
+
+  .hero__lead {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    max-width: 28ch;
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+
+  .hero__stat {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .hero__rating {
+    grid-column: 3;
+    grid-row: 2;
+  }
+}
+
+@media (min-width: 120rem) {
+  .hero {
+    --tower-h: clamp(18rem, calc(var(--hero-h) * 0.56), 44rem);
+  }
+}
+
+
+/* ===========================================================================
+   Search panel (10.6)
+   ======================================================================== */
+.search {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-text);
+}
+
+.search__tabs {
+  display: none;
+  gap: var(--space-6);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.js .search__tabs {
+  display: flex;
+}
+
+.search__tab {
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  margin-bottom: -1px;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--color-text-muted);
+  font-weight: var(--weight-strong);
+  cursor: pointer;
+}
+
+.search__tab:hover,
+.search__tab[aria-selected="true"] {
+  color: var(--color-text);
+}
+
+.search__tab[aria-selected="true"] {
+  border-bottom-color: var(--color-accent-graphic);
+}
+
+/* Without JS all three panels show, each under its own title. */
+.search__panel + .search__panel {
+  margin-top: var(--space-8);
+}
+
+.search__panel-title {
+  margin: 0 0 var(--space-3);
+}
+
+.js .search__panel-title {
+  display: none;
+}
+
+.js .search__panel + .search__panel {
+  margin-top: 0;
+}
+
+.search__panel[hidden],
+.js .search__panel:not(.is-active) {
+  display: none;
+}
+
+.search__form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.search__field {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.search__label {
+  color: var(--color-text-muted);
+}
+
+.search__control {
+  position: relative;
+}
+
+.search__select,
+.search__input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--space-4);
+  border: var(--border-control) solid var(--color-border-control);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-input-bg);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-body);
+}
+
+.search__select {
+  padding-inline-end: var(--space-10);
+  appearance: none;
+  cursor: pointer;
+}
+
+.search__select:hover {
+  background-color: var(--color-surface-sunken);
+}
+
+.search__input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.search__chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  translate: 0 -50%;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.search__more {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.search__more-toggle {
+  display: none;
+}
+
+.js .search__more-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font-weight: var(--weight-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent-line);
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+}
+
+.search__more-icon {
+  transition: rotate var(--dur-fast) var(--ease-standard);
+}
+
+.search__more-toggle[aria-expanded="true"] .search__more-icon {
+  rotate: 180deg;
+}
+
+.js .search__more:not(.is-open) {
+  display: none;
+}
+
+.search__submit {
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+}
+
+.search__sell-copy {
+  margin: 0;
+  max-width: var(--measure-narrow);
+}
+
+@media (min-width: 48rem) {
+  .search {
+    padding: var(--space-6);
+  }
+
+  .search__form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--space-4);
+  }
+
+  .search__more,
+  .js .search__more:not(.is-open) {
+    display: contents;
+  }
+
+  .js .search__more-toggle {
+    display: none;
+  }
+
+  .search__submit,
+  .search__sell-copy {
+    grid-column: 1 / -1;
+  }
+
+  .search__form--sell {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .search__form--sell .search__submit {
+    grid-column: auto;
+  }
+}
+
+/* Desktop: one row 4 / 2 / 2 / 2 / auto, borderless fields split by hairlines. */
+@media (min-width: 64rem) {
+  .search__form {
+    grid-template-columns: 4fr 2fr 2fr 2fr auto;
+    align-items: end;
+    gap: 0;
+  }
+
+  .search__field {
+    padding-inline: var(--space-3);
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  .search__field--location {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .search__form .search__select {
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  .search__form .search__select:hover {
+    background-color: var(--color-surface-sunken);
+  }
+
+  .search__submit {
+    grid-column: auto;
+    width: auto;
+    margin-inline-start: var(--space-3);
+  }
+
+  .search__form--sell {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) auto;
+    gap: 0 var(--space-6);
+  }
+
+  .search__form--sell .search__field {
+    padding: 0;
+    border: 0;
+  }
+
+  .search__form--sell .search__sell-copy {
+    grid-column: auto;
+    align-self: center;
+  }
+
+  .search__form--sell .search__submit {
+    margin: 0;
+  }
+}
+
+/* ===========================================================================
+   H2 Trust numbers: statement on top, four stats in a full-width row below (each under a hairline
+   with a short brass tick, so the numbers never share a column with the statement and cannot collide).
+   ======================================================================== */
+.trust {
+  padding-block: var(--space-section);
+}
+
+.trust__grid {
+  row-gap: var(--space-12);
+  align-items: start;
+}
+
+.trust__intro {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+  grid-column: 1 / -1;
+}
+
+.trust__eyebrow {
+  width: min(100%, var(--measure-narrow));
+}
+
+.trust__statement {
+  margin: 0;
+  max-width: 24ch;
+}
+
+.trust__stats {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-10) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust__stat {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.trust__stat::before {
+  content: '';
+  position: absolute;
+  inset: -1px auto auto 0;
+  width: var(--space-8);
+  height: 2px;
+  background: var(--color-accent-line);
+}
+
+.trust__value {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.trust__label {
+  margin: 0;
+}
+
+@media (min-width: 48rem) {
+  .trust__stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+@media (min-width: 64rem) {
+  .trust__statement {
+    max-width: 30ch;
+  }
+}
+
+/* ===========================================================================
+   H3 Featured properties
+   ======================================================================== */
+/* The card row drifts in from the right on desktop (home.ts); never let it widen the page. */
+.featured {
+  overflow-x: clip;
+}
+
+.featured__head,
+.agents__head,
+.journal-teaser__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-bottom: var(--space-12);
+}
+
+.featured__all {
+  display: none;
+}
+
+.featured__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-12) var(--space-gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.featured__item {
+  min-width: 0;
+}
+
+.featured__item--4,
+.featured__item--5,
+.featured__item--6 {
+  display: none;
+}
+
+.featured__all-mobile {
+  margin-top: var(--space-10);
+}
+
+@media (min-width: 48rem) {
+  .featured__all {
+    display: inline-flex;
+  }
+
+  .featured__all-mobile {
+    display: none;
+  }
+
+  .featured__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .featured__item--1 {
+    grid-column: 1 / -1;
+  }
+
+  .featured__item--4,
+  .featured__item--5 {
+    display: block;
+  }
+}
+
+@media (min-width: 64rem) {
+  .featured__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .featured__item--1 {
+    grid-column: 1 / span 7;
+  }
+
+  /* The second card matches the large card's height (its photo grows taller, cropped by cover; Featured.astro's
+     sizes allow for that), so no empty block sits beside it. */
+  .featured__item--2 {
+    grid-column: 8 / -1;
+    align-self: stretch;
+    display: flex;
+  }
+
+  .featured__item--2 .property-card {
+    flex: 1;
+  }
+
+  .featured__item--2 .property-card__media {
+    flex: 1;
+    display: flex;
+  }
+
+  .featured__item--2 .property-card__media .photo {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+
+  .featured__item--3,
+  .featured__item--4,
+  .featured__item--5 {
+    grid-column: span 4;
+  }
+}
+
+/* ===========================================================================
+   H4 About teaser
+   ======================================================================== */
+.about-teaser__grid {
+  row-gap: var(--space-10);
+}
+
+.about-teaser__media {
+  border-radius: var(--radius-arch);
+  overflow: clip;
+}
+
+.about-teaser__photo.photo {
+  border-radius: var(--radius-arch);
+}
+
+@media (max-width: 24.4rem) {
+  .about-teaser__photo.photo {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+.about-teaser__text {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+  justify-items: start;
+}
+
+.about-teaser__body,
+.about-teaser__founders {
+  margin: 0;
+  max-width: var(--measure);
+}
+
+.about-teaser__drawing.draw-svg {
+  width: 70%;
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .about-teaser__grid {
+    align-items: center;
+  }
+
+  .about-teaser__media {
+    grid-column: 1 / span 4;
+  }
+
+  .about-teaser__text {
+    grid-column: 5 / -1;
+  }
+
+  .about-teaser__drawing.draw-svg {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .about-teaser__grid {
+    grid-template-rows: auto 1fr;
+    align-items: start;
+  }
+
+  .about-teaser__media {
+    grid-column: 1 / span 5;
+    grid-row: 1 / span 2;
+  }
+
+  .about-teaser__text {
+    grid-column: 7 / -1;
+  }
+
+  .about-teaser__drawing.draw-svg {
+    display: block;
+    grid-column: 7 / -1;
+    grid-row: 2;
+    align-self: end;
+    width: 280px;
+  }
+}
+
+/* ===========================================================================
+   H5 Services
+   ======================================================================== */
+.services__head {
+  row-gap: var(--space-6);
+  margin-bottom: var(--space-12);
+  align-items: end;
+}
+
+.services__intro {
+  margin: 0;
+  max-width: var(--measure-narrow);
+}
+
+.services__scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.services__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.services__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78%;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.service {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  scroll-snap-align: start;
+}
+
+/* Each card gets its own top: arch, quarter round left, quarter round right, wide dome (photos are 3 / 4). */
+.service {
+  --service-top: var(--radius-arch);
+}
+
+.service:nth-child(2) {
+  --service-top: 100% 0 var(--radius-xs) var(--radius-xs) / 75% 0 var(--radius-xs) var(--radius-xs);
+}
+
+.service:nth-child(3) {
+  --service-top: 0 100% var(--radius-xs) var(--radius-xs) / 0 75% var(--radius-xs) var(--radius-xs);
+}
+
+.service:nth-child(4) {
+  --service-top: 50% 50% var(--radius-xs) var(--radius-xs) / 22% 22% var(--radius-xs) var(--radius-xs);
+}
+
+.service__media {
+  border-radius: var(--service-top);
+  overflow: clip;
+}
+
+/* M29 drift: the four shapes float down and back out of step (translate only; downward, so a phone's scroll row
+   never clips their tops). */
+.motion-ok .service__media {
+  animation: service-drift var(--dur-drift) var(--ease-in-out) calc(var(--i, 0) * -2.75s) infinite alternate;
+  animation-play-state: var(--ambient-play, running);
+}
+
+@keyframes service-drift {
+  to {
+    translate: 0 0.625rem;
+  }
+}
+
+.service__photo.photo {
+  border-radius: var(--service-top);
+}
+
+.motion-ok .service__photo .photo-img,
+.motion-ok .agent__photo .photo-img,
+.motion-ok .post-card__photo .photo-img {
+  transition: scale var(--dur-slow) var(--ease-out);
+}
+
+.motion-ok .service:hover .service__photo .photo-img {
+  scale: 1.04;
+}
+
+.service__text {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.service__title,
+.service__line {
+  margin: 0;
+}
+
+.service__link,
+.map-popup__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  color: var(--color-text);
+  font-weight: var(--weight-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent-line);
+  text-underline-offset: 0.3em;
+}
+
+.service__link:hover,
+.map-popup__link:hover {
+  text-decoration-color: currentColor;
+}
+
+.services__progress {
+  position: relative;
+  height: 1px;
+  margin-top: var(--space-6);
+  background-color: var(--color-border);
+}
+
+.services__progress-fill {
+  position: absolute;
+  top: -1px;
+  left: calc(var(--pos, 0) * 100%);
+  width: calc(var(--size, 1) * 100%);
+  height: 3px;
+  background-color: var(--color-accent-graphic);
+}
+
+@media (min-width: 48rem) {
+  .services__scroller {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .services__list {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12) var(--space-gutter);
+  }
+
+  .services__progress {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .services__heading {
+    grid-column: 1 / span 7;
+  }
+
+  .services__intro {
+    grid-column: 9 / -1;
+  }
+
+  .services__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ===========================================================================
+   H6 Map (night) and 10.13 pins / popup
+   ======================================================================== */
+.map-section__grid {
+  row-gap: var(--space-10);
+}
+
+.map-section__head {
+  display: grid;
+  gap: var(--space-8);
+  align-content: start;
+}
+
+.map-section__map {
+  min-width: 0;
+}
+
+.usmap {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.usmap__svg {
+  grid-area: 1 / 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.usmap__graticule path {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.usmap__land {
+  fill: var(--color-map-land);
+}
+
+/* Light state borders: a hairline in the land's own family, quiet next to the brass coastline. */
+.usmap__borders {
+  fill: none;
+  stroke: var(--color-map-border);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.usmap__lakes path {
+  fill: var(--color-map-water);
+}
+
+.usmap__coast path {
+  fill: none;
+  stroke: var(--color-accent-line);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+
+.motion-ok .usmap__coast path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* Pin: price pill, 6px tick, 10px dot with pulse ring. The dot sits on the city's point. */
+.pin {
+  position: absolute;
+  top: calc(var(--y) + var(--dy, 0px));
+  left: calc(var(--x) + var(--dx, 0px));
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  translate: -50% calc(-100% + 5px);
+}
+
+.pin--down {
+  flex-direction: column-reverse;
+  translate: -50% -5px;
+}
+
+/* Carries the pin's parts for the depth float; lays them out exactly as the button did. */
+.pin__float {
+  display: flex;
+  flex-direction: inherit;
+  align-items: center;
+}
+
+.pin[hidden] {
+  display: none;
+}
+
+.pin:hover,
+.pin:focus-visible,
+.pin.is-hot,
+.pin[aria-expanded="true"] {
+  z-index: 3;
+}
+
+.pin__pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-pin);
+  color: var(--color-pin-fg);
+  font-weight: var(--weight-strong);
+  white-space: nowrap;
+  position: relative;
+  left: var(--px, 0px);
+  transition:
+    translate var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.pin:hover .pin__pill,
+.pin.is-hot .pin__pill {
+  translate: 0 -2px;
+  box-shadow: var(--shadow-md);
+}
+
+.pin[aria-expanded="true"] .pin__pill {
+  background-color: var(--hr-mist-200);
+  color: var(--hr-night-900);
+}
+
+.pin__tick {
+  width: 1.5px;
+  height: 6px;
+  background-color: var(--color-pin);
+}
+
+.pin__dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-pin);
+}
+
+.pin__pulse {
+  position: absolute;
+  inset: -5px;
+  border: 1.5px solid var(--color-pin-pulse);
+  border-radius: 50%;
+  opacity: 0.35;
+}
+
+.motion-ok .usmap.is-live .pin__pulse {
+  animation: pin-pulse 2.4s var(--ease-out) calc(var(--i, 0) * 300ms) infinite both;
+  animation-play-state: var(--ambient-play, running);
+}
+
+@keyframes pin-pulse {
+  from {
+    scale: 0.6;
+    opacity: 0.8;
+  }
+
+  to {
+    scale: 2.2;
+    opacity: 0;
+  }
+}
+
+/* Popup card. Phones: in flow under the map. From 768: absolute, placed by home.ts. */
+.map-popup {
+  grid-area: 2 / 1;
+  position: relative;
+  z-index: 4;
+  display: grid;
+  margin-top: var(--space-4);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-popup);
+  color: var(--color-text);
+  overflow: clip;
+}
+
+.map-popup[hidden] {
+  display: none;
+}
+
+.motion-ok .map-popup {
+  opacity: 0;
+  scale: 0.96;
+  transform-origin: var(--origin, 50% 100%);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    scale var(--dur-fast) var(--ease-out);
+}
+
+.motion-ok .map-popup.is-open {
+  opacity: 1;
+  scale: 1;
+}
+
+.map-popup__body {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+
+.map-popup__body p,
+.map-popup__title {
+  margin: 0;
+}
+
+.map-popup__price {
+  font-size: var(--text-title);
+  font-weight: var(--weight-strong);
+}
+
+.map-popup__close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  border-radius: 50%;
+  background-color: var(--color-surface);
+}
+
+/* Home cards under the map: a swipe rail of photo-over-text cards on phones, a grid of thumbnail cards from 768px.
+   Hover and focus change colour and opacity only; a card never moves. The whole card is the title's link. */
+.map-section__list .map-list {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0 calc(var(--space-gutter) * -1);
+  padding: 0 var(--space-gutter) var(--space-3);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--space-gutter);
+  list-style: none;
+}
+
+.map-list__row {
+  flex: 0 0 min(76vw, 17rem);
+  scroll-snap-align: start;
+}
+
+.map-list__row[hidden] {
+  display: none;
+}
+
+.map-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  overflow: hidden;
+  transition: background-color var(--dur-base) var(--ease-standard);
+}
+
+.map-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.map-card__photo.photo {
+  --photo-aspect: 16 / 10;
+}
+
+.map-card__status {
+  position: absolute;
+  inset: var(--space-2) auto auto var(--space-2);
+}
+
+.map-card__body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3) calc(var(--space-3) + 2rem) var(--space-3) var(--space-3);
+}
+
+.map-card__city {
+  color: var(--color-text-muted);
+}
+
+.map-card__title {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-ui);
+  line-height: var(--leading-title);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.map-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.map-card__price {
+  margin-top: var(--space-1);
+  color: var(--color-accent-text);
+  font-size: var(--text-small);
+  font-weight: var(--weight-strong);
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-standard);
+}
+
+/* A small disc at the card's lower right; it fills brass when the card is hovered or focused. */
+.map-card__go {
+  position: absolute;
+  inset: auto var(--space-3) var(--space-3) auto;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-accent-text);
+  transition:
+    background-color var(--dur-base) var(--ease-standard),
+    border-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
+}
+
+.map-card:hover,
+.map-card:focus-within {
+  background-color: color-mix(in oklab, var(--color-surface), var(--color-text) 9%);
+}
+
+.map-card:hover .map-card__go,
+.map-card:focus-within .map-card__go {
+  border-color: var(--color-accent-graphic);
+  background-color: var(--color-accent-graphic);
+  color: var(--hr-night-900);
+}
+
+.map-card:has(.map-card__link:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.map-card__link:focus-visible {
+  outline: none;
+}
+
+.motion-ok .map-card .photo-img {
+  transition: scale var(--dur-slow) var(--ease-out-expo);
+}
+
+.motion-ok .map-card:hover .photo-img,
+.motion-ok .map-card:focus-within .photo-img {
+  scale: 1.06;
+}
+
+@media (forced-colors: active) {
+  .map-card,
+  .map-card__go {
+    border-color: CanvasText;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  /* Pills would collide: 12px dot inside a 44px hit area, nudged apart where cities sit close. */
+  .pin,
+  .pin--down {
+    justify-content: center;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    translate: calc(-50% + var(--nx, 0px)) calc(-50% + var(--ny, 0px));
+    top: var(--y);
+    left: var(--x);
+  }
+
+  .pin__pill,
+  .pin__tick {
+    display: none;
+  }
+
+  .pin__dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .pin[aria-expanded="true"] .pin__dot {
+    background-color: var(--hr-mist-200);
+  }
+}
+
+@media (min-width: 48rem) {
+  .map-popup {
+    /* Out of the grid flow: an absolute grid item with a grid-area would be placed inside that area. */
+    grid-area: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 288px;
+    margin: 0;
+  }
+
+  .map-section__list .map-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .map-list__row {
+    flex: none;
+  }
+
+  .map-card {
+    grid-template-columns: 7rem minmax(0, 1fr);
+    grid-template-rows: none;
+    min-height: 6.5rem;
+  }
+
+  .map-card__media,
+  .map-card__photo.photo {
+    height: 100%;
+  }
+
+  .map-card__photo.photo {
+    --photo-aspect: auto;
+  }
+
+  .map-card__status {
+    display: none;
+  }
+
+  .map-card__body {
+    align-content: center;
+  }
+}
+
+@media (min-width: 64rem) {
+  .map-section__grid {
+    row-gap: var(--space-8);
+    align-items: center;
+  }
+
+  .map-section__head {
+    grid-column: 9 / -1;
+    grid-row: 1;
+  }
+
+  .map-section__map {
+    grid-column: 1 / span 8;
+    grid-row: 1;
+  }
+
+  .map-section__list {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .map-section__list .map-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+/* ===========================================================================
+   H7 How it works: a stacked <ol> by default; pinned crossfade (M9) when home.ts adds .is-pinned
+   ======================================================================== */
+.steps__grid {
+  row-gap: var(--space-12);
+}
+
+.steps__text {
+  display: grid;
+  gap: var(--space-12);
+  align-content: start;
+}
+
+.steps__track,
+.steps__stage {
+  display: none;
+}
+
+.steps__list {
+  display: grid;
+  gap: var(--space-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.step__art .draw-svg {
+  width: 60%;
+}
+
+.step__copy {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.step__num {
+  margin: 0;
+  color: var(--color-accent-text);
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.step__title,
+.step__desc {
+  margin: 0;
+}
+
+.step__desc {
+  max-width: var(--measure-narrow);
+}
+
+@media (min-width: 48rem) {
+  .step {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-gutter);
+    align-items: center;
+  }
+
+  .step__art .draw-svg {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (min-width: 64rem) {
+  .steps.is-pinned {
+    display: flex;
+    align-items: center;
+    min-height: 100svh;
+    padding-block: calc(var(--header-height-compact) + var(--space-8)) var(--space-8);
+  }
+
+  .steps.is-pinned .steps__grid {
+    align-items: center;
+  }
+
+  .steps.is-pinned .steps__text {
+    grid-column: 1 / span 5;
+    gap: var(--space-10);
+  }
+
+  .steps.is-pinned .steps__body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .steps.is-pinned .steps__track {
+    display: block;
+    position: relative;
+    width: 1px;
+    background-color: var(--color-border);
+  }
+
+  .steps__track-fill {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-accent-graphic);
+    transform-origin: top;
+  }
+
+  .steps__tick {
+    position: absolute;
+    top: calc(var(--i) * 33.333%);
+    left: -4px;
+    width: 9px;
+    height: 1px;
+    background-color: var(--color-accent-graphic);
+  }
+
+  .steps.is-pinned .steps__list {
+    gap: 0;
+  }
+
+  .steps.is-pinned .step {
+    grid-area: 1 / 1;
+    display: block;
+  }
+
+  .steps.is-pinned .step__art {
+    display: none;
+  }
+
+  .steps.is-pinned .step__copy {
+    gap: var(--space-4);
+  }
+
+  .steps.is-pinned .step__num {
+    font-size: min(var(--text-display-xl), 16svh);
+  }
+
+  .steps.is-pinned .steps__stage {
+    display: grid;
+    grid-column: 7 / -1;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    max-height: calc(100svh - var(--header-height-compact) - var(--space-16));
+    padding: var(--space-12);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+  }
+
+  .steps__drawing.draw-svg {
+    grid-area: 1 / 1;
+    width: 70%;
+    min-width: 0;
+  }
+}
+
+/* ===========================================================================
+   H8 Neighbourhoods (M23 wipe between photos)
+   ======================================================================== */
+.places__grid {
+  row-gap: var(--space-10);
+  align-items: stretch;
+}
+
+.places__main {
+  display: grid;
+  gap: var(--space-12);
+  align-content: start;
+}
+
+.places__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.place {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.place__link {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-6);
+  color: inherit;
+  text-decoration: none;
+}
+
+.place__inline-photo.photo {
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.place__name {
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: var(--weight-display);
+  line-height: var(--leading-display-m);
+  letter-spacing: var(--tracking-display-m);
+}
+
+.place__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.place__dim {
+  flex: 1;
+  min-width: 0;
+}
+
+.place__chevron {
+  flex: none;
+  color: var(--color-text);
+  transition: translate var(--dur-fast) var(--ease-out);
+}
+
+.place__link:hover .place__name {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.12em;
+}
+
+.place__link:hover .place__chevron {
+  translate: 4px 0;
+}
+
+.places__frame-wrap {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .place__inline-photo.photo {
+    display: none;
+  }
+
+  .places__main {
+    grid-column: 1 / span 4;
+  }
+
+  .places__frame-wrap {
+    display: block;
+    grid-column: 5 / -1;
+  }
+
+  .places__frame {
+    position: sticky;
+    top: calc(var(--header-height-compact) + var(--space-8));
+    display: grid;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-sm);
+    overflow: clip;
+  }
+
+  .places__layer {
+    grid-area: 1 / 1;
+    visibility: hidden;
+  }
+
+  .places__layer .photo {
+    height: 100%;
+  }
+
+  .places__layer.is-active,
+  .places__layer.is-prev {
+    visibility: visible;
+  }
+
+  .places__layer.is-active {
+    z-index: 1;
+  }
+
+  .motion-ok .places__layer.is-entering {
+    animation: place-wipe 600ms var(--ease-out) both;
+  }
+}
+
+@media (min-width: 64rem) {
+  .places__main {
+    grid-column: 1 / span 6;
+  }
+
+  .places__frame-wrap {
+    grid-column: 8 / -1;
+  }
+}
+
+/* Name and dimension label share a row only where the column is wide enough. */
+@media (min-width: 80rem) {
+  .place__link {
+    grid-template-columns: minmax(0, 1fr) minmax(13rem, auto);
+    align-items: center;
+    column-gap: var(--space-6);
+  }
+}
+
+@keyframes place-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* ===========================================================================
+   H9 Agents
+   ======================================================================== */
+/* ===========================================================================
+   H10 Testimonials
+   ======================================================================== */
+.testimonials__head {
+  margin-bottom: var(--space-12);
+}
+
+/* ===========================================================================
+   H11 FAQ
+   ======================================================================== */
+.faq {
+  background-color: var(--color-surface-sunken);
+}
+
+.faq__grid {
+  row-gap: var(--space-10);
+}
+
+.faq__intro {
+  display: grid;
+  gap: var(--space-8);
+  align-content: start;
+}
+
+.faq__contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-3);
+  margin: 0;
+}
+
+.faq__contact--side {
+  display: none;
+}
+
+.faq__contact--below {
+  margin-top: var(--space-8);
+}
+
+@media (min-width: 64rem) {
+  .faq__intro {
+    grid-column: 1 / span 4;
+  }
+
+  .faq__list {
+    grid-column: 6 / -1;
+  }
+
+  .faq__contact--side {
+    display: flex;
+  }
+
+  .faq__contact--below {
+    display: none;
+  }
+}
+
+/* ===========================================================================
+   H12 CTA band
+   ======================================================================== */
+.cta-band {
+  padding-top: var(--space-section);
+}
+
+.cta-band__frame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 520px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  overflow: clip;
+  isolation: isolate;
+}
+
+.cta-band__media {
+  position: absolute;
+  inset: 0;
+}
+
+.cta-band__photo.photo {
+  height: 100%;
+}
+
+.cta-band__photo .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cta-band__scrim {
+  position: absolute;
+  inset: 0;
+  background-image: var(--scrim-hero-bottom);
+}
+
+.cta-band__content {
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+  padding: var(--space-8) var(--space-6);
+}
+
+.cta-band__title,
+.cta-band__line {
+  margin: 0;
+}
+
+.cta-band__title {
+  max-width: 16ch;
+}
+
+.cta-band__line {
+  max-width: 40ch;
+}
+
+.cta-band__actions {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-3);
+}
+
+.cta-band__actions > * {
+  justify-content: center;
+}
+
+@media (min-width: 48rem) {
+  .cta-band__frame {
+    min-height: 480px;
+    aspect-ratio: 21 / 9;
+  }
+
+  /* Holds --scrim-strong across the text column, then fades out by 75%. */
+  .cta-band__scrim {
+    background-image: linear-gradient(
+      to right,
+      var(--scrim-strong) 0%,
+      var(--scrim-strong) 45%,
+      rgb(var(--hr-scrim-rgb) / 0) 75%
+    );
+  }
+
+  .cta-band__content {
+    align-self: center;
+    width: min(100%, 44rem);
+    padding: var(--space-16);
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    width: auto;
+  }
+}
+
+/* ===========================================================================
+   H13 Journal teaser
+   ======================================================================== */
+.journal-teaser__grid {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-card {
+  position: relative;
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.post-card__media {
+  border-radius: var(--radius-sm);
+  overflow: clip;
+}
+
+.motion-ok .post-card:hover .post-card__photo .photo-img,
+.motion-ok .post-card:focus-within .post-card__photo .photo-img {
+  scale: 1.05;
+}
+
+.post-card__body {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.post-card__body > * {
+  margin: 0;
+}
+
+.post-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (max-width: 47.99rem) {
+  .post-card:not(.post-card--first) {
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .post-card:not(.post-card--first) .post-card__photo.photo {
+    aspect-ratio: 1 / 1;
+  }
+
+  .post-card:not(.post-card--first) .post-card__title {
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+  }
+}
+
+@media (min-width: 48rem) {
+  .journal-teaser__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12) var(--space-gutter);
+  }
+
+  .post-card--first {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-gutter);
+    align-items: center;
+  }
+}
+
+@media (min-width: 64rem) {
+  .journal-teaser__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .post-card--first {
+    grid-column: auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+}
+
+/* ===========================================================================
+   H14 Newsletter
+   ======================================================================== */
+.newsletter__panel {
+  display: grid;
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-5);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-sunken);
+}
+
+.newsletter__key.draw-svg {
+  width: 140px;
+  min-width: 0;
+}
+
+.newsletter__intro {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.newsletter__title,
+.newsletter__line,
+.newsletter__consent {
+  margin: 0;
+}
+
+.newsletter__form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.newsletter__form-root .form__actions .btn {
+  --btn-h: 52px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* The status line takes no room until it has a message (it stays in the page for screen readers). */
+.newsletter__form-root .form__actions {
+  gap: 0;
+}
+
+.newsletter__form-root .form__status {
+  min-height: 0;
+}
+
+.newsletter__form-root .form__status:not(:empty) {
+  margin-top: var(--space-3);
+}
+
+@media (min-width: 30rem) {
+  /* Field and button on one row. */
+  .newsletter__form-root .form__form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: var(--space-3);
+  }
+
+  .newsletter__form-root .form__summary,
+  .newsletter__form-root .form__status {
+    grid-column: 1 / -1;
+  }
+
+  .newsletter__form-root .form__actions {
+    display: contents;
+  }
+
+  /* The label has a fixed 1.5rem line so the button sits level with the field, and both are 52px tall. */
+  .newsletter__form-root .field__label {
+    line-height: 1.5rem;
+  }
+
+  .newsletter__form-root .form__actions .btn {
+    --btn-h: 52px;
+    --btn-px: var(--space-5);
+    width: auto;
+    margin-top: calc(1.5rem + var(--space-2));
+  }
+
+  .newsletter__form-root .form__status:empty {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .newsletter__panel {
+    padding: var(--space-12);
+  }
+}
+
+@media (min-width: 64rem) {
+  .newsletter__panel {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    grid-template-rows: auto auto;
+    column-gap: var(--space-16);
+    padding: var(--space-16);
+  }
+
+  .newsletter__key.draw-svg {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: 200px;
+  }
+
+  .newsletter__intro {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: end;
+  }
+
+  .newsletter__form {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}

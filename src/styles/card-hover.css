@@ -1,0 +1,181 @@
+/* Journal card hover (DESIGN.md M13, Journal): the same treatment as the Featured homes cards (PropertyCard `--arrow`).
+   A dark disc with an up-right arrow fades in over the middle of the photo, a 1px hairline frames the whole card,
+   and the text sits on a dark panel while it scales down. Only opacity, scale and colour change; the card never moves.
+   The panel is the text block's own background, extended outwards with negative margins and given the same padding
+   back, so nothing is positioned and the stretched link still covers the whole card.
+   Used by pages/PostCard.astro (journal index and article) and home/JournalTeaser.astro.
+   Layout hooks (custom properties on the card): `--hc-gap` is the space between photo and text when stacked (set where
+   the card's grid is defined); side-by-side layouts below set `--hc-up`, `--hc-left`, `--hc-align` and `--hc-content`. */
+
+.post-card {
+  --hc-frame: var(--space-3);
+  --hc-up: calc(var(--hc-gap, var(--space-4)) - var(--space-2));
+  --hc-left: var(--hc-frame);
+  --hc-align: auto;
+  --hc-content: normal;
+}
+
+/* The photo's centre disc. */
+.post-card__go {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.62);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  scale: 0.8;
+  transition:
+    opacity var(--dur-base) var(--ease-standard),
+    scale var(--dur-slow) var(--ease-out-expo);
+  pointer-events: none;
+}
+
+.post-card__media {
+  position: relative;
+}
+
+/* Hairline frame over the whole card, one frame-gap outside it. */
+.post-card::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--hc-frame) * -1);
+  z-index: 2;
+  border: 1px solid var(--hr-night-800);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-standard);
+  pointer-events: none;
+}
+
+/* Text panel: stacked, it starts 8px under the photo and runs to the frame at the sides and foot. */
+.post-card .post-card__body {
+  margin: calc(var(--hc-up) * -1) calc(var(--hc-frame) * -1) calc(var(--hc-frame) * -1) calc(var(--hc-left) * -1);
+  padding: var(--hc-up) var(--hc-frame) var(--hc-frame) var(--hc-left);
+  align-self: var(--hc-align);
+  align-content: var(--hc-content);
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  transition: background-color var(--dur-slow) var(--ease-standard);
+}
+
+.post-card__title .hc-text {
+  display: block;
+}
+
+.post-card__body > *,
+.post-card__title .hc-text {
+  transform-origin: left center;
+  transition:
+    scale var(--dur-slow) var(--ease-out-expo),
+    color var(--dur-base) var(--ease-standard),
+    opacity var(--dur-base) var(--ease-standard),
+    translate var(--dur-base) var(--ease-standard);
+}
+
+.post-card:hover::after,
+.post-card:focus-within::after,
+.post-card:hover .post-card__go,
+.post-card:focus-within .post-card__go {
+  opacity: 1;
+}
+
+.post-card:hover .post-card__go,
+.post-card:focus-within .post-card__go {
+  scale: 1;
+}
+
+.post-card:hover .post-card__body,
+.post-card:focus-within .post-card__body {
+  background-color: var(--hr-night-800);
+}
+
+/* The scale goes on the title's inner text, never on an element that contains the stretched link: a transformed
+   ancestor becomes the link's containing block and shrinks its click area to the title. */
+.post-card:hover .post-card__body > :not(.post-card__title),
+.post-card:focus-within .post-card__body > :not(.post-card__title),
+.post-card:hover .post-card__title .hc-text,
+.post-card:focus-within .post-card__title .hc-text {
+  scale: 0.92;
+}
+
+.post-card:hover .post-card__body > *,
+.post-card:focus-within .post-card__body > * {
+  color: var(--hr-mist-200);
+}
+
+.post-card:hover .post-card__body :is(.muted, .small, .label, .post-card__excerpt),
+.post-card:focus-within .post-card__body :is(.muted, .small, .label, .post-card__excerpt) {
+  color: var(--hr-mist-400);
+}
+
+.post-card:hover .post-card__more,
+.post-card:focus-within .post-card__more {
+  color: var(--hr-brass-300);
+}
+
+/* The title never underlines on hover. */
+.post-card:hover .post-card__title a,
+.post-card:focus-within .post-card__title a,
+.post-card:hover .post-card__link,
+.post-card:focus-within .post-card__link {
+  text-decoration: none;
+}
+
+/* Side-by-side layouts: the lead article on /journal (64rem up), the home teaser's lead and the third related post on tablets,
+   and the phone thumbnail rows in the teaser. The frame goes round photo and text; the panel runs to the frame on the top,
+   right and foot, with the text centred in it (thumbnail rows keep the text at the top). */
+@media (min-width: 64rem) {
+  .post-card--feature {
+    --hc-up: var(--hc-frame);
+    --hc-align: stretch;
+    --hc-content: center;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  .post-card--first,
+  .post-related .journal__grid > li:nth-child(3):last-child .post-card {
+    --hc-up: var(--hc-frame);
+    --hc-align: stretch;
+    --hc-content: center;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  li.post-card:not(.post-card--first) {
+    --hc-up: var(--hc-frame);
+    --hc-left: var(--space-2);
+  }
+
+  li.post-card:not(.post-card--first) .post-card__go {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  li.post-card:not(.post-card--first) .post-card__go .icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card .post-card__go,
+  .post-card:hover .post-card__go,
+  .post-card:focus-within .post-card__go {
+    scale: none;
+  }
+
+  .post-card:hover .post-card__body > *,
+  .post-card:focus-within .post-card__body > *,
+  .post-card:hover .post-card__title .hc-text,
+  .post-card:focus-within .post-card__title .hc-text {
+    scale: none;
+  }
+}
