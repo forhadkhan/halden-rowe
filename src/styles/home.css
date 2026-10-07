@@ -432,7 +432,7 @@
   }
 
   .hero__facts {
-    padding-block: var(--space-6) var(--space-8);
+    padding-block: var(--space-12) var(--space-8);
   }
 
   /* Map filter chips: 44px tall on phones. */
